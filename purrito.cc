@@ -215,7 +215,8 @@ void *handle_connection(void *args) {
 
   printf("Purrito: receving paste\n");
 
-  const int bytes = read(connection->sockd, buffer, connection->settings->max_paste_size);
+  //const int bytes = read(connection->sockd, buffer, connection->settings->max_paste_size);
+  const int bytes = recv(connection->sockd, buffer, connection->settings->max_paste_size, MSG_WAITALL);
   if (bytes <= 0) {
 
     printf("Purrito: no data received from the client\n");
