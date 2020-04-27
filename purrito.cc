@@ -20,7 +20,6 @@
 #include <ctime>
 #include <random>
 #include <filesystem>
-#include <fstream>
 
 #include <stdio.h>
 #include <stdarg.h>
@@ -216,7 +215,7 @@ void *handle_connection(void *args) {
 
   printf("Purrito: receving paste\n");
 
-  const int bytes = read(connection->sockd, buffer, sizeof(buffer));
+  const int bytes = read(connection->sockd, buffer, connection->settings->max_paste_size);
   if (bytes <= 0) {
 
     printf("Purrito: no data received from the client\n");
@@ -239,9 +238,10 @@ void *handle_connection(void *args) {
 
   std::filesystem::path ofile = connection->settings->storage_directory;
   ofile /= slug;
-  std::ofstream ofs(ofile.c_str());
-  ofs << buffer;
-  ofs.close();
+  FILE *f = fopen(ofile.c_str(), "w");
+  buffer[connection->settings->max_paste_size - 1] = 0;
+  fprintf(f, "%s", buffer);
+  fclose(f);
 
   printf("Purrito: wrote it to file %s\n", ofile.c_str());
   printf("------------------------------\n");
