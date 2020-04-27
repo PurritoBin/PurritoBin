@@ -16,8 +16,6 @@
  */
 
 
-#include <algorithm>
-#include <iostream>
 #include <chrono>
 #include <ctime>
 #include <random>
@@ -49,14 +47,12 @@
 
 #include "purrito.hh"
 
-using namespace std;
-
 /*
  * high precision timer and random number generator
  * see: https://codeforces.com/blog/entry/61587
  * it is also thread safe, so useful for async
  */
-mt19937 rng(chrono::steady_clock::now().time_since_epoch().count());
+std::mt19937 rng(std::chrono::steady_clock::now().time_since_epoch().count());
 
 /* generate a random slug of required length */
 string
@@ -159,22 +155,23 @@ void dispatch_connection(const int &sockd, const purrito_settings *settings){
 
   const int newsockd = accept(sockd, (struct sockaddr *) &address, &addlen);
 
-  cout << "Got a new connection" << endl;
+  printf("Purrito: Got a new connection\n");
 
-  if (newsockd < 0)
-    err(newsockd, "Error: could not accept incoming connection");
-
+  if (newsockd < 0){
+    warn("Warning: could not accept incoming connection: %d\n", newsockd);
+    return;
+  }
   const struct timeval timeout = { 5, 0 };
 
   /* get receive timeout value */
   int rcvtimev = setsockopt(newsockd, SOL_SOCKET, SO_RCVTIMEO, &timeout, sizeof(timeout));
   if (rcvtimev != 0)
-    err(rcvtimev, "Error: couldn't set a receive timeout");
+    warn("Warning: couldn't set a receive timeout: %d\n", rcvtimev);
 
   /* get send timeout value */
   int sndtimev = setsockopt(newsockd, SOL_SOCKET, SO_SNDTIMEO, &timeout, sizeof(timeout));
   if (sndtimev != 0)
-    err(sndtimev, "Error: couldn't set a send timeout");
+    warn("Warning: couldn't set a send timeout: %d\n", sndtimev);
 
   /* create a tuple for values to send in thread */
   connection_info *connection = new connection_info(newsockd, settings, address);
@@ -184,8 +181,10 @@ void dispatch_connection(const int &sockd, const purrito_settings *settings){
 
   /* try to create the thread and get the value */
   int threadv = pthread_create(&id, NULL, &handle_connection, connection);
-  if (threadv != 0)
-    err(threadv, "Error: couldn't spawn a thread to handle the connection");
+  if (threadv != 0){
+    warn("Warning: couldn't spawn a thread to handle the connection: %d\n", threadv);
+    return;
+  }
 
   pthread_detach(id);
 }
@@ -206,19 +205,19 @@ void *handle_connection(void *args) {
 
   /* print status on this connection */
   {
-    auto date = chrono::system_clock::to_time_t(chrono::system_clock::now());
+    auto date = std::chrono::system_clock::to_time_t(std::chrono::system_clock::now());
 
-    printf("Purrito: Incoming connection from: %s (%s) @ %s\n", ip, hostname, ctime(&date));
+    printf("Purrito: Incoming connection from: %s (%s) @ %s\n", ip, hostname, std::ctime(&date));
   }
 
   // Create a buffer
-  uint8_t buffer[connection->settings->max_paste_size];
+  uint8_t *buffer = new uint8_t [connection->settings->max_paste_size];
   memset(buffer, 0, connection->settings->max_paste_size);
 
-  cout << "Purrito: receving paste\n";
+  printf("Purrito: receving paste\n");
 
-  const int r = read(connection->sockd, buffer, sizeof(buffer));
-  if (r <= 0) {
+  const int bytes = read(connection->sockd, buffer, sizeof(buffer));
+  if (bytes <= 0) {
 
     printf("Purrito: no data received from the client\n");
     printf("------------------------------\n");
@@ -233,22 +232,24 @@ void *handle_connection(void *args) {
     return 0;
   }
 
-  printf("Purrito: received paste of size %d\n", r);
+  printf("Purrito: received paste of size %d\n", bytes);
 
   string slug = random_slug(connection->settings->slug_size);
 
-  filesystem::path ofile = connection->settings->storage_directory;
+  std::filesystem::path ofile = connection->settings->storage_directory;
   ofile /= slug;
-  ofstream ofs(ofile.c_str());
+  std::ofstream ofs(ofile.c_str());
   ofs << buffer;
   ofs.close();
 
   printf("Purrito: wrote it to file %s\n", ofile.c_str());
   printf("------------------------------\n");
 
+  delete[] buffer;
+
   string slug_url = connection->settings->domain + slug;
   string return_message = "Your paste is available at: " + slug_url + "\n";
-  (void)write(connection->sockd, return_message.c_str(), return_message.size());
+  static_cast<void>(write(connection->sockd, return_message.c_str(), return_message.size()));
 
   close(connection->sockd);
 
