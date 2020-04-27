@@ -160,7 +160,7 @@ void dispatch_connection(const int &sockd, const purrito_settings *settings){
     warn("Warning: could not accept incoming connection: %d\n", newsockd);
     return;
   }
-  const struct timeval timeout = { 5, 0 };
+  const struct timeval timeout = { 2, 0 };
 
   /* get receive timeout value */
   int rcvtimev = setsockopt(newsockd, SOL_SOCKET, SO_RCVTIMEO, &timeout, sizeof(timeout));
