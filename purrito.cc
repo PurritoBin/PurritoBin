@@ -227,6 +227,7 @@ void *handle_connection(void *args) {
 
     // Cleanup
     free(connection);
+    delete[] buffer;
     pthread_exit(NULL);
 
     return 0;
@@ -245,7 +246,6 @@ void *handle_connection(void *args) {
   printf("Purrito: wrote it to file %s\n", ofile.c_str());
   printf("------------------------------\n");
 
-  delete[] buffer;
 
   std::string slug_url = connection->settings->domain + slug;
   std::string return_message = "Your paste is available at: " + slug_url + "\n";
@@ -254,6 +254,7 @@ void *handle_connection(void *args) {
   close(connection->sockd);
 
   free(connection);
+  delete[] buffer;
   pthread_exit(NULL);
 
   return NULL;
