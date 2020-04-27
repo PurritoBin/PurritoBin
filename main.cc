@@ -16,52 +16,49 @@
  */
 
 
-#include <string>
-#include <cstdint>
-#include <iostream>
 #include <filesystem>
 #include <fstream>
+#include <string>
 
-#include <stdio.h>
-#include <ctype.h>
-#include <stdlib.h>
-#include <unistd.h>
 #include <err.h>
 #include <errno.h>
+#include <stdint.h>
+#include <stdio.h>
+#include <unistd.h>
 
 #include "purrito.hh"
 
-using namespace std;
+//using namespace std;
 
 /*
  * function for printing the help of the code
  */
 void
 print_help() {
-  cout << "usage: purrito [-hdsipmg]                                       " << endl
-       << "        -h                                                      " << endl
-       << "            print this help                                     " << endl
-       << "        -d domain                                               " << endl
-       << "            REQUIRED                                            " << endl
-       << "            domain that will be used as prefix of returned paste" << endl
-       << "            NOTE: should be the full name, including trailing / " << endl
-       << "              e.g. https://bsd.ac/                              " << endl << endl
-       << "        -s storage_directory                                    " << endl
-       << "            REQUIRED                                            " << endl
-       << "            path to the storage directory for storing the paste " << endl
-       << "            NOTE: should exist prior to creation and should be  " << endl
-       << "                  writable by the user running purrito          " << endl
-       << "              e.g. /var/www/purrito                             " << endl << endl
-       << "        -i bind_ip                                              " << endl
-       << "            DEFAULT: 0.0.0.0                                    " << endl
-       << "            IP on which to listen for incoming connections      " << endl << endl
-       << "        -p bind_port                                            " << endl
-       << "            DEFAULT: 42069                                      " << endl
-       << "            port on which to listen for connections             " << endl << endl
-       << "        -m max_paste_size (in bytes)                            " << endl
-       << "            DEFAULT: 65536 (64KB)                               " << endl << endl
-       << "        -g slug_size                                            " << endl
-       << "            DEFAULT: 7                                          " << endl << endl;
+  printf("usage: purrito [-hdsipmg]                                       \n\n"
+         "        -h                                                        \n"
+         "            print this help                                     \n\n"
+         "        -d domain                                                 \n"
+         "            REQUIRED                                              \n"
+         "            domain that will be used as prefix of returned paste  \n"
+         "            NOTE: should be the full name, including trailing /   \n"
+         "              e.g. https://bsd.ac/                              \n\n"
+         "        -s storage_directory                                      \n"
+         "            REQUIRED                                              \n"
+         "            path to the storage directory for storing the paste   \n"
+         "            NOTE: should exist prior to creation and should be    \n"
+         "                  writable by the user running purrito            \n"
+         "              e.g. /var/www/purrito                             \n\n"
+         "        -i bind_ip                                                \n"
+         "            DEFAULT: 0.0.0.0                                      \n"
+         "            IP on which to listen for incoming connections      \n\n"
+         "        -p bind_port                                              \n"
+         "            DEFAULT: 42069                                        \n"
+         "            port on which to listen for connections             \n\n"
+         "        -m max_paste_size (in bytes)                              \n"
+         "            DEFAULT: 65536 (64KB)                               \n\n"
+         "        -g slug_size                                              \n"
+         "            DEFAULT: 7                                          \n\n");
 }
 
 /*
@@ -69,7 +66,6 @@ print_help() {
  */
 int
 main(int argc, char **argv) {
-
   int opt;
   string domain, storage_directory, bind_ip;
   uint8_t slug_size;
@@ -131,7 +127,6 @@ main(int argc, char **argv) {
    */
   if (domain == "") {
     print_help();
-    cout << endl;
     err(1, "Error: empty domain name");
   }
 
@@ -141,7 +136,6 @@ main(int argc, char **argv) {
    */
   if (storage_directory == "" || access(storage_directory.c_str(), W_OK) != 0){
     print_help();
-    cout << endl;
     err(1, "Error: storage directory is invalid or is not writable");
   }
 
@@ -151,15 +145,19 @@ main(int argc, char **argv) {
    * make a init file and write to it and then we delete it
    */
   {
-    filesystem::path fpath = storage_directory;
+    std::filesystem::path fpath = storage_directory;
     fpath /= "__init__";
-    ofstream output(fpath.string());
+    std::ofstream output(fpath.string());
     (void)remove(fpath.c_str());
   }
 
+  /* initialize the settings to be passed to the server */
   purrito_settings settings(domain, storage_directory, bind_ip, bind_port, max_paste_size, slug_size);
 
+  /* create the server and start running it */
   purrito purr(settings);
-
   purr.start_server();
+
+  /* it should not be possible to reach here */
+  return 0;
 }
