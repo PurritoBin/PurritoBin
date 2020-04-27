@@ -248,7 +248,7 @@ void *handle_connection(void *args) {
 
   string slug_url = connection->settings->domain + slug;
   string return_message = "Your paste is available at: " + slug_url + "\n";
-  write(connection->sockd, return_message.c_str(), return_message.size());
+  (void)write(connection->sockd, return_message.c_str(), return_message.size());
 
   close(connection->sockd);
 
