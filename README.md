@@ -2,7 +2,51 @@
 
 minimalistic command line paste-bin
 
-## Usage
+## Client
+
+Define this function somewhere in the dot files of your shell (works on all POSIX shells)
+
+```
+purr() {
+	nc bsd.ac 42069 < ${1:-/dev/stdin}
+}
+```
+NOTE: `nc` is the command for [netcat](https://en.wikipedia.org/wiki/Netcat), replace `nc` with the equivalent command for netcat in your system
+
+### Client usage
+```
+~$ echo Hello world. | nc bsd.ac 42069
+Your paste is available at: https://bsd.ac/d4nkl1t
+
+~$ echo Bye world. | purr
+Your paste is available at: https://bsd.ac/n0td4nk
+
+~$ purr d4nkf1l3.txt
+Your paste is available at: https://bsd.ac/n00bm4x
+
+~$ purr < l1tf1l3.txt
+Your paste is available at: https://bsd.ac/pr0n00b
+```
+
+## Server
+
+### Installation
+
+Clone the repository and compile
+
+```
+make
+./purrito [ options ]
+```
+
+To install the program
+
+```
+make
+make install
+```
+
+### Usage
 
 ```
  usage: purrito [-hdsipmg]                                       
@@ -36,21 +80,6 @@ minimalistic command line paste-bin
             DEFAULT: 7                                          
 ```
 
-## Installation
-
-Clone the repository and compile
-
-```
-make
-./purrito [ options ]
-```
-
-To install the program
-
-```
-make
-make install
-```
 
 ## Credits
 [solusipse](https://github.com/solusipse): for their [fiche](https://github.com/solusipse/fiche/) pastebin
