@@ -98,6 +98,6 @@ install:
 
 script:
   - cppcheck --enable=all --error-exitcode=1 --inconclusive main.cc purrito.cc
-  - make
+  - CXXFLAGS="-lstdc++fs" make
   - scan-build --status-bugs make -B
 
