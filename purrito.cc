@@ -131,7 +131,7 @@ purrito::start_server() {
   address.sin_addr.s_addr = inet_addr(settings.bind_ip.c_str());
   address.sin_port = htons(settings.bind_port);
 
-  int bindv = bind(sockd, (struct sockaddr *) &address, sizeof(address));
+  int bindv = ::bind(sockd, (struct sockaddr *) &address, sizeof(address));
   if (bindv != 0)
     err(bindv, "Error: could not bind to port %d on ip %s", settings.bind_port, settings.bind_ip.c_str());
 
