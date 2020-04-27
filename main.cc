@@ -28,7 +28,6 @@
 
 #include "purrito.hh"
 
-//using namespace std;
 
 /*
  * function for printing the help of the code
