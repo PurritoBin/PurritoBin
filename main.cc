@@ -115,10 +115,9 @@ main(int argc, char **argv) {
   /* based and lit method to make sure that nothing goes wrong */
 #if defined(__OpenBSD__)
   /* the only directory we need access to is the storage directory */
-  int unveil_error = unveil(storage_directory, "rwxc");
+  int unveil_err = unveil(storage_directory, "rwxc");
   if (unveil_err != 0) {
     err(unveil_err, "Error: could not unveil storage folder: %s", storage_directory);
-    return unveil_err;
   }
   /* also we only need small amounts of net and socket access */
   (void)pledge("stdio rpath wpath cpath inet unix", NULL);
