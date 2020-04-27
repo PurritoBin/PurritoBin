@@ -1,6 +1,8 @@
 TARGET	=	purrito
 
-DESTDIR	?= /usr/local/bin
+DESTDIR	?=
+
+PREFIX ?=	/usr/local/bin
 
 CXXFLAGS	+= -lpthread -std=c++17 -O2 -Wall -Wextra -Wpedantic -Wstrict-overflow
 
