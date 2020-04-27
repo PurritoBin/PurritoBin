@@ -12,6 +12,7 @@ all:
 	$(CXX) main.cc purrito.cc $(CFLAGS) $(CXXFLAGS) -o $(TARGET)
 
 install:
+	install -d $(DESTDIR)$(bindir)
 	install -m 0755 $(TARGET) $(DESTDIR)$(bindir)/$(TARGET)
 
 clean:
