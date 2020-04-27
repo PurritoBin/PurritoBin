@@ -190,7 +190,7 @@ void dispatch_connection(const int &sockd, const purrito_settings *settings){
 }
 
 void *handle_connection(void *args) {
-  connection_info *connection = (connection_info *) args;
+  connection_info *connection = reinterpret_cast <connection_info *>(args);
 
   /* get client's IP */
   const char *ip = inet_ntoa(connection->address.sin_addr);
