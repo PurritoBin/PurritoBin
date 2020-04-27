@@ -2,7 +2,7 @@ TARGET	=	purrito
 
 DESTDIR	?=
 
-CXXFLAGS	+= -O2 -Wall -Wextra -Wpedantic -Wstrict-overflow
+CXXFLAGS	+= -std=c++17 -O2 -Wall -Wextra -Wpedantic -Wstrict-overflow
 
 PREFIX	=	${DESTDIR}/usr/local/bin
 
