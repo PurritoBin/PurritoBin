@@ -50,4 +50,4 @@ make install
 ```
 
 ## Credits
-solusipse: for their [fiche](https://github.com/solusipse/fiche/) pastebin
+[solusipse](https://github.com/solusipse): for their [fiche](https://github.com/solusipse/fiche/) pastebin
