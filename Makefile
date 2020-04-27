@@ -1,7 +1,6 @@
 TARGET	=	purrito
 
-DESTDIR	?= /usr/local
-PREFIX ?= /bin
+DESTDIR	?= /usr/local/bin
 
 CXXFLAGS	+= -lpthread -std=c++17 -O2 -Wall -Wextra -Wpedantic -Wstrict-overflow
 
@@ -11,7 +10,7 @@ all:
 	${CXX} main.cc purrito.cc ${CFLAGS} ${CXXFLAGS} -o ${TARGET}
 
 install:
-	install -m 0755 ${TARGET} ${INSTALLDIR}
+	install -m 0755 ${TARGET} ${DESTDIR}
 
 clean:
 	${RM} ${TARGET}
