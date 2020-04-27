@@ -55,7 +55,7 @@
 std::mt19937 rng(std::chrono::steady_clock::now().time_since_epoch().count());
 
 /* generate a random slug of required length */
-string
+std::string
 random_slug(const int&);
 
 /* dispatch connections */
@@ -84,10 +84,10 @@ public:
 /*
  * linear time generation of random slug
  */
-string
+std::string
 random_slug(const int &slug_size) {
   /* we generate only alpha-num slugs */
-  string alphanum = "0123456789abcdefghijklmnopqrstuvwxyz";
+  std::string alphanum = "0123456789abcdefghijklmnopqrstuvwxyz";
   /* get the size, cuz 10+26 is too hard */
   size_t len = alphanum.size();
   /* work around variable length array iso dumbass */
@@ -98,7 +98,7 @@ random_slug(const int &slug_size) {
   }
   /* add the final character for converting back to string */
   rslug[slug_size] = '\0';
-  string new_slug(rslug);
+  std::string new_slug(rslug);
   /* definitely learning some weird paradigms in c++ */
   delete[] rslug;
   return new_slug;
@@ -127,7 +127,7 @@ purrito::start_server() {
   address.sin_addr.s_addr = inet_addr(settings.bind_ip.c_str());
   address.sin_port = htons(settings.bind_port);
 
-  int bindv = ::bind(sockd, (struct sockaddr *) &address, sizeof(address));
+  int bindv = bind(sockd, (struct sockaddr *) &address, sizeof(address));
   if (bindv != 0)
     err(bindv, "Error: could not bind to port %d on ip %s", settings.bind_port, settings.bind_ip.c_str());
 
@@ -234,7 +234,7 @@ void *handle_connection(void *args) {
 
   printf("Purrito: received paste of size %d\n", bytes);
 
-  string slug = random_slug(connection->settings->slug_size);
+  std::string slug = random_slug(connection->settings->slug_size);
 
   std::filesystem::path ofile = connection->settings->storage_directory;
   ofile /= slug;
@@ -247,8 +247,8 @@ void *handle_connection(void *args) {
 
   delete[] buffer;
 
-  string slug_url = connection->settings->domain + slug;
-  string return_message = "Your paste is available at: " + slug_url + "\n";
+  std::string slug_url = connection->settings->domain + slug;
+  std::string return_message = "Your paste is available at: " + slug_url + "\n";
   static_cast<void>(write(connection->sockd, return_message.c_str(), return_message.size()));
 
   close(connection->sockd);

@@ -19,10 +19,9 @@
 #ifndef _PURRITO
 #define _PURRITO
 
-#include <cstdint>
 #include <string>
 
-using namespace std;
+#include <stdint.h>
 
 class purrito_settings {
 public:
@@ -32,7 +31,7 @@ public:
    * NOTE: should be the full name, including trailing /
    *   e.g. https://bsd.ac/
    */
-  const string domain;
+  const std::string domain;
 
   /*
    * REQUIRED
@@ -40,14 +39,14 @@ public:
    * NOTE: should exist prior to creation and should be
    *       writable by the user running purrito
    */
-  const string storage_directory;
+  const std::string storage_directory;
 
   /*
    * DEFAULT: 0.0.0.0
    * IP on which to listen for incoming connections
    * NOTE: defaults to all
    */
-  const string bind_ip;
+  const std::string bind_ip;
 
   /*
    * DEFAULT: 42069 // dank af
@@ -70,7 +69,7 @@ public:
    */
   const uint8_t slug_size;
 
-  purrito_settings(const string &domain, const string &storage_directory, const string & bind_ip, const uint16_t &bind_port, const uint32_t &max_paste_size, const uint8_t &slug_size): domain(domain), storage_directory(storage_directory), bind_ip(bind_ip), bind_port(bind_port), max_paste_size(max_paste_size), slug_size(slug_size) {}
+  purrito_settings(const std::string &domain, const std::string &storage_directory, const std::string & bind_ip, const uint16_t &bind_port, const uint32_t &max_paste_size, const uint8_t &slug_size): domain(domain), storage_directory(storage_directory), bind_ip(bind_ip), bind_port(bind_port), max_paste_size(max_paste_size), slug_size(slug_size) {}
 };
 
 class purrito {

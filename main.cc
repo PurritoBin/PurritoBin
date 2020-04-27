@@ -67,7 +67,7 @@ print_help() {
 int
 main(int argc, char **argv) {
   int opt;
-  string domain, storage_directory, bind_ip;
+  std::string domain, storage_directory, bind_ip;
   uint8_t slug_size;
   uint16_t bind_port;
   uint32_t max_paste_size;
@@ -94,13 +94,13 @@ main(int argc, char **argv) {
       bind_ip = optarg;
       break;
     case 'p':
-      bind_port = stoi(optarg);
+      bind_port = std::stoi(optarg);
       break;
     case 'm':
-      max_paste_size = stoi(optarg);
+      max_paste_size = std::stoi(optarg);
       break;
     case 'g':
-      slug_size = stoi(optarg);
+      slug_size = std::stoi(optarg);
       break;
     default:
       print_help();
