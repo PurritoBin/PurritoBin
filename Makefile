@@ -9,7 +9,7 @@ PREFIX	=	${DESTDIR}/usr/local/bin
 all:
 	${CXX} main.cc purrito.cc ${CFLAGS} ${CXXFLAGS} -o ${TARGET}
 
-install:
+install: all
 	install -m 0755 ${TARGET} ${PREFIX}
 
 clean:
