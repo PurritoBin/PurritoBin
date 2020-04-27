@@ -5,7 +5,7 @@ minimalistic command line paste-bin
 ## Usage
 
 ```
- usage: purrito [-dsipm]                                         
+ usage: purrito [-hdsipmg]                                       
         -h                                                      
             print this help                                     
         -d domain                                               
@@ -31,6 +31,9 @@ minimalistic command line paste-bin
 
         -m max_paste_size (in bytes)                            
             DEFAULT: 65536 (64KB)                               
+
+        -g slug_size                                            
+            DEFAULT: 7                                          
 ```
 
 ## Installation
