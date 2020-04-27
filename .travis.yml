@@ -9,9 +9,10 @@ jobs:
           sources:
             - ubuntu-toolchain-r-test
           packages:
+            - cppcheck
             - g++-7
       env:
-        - MATRIX_EVAL="CC=gcc-7 CXX=g++-7"
+        - MATRIX_EVAL="CC=gcc-7 CXX=g++-7 GSL_CXX_STANDARD=17"
     - os: linux
       dist: xenial
       addons:
@@ -19,9 +20,10 @@ jobs:
           sources:
             - ubuntu-toolchain-r-test
           packages:
+            - cppcheck
             - g++-8
       env:
-        - MATRIX_EVAL="CC=gcc-8 CXX=g++-8"
+        - MATRIX_EVAL="CC=gcc-8 CXX=g++-8 GSL_CXX_STANDARD=17"
     - os: linux
       dist: xenial
       addons:
@@ -29,10 +31,10 @@ jobs:
           sources:
             - ubuntu-toolchain-r-test
           packages:
+            - cppcheck
             - g++-9
       env:
-        - MATRIX_EVAL="CC=gcc-9 CXX=g++-9"
-
+        - MATRIX_EVAL="CC=gcc-9 CXX=g++-9 GSL_CXX_STANDARD=17"
     - os: linux
       dist: xenial
       addons:
@@ -42,9 +44,10 @@ jobs:
             - sourceline: 'deb https://apt.llvm.org/xenial/ llvm-toolchain-xenial-7 main'
               key_url: 'https://apt.llvm.org/llvm-snapshot.gpg.key'
           packages:
+            - cppcheck
             - clang-7
       env:
-        - MATRIX_EVAL="CC=clang-7 CXX=clang++-7"
+        - MATRIX_EVAL="CC=clang-7 CXX=clang++-7 GSL_CXX_STANDARD=17"
     - os: linux
       dist: xenial
       addons:
@@ -54,9 +57,10 @@ jobs:
             - sourceline: 'deb https://apt.llvm.org/xenial/ llvm-toolchain-xenial-8 main'
               key_url: 'https://apt.llvm.org/llvm-snapshot.gpg.key'
           packages:
+            - cppcheck
             - clang-8
       env:
-        - MATRIX_EVAL="CC=clang-8 CXX=clang++-8"
+        - MATRIX_EVAL="CC=clang-8 CXX=clang++-8 GSL_CXX_STANDARD=17"
     - os: linux
       dist: xenial
       addons:
@@ -66,9 +70,10 @@ jobs:
             - sourceline: 'deb https://apt.llvm.org/xenial/ llvm-toolchain-xenial-9 main'
               key_url: 'https://apt.llvm.org/llvm-snapshot.gpg.key'
           packages:
+            - cppcheck
             - clang-9
       env:
-        - MATRIX_EVAL="CC=clang-9 CXX=clang++-9"
+        - MATRIX_EVAL="CC=clang-9 CXX=clang++-9 GSL_CXX_STANDARD=17"
     - os: linux
       dist: xenial
       addons:
@@ -78,21 +83,21 @@ jobs:
             - sourceline: 'deb https://apt.llvm.org/xenial/ llvm-toolchain-xenial-10 main'
               key_url: 'https://apt.llvm.org/llvm-snapshot.gpg.key'
           packages:
+            - cppcheck
             - clang-10
       env:
-        - MATRIX_EVAL="CC=clang-10 CXX=clang++-10"
+        - MATRIX_EVAL="CC=clang-10 CXX=clang++-10 GSL_CXX_STANDARD=17"
         - LINKER_FLAGS="-stdlib=libc++ -lc++abi"
 
 before_script:
   - eval "${MATRIX_EVAL}"
 
-
 install:
   - export PYTHONUSERBASE=~/.loc9
   - easy_install --user scan-build
-  - easy_install --user typing
 
 script:
   - cppcheck --enable=all --error-exitcode=1 --inconclusive main.cc purrito.cc
   - make
   - scan-build --status-bugs make -B
+
