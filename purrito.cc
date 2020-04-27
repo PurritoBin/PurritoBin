@@ -217,7 +217,7 @@ void *handle_connection(void *args) {
 
   cout << "Purrito: receving paste\n";
 
-  const int r = recv(connection->sockd, buffer, sizeof(buffer), MSG_WAITALL);
+  const int r = read(connection->sockd, buffer, sizeof(buffer));
   if (r <= 0) {
 
     printf("Purrito: no data received from the client\n");
