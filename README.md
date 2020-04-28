@@ -30,6 +30,10 @@ Your paste is available at: https://bsd.ac/pr0n00b
 
 ## Server
 
+## Requirements
+
+- [uWebSockets](https://github.com/uNetworking/uWebSockets/)
+
 ### Installation
 
 Clone the repository and compile
