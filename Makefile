@@ -2,14 +2,18 @@ TARGET	=	purrito
 
 DESTDIR	?=
 
-prefix ?= /usr/local
-exec_prefix ?= $(prefix)
-bindir ?= $(exec_prefix)/bin
+prefix	?= /usr/local
+exec_prefix	?= $(prefix)
+bindir	?= $(exec_prefix)/bin
 
-CXXFLAGS	+= -lpthread -std=c++17 -O2 -Wall -Wextra -Wpedantic -Wstrict-overflow
+CXXFLAGS	+= -lpthread -std=c++17 -Wall -Wextra -Wpedantic -Wstrict-overflow
 
+# requirements
+# uwebsockets: https://github.com/uNetworking/uWebSockets
+# uSockets   : https://github.com/uNetworking/uSockets
+# plus all their dependencies (PurritoBin doesn't need zlib for uWebSockets)
 all:
-	$(CXX) main.cc purrito.cc $(CFLAGS) $(CXXFLAGS) -o $(TARGET)
+	$(CXX) -DUWS_NO_ZLIB -lusocket main.cc purrito.cc $(CFLAGS) $(CXXFLAGS) -o $(TARGET)
 
 install:
 	install -d $(DESTDIR)$(bindir)
