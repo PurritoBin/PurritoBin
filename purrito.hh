@@ -15,7 +15,6 @@
  *
  */
 
-
 #ifndef _PURRITO
 #define _PURRITO
 
@@ -69,14 +68,20 @@ public:
    */
   const uint8_t slug_size;
 
-  purrito_settings(const std::string &domain, const std::string &storage_directory, const std::string & bind_ip, const uint16_t &bind_port, const uint32_t &max_paste_size, const uint8_t &slug_size): domain(domain), storage_directory(storage_directory), bind_ip(bind_ip), bind_port(bind_port), max_paste_size(max_paste_size), slug_size(slug_size) {}
+  purrito_settings(const std::string &domain,
+                   const std::string &storage_directory,
+                   const std::string &bind_ip, const uint16_t &bind_port,
+                   const uint32_t &max_paste_size, const uint8_t &slug_size)
+      : domain(domain), storage_directory(storage_directory), bind_ip(bind_ip),
+        bind_port(bind_port), max_paste_size(max_paste_size),
+        slug_size(slug_size) {}
 };
 
 class purrito {
 public:
   const purrito_settings settings;
 
-  purrito(const purrito_settings settings): settings(settings) {}
+  purrito(const purrito_settings settings) : settings(settings) {}
 
   void start_server();
 };
