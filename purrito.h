@@ -77,13 +77,6 @@ public:
         slug_size(slug_size) {}
 };
 
-class purrito {
-public:
-  const purrito_settings settings;
-
-  purrito(const purrito_settings settings) : settings(settings) {}
-
-  void start_server();
-};
+void purr(const purrito_settings &);
 
 #endif //_PURRITO

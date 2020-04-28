@@ -25,7 +25,7 @@
 #include <stdio.h>
 #include <unistd.h>
 
-#include "purrito.hh"
+#include "purrito.h"
 
 /*
  * function for printing the help of the code
@@ -155,8 +155,7 @@ int main(int argc, char **argv) {
                             max_paste_size, slug_size);
 
   /* create the server and start running it */
-  purrito purr(settings);
-  purr.start_server();
+  purr(settings);
 
   /* it should not be possible to reach here */
   return 0;
