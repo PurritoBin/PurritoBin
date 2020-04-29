@@ -50,7 +50,7 @@ std::string random_slug(const int &);
  * try and save a buffer to file and return the error code
  * and also save the returned filename in the argument
  */
-std::string save_buffer(const char *, const purrito_settings &);
+std::string save_buffer(const char *, const uint32_t, const purrito_settings &);
 
 /*
  * read data in a registered call back function
@@ -141,7 +141,7 @@ void read_paste(const purrito_settings &settings,
                  *read_count);
 
           /* get the paste_url after saving */
-          std::string paste_url = save_buffer(buffer, settings);
+          std::string paste_url = save_buffer(buffer, *read_count, settings);
 
           /* and return it to the user */
           res->end(paste_url.c_str());
@@ -159,7 +159,8 @@ void read_paste(const purrito_settings &settings,
 /*
  * save the buffer to a file and return the paste url
  */
-std::string save_buffer(const char *buffer, const purrito_settings &settings) {
+std::string save_buffer(const char *buffer, const uint32_t buffer_size,
+                        const purrito_settings &settings) {
   /* generate the slug */
   std::string slug = random_slug(settings.slug_size);
 
@@ -170,7 +171,7 @@ std::string save_buffer(const char *buffer, const purrito_settings &settings) {
   /* get the file descriptor */
   FILE *output_file = fopen(ofile.c_str(), "w");
 
-  int write_count = fprintf(output_file, "%s", buffer);
+  int write_count = fwrite(buffer, sizeof(char), buffer_size, output_file);
 
   fclose(output_file);
 
