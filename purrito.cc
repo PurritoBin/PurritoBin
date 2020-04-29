@@ -123,7 +123,6 @@ uint8_t read_paste(const purrito_settings &settings,
   /* uWebSockets doesn't cork something already corked so we cork */
   res->cork([=]() {
     res->onData([=](std::string_view chunk, bool is_last) {
-
       /* calculate how much to copy over */
       uint32_t copy_size = std::max<int>(
           0, std::min<int>(max_chars - *read_count, chunk.size()));

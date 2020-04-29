@@ -34,7 +34,7 @@ https://bsd.ac/pron00b
 This is my input
 it can span multiple lines
 <Ctrl-d>
-https://bsd.ac/curlpro
+https://bsd.ac/curlpr0
 ```
 
 ## Server
