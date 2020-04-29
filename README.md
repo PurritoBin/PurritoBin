@@ -4,6 +4,7 @@ ultra fast, minimalistic, command line paste-bin
 
 ## Client
 
+### Basic
 Define this function somewhere in the dot files of your shell (works on all POSIX shells)
 
 ```
@@ -36,6 +37,27 @@ it can span multiple lines
 <Ctrl-d>
 https://bsd.ac/curlpr0
 ```
+
+### Zero Knowledge Storage
+
+In a zero knowledge storage setting, the paste is encrypted before sending it to the server.  
+Now the server will only be used as a storage bin and even in case of a non-https connection, 
+you are guaranteed that no one else will be able to read
+
+#### How does it work?
+ Client side:
+ - Encrypt the *paste* using some *key*, the encrypted text is called the *cipher*
+ - Send the *cipher* to the pastebin, using any client and get a paste url *https://bsd.ac/pasteurl*
+ - You can view the unencrypted *paste* at *https://bsd.ac/pasteurl.html#key*
+
+There are clients in the [clients](clients/) folder which allow you to do all this automatically, including POSIX compliant shell clients 
+
+### Why is this secure?
+- The html webpage only contains the encrypted *cipher* and has no knowledge of the *paste*
+- When you visit the html webpage the *key* is in the hash property of the webpage, which is never sent to the server
+- All decryption is done inside the browser on the client side
+
+TODO: Write decent clients, which are readable and modifiable
 
 ## Server
 
