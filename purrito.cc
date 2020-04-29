@@ -67,7 +67,8 @@ void purr(const purrito_settings &settings) {
   /* create a standard non tls app to listen for requests */
   uWS::App()
       .post("/",
-            [&](auto *res, auto *req) {
+            /* specifically ignoring the requet parameter, as c++ is dumb */
+            [&](auto *res, auto *) {
               /* Log that we are getting a connection */
               printf("Purrito: Got a connection\n");
 
@@ -85,7 +86,9 @@ void purr(const purrito_settings &settings) {
       .listen(settings.bind_port,
               [](auto *listenSocket) {
                 if (listenSocket) {
-                  printf("Purrito: Listening for connections...\n");
+                  printf("Purrito: Listening for connections...\n"
+                         "-----------------------------------"
+                         "-----------------------------------\n");
                 }
               })
       .run();
