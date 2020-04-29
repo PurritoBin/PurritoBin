@@ -13,7 +13,7 @@ CXXFLAGS	+= -lpthread -std=c++17 -Wall -Wextra -Wpedantic -Wstrict-overflow
 # uSockets   : https://github.com/uNetworking/uSockets
 # plus all their dependencies (PurritoBin doesn't need zlib for uWebSockets)
 all:
-	$(CXX) -DUWS_NO_ZLIB -lusocket main.cc purrito.cc $(CFLAGS) $(CXXFLAGS) -o $(TARGET)
+	$(CXX) -DUWS_NO_ZLIB -lusockets main.cc purrito.cc $(CFLAGS) $(CXXFLAGS) -o $(TARGET)
 
 install:
 	install -d $(DESTDIR)$(bindir)
