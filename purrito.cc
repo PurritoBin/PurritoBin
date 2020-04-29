@@ -14,9 +14,7 @@
  * OR IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
  */
 
-#include <PerMessageDeflate.h>
 #include <algorithm>
-#include <bits/stdint-uintn.h>
 #include <chrono>
 #include <filesystem>
 #include <fstream>
@@ -35,7 +33,7 @@
 #include <stdlib.h>
 #include <unistd.h>
 
-#include <App.h>
+#include <uWebSockets/App.h>
 
 #include "purrito.h"
 
