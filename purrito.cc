@@ -14,6 +14,7 @@
  * OR IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
  */
 
+#include <PerMessageDeflate.h>
 #include <algorithm>
 #include <bits/stdint-uintn.h>
 #include <chrono>
@@ -67,10 +68,14 @@ void purr(const purrito_settings &settings) {
   uWS::App()
       .post("/",
             [&](auto *res, auto *req) {
-              /* register the callback, which will cork the request properly */
+              /* Log that we are getting a connection */
+              printf("Purrito: Got a connection\n");
+
+              /* register the callback, which will cork the request properly
+               */
               res->cork([=]() { read_paste(settings, res); });
 
-              /* 
+              /*
                * attach a standard abort handler, in case something goes wrong
                */
               res->onAborted([]() {
@@ -85,7 +90,8 @@ void purr(const purrito_settings &settings) {
               })
       .run();
 
-  /* if we reached here, it means something went wrong */
+  /* if we reached here, it means something went wrong
+   */
   err(EXIT_FAILURE, "Error: could not start listening on the socket");
 }
 
@@ -96,7 +102,6 @@ void purr(const purrito_settings &settings) {
  */
 void read_paste(const purrito_settings &settings,
                 uWS::HttpResponse<false> *res) {
-
   /* calculate the correct number of characters allowed in the paste */
   uint32_t max_chars = settings.max_paste_size / sizeof(char);
 
@@ -107,6 +112,9 @@ void read_paste(const purrito_settings &settings,
   /* keep a counter on how much was already read */
   uint32_t *read_count = new uint32_t;
   *read_count = 0;
+
+  /* Log that we are starting to read the paste */
+  printf("Purrito: Starting to read the paste\n");
 
   /* uWebSockets doesn't cork something already corked so we cork */
   res->cork([=]() {
@@ -128,12 +136,20 @@ void read_paste(const purrito_settings &settings,
           /* set the last element correctly */
           buffer[*read_count] = '\0';
 
+          /* Log that we finished reading the paste */
+          printf("Purrito: Finished reading the paste of size %u\n",
+                 *read_count);
+
           /* get the paste_url after saving */
           std::string paste_url = save_buffer(buffer, settings);
 
           /* and return it to the user */
           res->end(paste_url.c_str());
           free(read_count);
+
+          /* print out the separator */
+          printf("-----------------------------------"
+                 "-----------------------------------\n");
         }
       }
     });
@@ -144,7 +160,6 @@ void read_paste(const purrito_settings &settings,
  * save the buffer to a file and return the paste url
  */
 std::string save_buffer(const char *buffer, const purrito_settings &settings) {
-
   /* generate the slug */
   std::string slug = random_slug(settings.slug_size);
 
@@ -155,12 +170,14 @@ std::string save_buffer(const char *buffer, const purrito_settings &settings) {
   /* get the file descriptor */
   FILE *output_file = fopen(ofile.c_str(), "w");
 
-  int write_err = fprintf(output_file, "%s", buffer);
+  int write_count = fprintf(output_file, "%s", buffer);
 
   fclose(output_file);
 
-  if (write_err < 0)
-    warn("Purrito: WARNING (%d) - error while writing to file\n", write_err);
+  if (write_count < 0) {
+    warn("Purrito: WARNING (%d) - error while writing to file\n", write_count);
+    return "PurritoBin: Error while pasting\n";
+  }
 
   return settings.domain + slug + "\n";
 }
