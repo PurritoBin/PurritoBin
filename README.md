@@ -4,7 +4,7 @@ ultra fast, minimalistic, command line paste-bin
 
 ## Client
 
-### Basic
+### Basic client
 Define this function somewhere in the dot files of your shell (works on all POSIX shells)
 
 ```
@@ -18,7 +18,7 @@ NOTE (specific to bsd.ac):
 - Paste size limited to 64KB (will be truncated)
 - Connection is not encrypted, use [zero-knowledge client](#zero) if you need full security
 
-### Client usage
+#### Client usage
 You can paste the stdout from a command, paste a file or paste while taking 
 input from a file or from the command line
 ```
@@ -38,7 +38,7 @@ it can span multiple lines
 https://bsd.ac/curlpr0
 ```
 
-### Zero Knowledge Storage
+### Zero Knowledge Storage Clients
 
 In a zero knowledge storage setting, the paste is encrypted before sending it to the server.  
 Now the server will only be used as a storage bin and even in case of a non-https connection, 
