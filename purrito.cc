@@ -66,44 +66,44 @@ void purr(const purrito_settings &settings) {
 
   /* create a standard non tls app to listen for requests */
   uWS::App()
-      .get("/*",
-           [&](auto *res, auto *req) {
-             std::cout << req->getUrl() << std::endl;
+      .post("/",
+            [&](auto *res, auto *req) {
+              std::cout << req->getUrl() << std::endl;
 
-             /* create an array for storing the returning string */
-             char *paste_url;
+              /* create an array for storing the returning string */
+              char *paste_url;
 
-             /* calculate number of characters in the paste_url */
-             uint32_t n = settings.domain.length() + settings.slug_size + 2;
+              /* calculate number of characters in the paste_url */
+              uint32_t n = settings.domain.length() + settings.slug_size + 2;
 
-             /* now we can malloc it, remember to free */
-             paste_url = (char *)malloc(n * sizeof(char));
-             memset(paste_url, 0, sizeof(paste_url));
+              /* now we can malloc it, remember to free */
+              paste_url = (char *)malloc(n * sizeof(char));
+              memset(paste_url, 0, n * sizeof(char));
 
-             /* register the callback, which will cork the request properly */
-             int perr = read_paste(settings, res, paste_url);
+              /* register the callback, which will cork the request properly */
+              int perr = read_paste(settings, res, paste_url);
 
-             res->end();
+              res->end();
 
-             /*
-              * if something went wrong we are guaranteed that
-              * paste_url has nothing in it
-              */
-             if (perr != 0) {
+              /*
+               * if something went wrong we are guaranteed that
+               * paste_url has nothing in it
+               */
+              if (perr != 0) {
 
-               /* send out a warning */
-               warn("Purrito: WARNING (%d) - could not process the request\n",
-                    n);
+                /* send out a warning */
+                warn("Purrito: WARNING (%d) - could not process the request\n",
+                     n);
 
-               /* free the malloc cuz we getting out of here */
-               free(paste_url);
+                /* free the malloc cuz we getting out of here */
+                free(paste_url);
 
-               return;
-             }
+                return;
+              }
 
-             /* remember to free the paste_url */
-             free(paste_url);
-           })
+              /* remember to free the paste_url */
+              free(paste_url);
+            })
       .listen(settings.bind_port,
               [](auto *listenSocket) {
                 if (listenSocket) {
@@ -191,7 +191,7 @@ uint8_t save_buffer(const char *buffer, const purrito_settings &settings,
 
   fclose(output_file);
 
-  if (write_err != 0)
+  if (write_err < 0)
     warn("Purrito: WARNING (%d) - error while writing to file\n", write_err);
 
   settings.domain.copy(paste_url, settings.domain.size());
