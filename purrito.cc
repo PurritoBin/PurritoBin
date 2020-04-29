@@ -57,7 +57,7 @@ std::string save_buffer(const char *, const purrito_settings &);
 /*
  * read data in a registered call back function
  */
-uint8_t read_paste(const purrito_settings &, uWS::HttpResponse<false> *);
+void read_paste(const purrito_settings &, uWS::HttpResponse<false> *);
 
 /******************************************************************************/
 
@@ -68,20 +68,7 @@ void purr(const purrito_settings &settings) {
       .post("/",
             [&](auto *res, auto *req) {
               /* register the callback, which will cork the request properly */
-              int perr = read_paste(settings, res);
-
-              /*
-               * if something went wrong we are guaranteed that
-               * paste_url has nothing in it
-               */
-              if (perr != 0) {
-
-                /* send out a warning */
-                warn("Purrito: WARNING (%d) - could not process the request\n",
-                     perr);
-
-                return;
-              }
+              read_paste(settings, res);
 
               /* attach a standard abort handler, in case something goes wrong
                */
@@ -106,8 +93,8 @@ void purr(const purrito_settings &settings) {
 /*
  * process the request
  */
-uint8_t read_paste(const purrito_settings &settings,
-                   uWS::HttpResponse<false> *res) {
+void read_paste(const purrito_settings &settings,
+                uWS::HttpResponse<false> *res) {
 
   /* calculate the correct number of characters allowed in the paste */
   uint32_t max_chars = settings.max_paste_size / sizeof(char);
@@ -145,11 +132,11 @@ uint8_t read_paste(const purrito_settings &settings,
 
           /* and return it to the user */
           res->end(paste_url.c_str());
+          free(read_count);
         }
       }
     });
   });
-  return 0;
 }
 
 /*
