@@ -68,9 +68,10 @@ void purr(const purrito_settings &settings) {
       .post("/",
             [&](auto *res, auto *req) {
               /* register the callback, which will cork the request properly */
-              read_paste(settings, res);
+              res->cork([=]() { read_paste(settings, res); });
 
-              /* attach a standard abort handler, in case something goes wrong
+              /* 
+               * attach a standard abort handler, in case something goes wrong
                */
               res->onAborted([]() {
                 printf("Purrito: Warning - request was prematurely aborted\n");
