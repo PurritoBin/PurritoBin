@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html>
+    <meta charset="utf-8"/>
+    <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/sjcl/1.0.8/sjcl.min.js"></script>
+    <script type="text/javascript">
+     var password = "password";
+     var text = "my secret text";
+     var parameters = { "iter" : 1000 };
+     var rp = {};
+     var cipherTextJson = {};
+
+     sjcl.misc.cachedPbkdf2(password, parameters);
+     cipherTextJson = sjcl.encrypt(password, text, parameters, rp);
+     console.log(cipherTextJson);
+
+     var key=window.location.hash;
+     key=key.substr(1);
+
+     var encrypted_data=document.getElementById('enc');
+     var ciphertext={ct: encrypted_data,
+         mode: "pbkdf2",
+         cipher: "aes",
+         ks: 256,
+     };
+     var decrypted_data=sjcl.decrypt(key, ciphertext);
+     var decrypted_storage=document.getElementById('dec');
+     decrypted_storage.innerHTML=decrypted_data;
+    </script>
+    <body>
+        <pre id="dec"></pre>
+        <pre id="enc"></pre>
+    </body>
+</html>

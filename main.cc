@@ -15,7 +15,6 @@
  *
  */
 
-
 #include <filesystem>
 #include <fstream>
 #include <string>
@@ -26,59 +25,59 @@
 #include <stdio.h>
 #include <unistd.h>
 
-#include "purrito.hh"
-
+#include "purrito.h"
 
 /*
  * function for printing the help of the code
  */
-void
-print_help() {
-  printf("usage: purrito [-hdsipmg]                                       \n\n"
-         "        -h                                                        \n"
-         "            print this help                                     \n\n"
-         "        -d domain                                                 \n"
-         "            REQUIRED                                              \n"
-         "            domain that will be used as prefix of returned paste  \n"
-         "            NOTE: should be the full name, including trailing /   \n"
-         "              e.g. https://bsd.ac/                              \n\n"
-         "        -s storage_directory                                      \n"
-         "            REQUIRED                                              \n"
-         "            path to the storage directory for storing the paste   \n"
-         "            NOTE: should exist prior to creation and should be    \n"
-         "                  writable by the user running purrito            \n"
-         "              e.g. /var/www/purrito                             \n\n"
-         "        -i bind_ip                                                \n"
-         "            DEFAULT: 0.0.0.0                                      \n"
-         "            IP on which to listen for incoming connections      \n\n"
-         "        -p bind_port                                              \n"
-         "            DEFAULT: 42069                                        \n"
-         "            port on which to listen for connections             \n\n"
-         "        -m max_paste_size (in bytes)                              \n"
-         "            DEFAULT: 65536 (64KB)                               \n\n"
-         "        -g slug_size                                              \n"
-         "            DEFAULT: 7                                          \n\n");
+void print_help() {
+  printf(
+      "usage: purrito [-hdsipmg]                                       \n\n"
+      "        -h                                                        \n"
+      "            print this help                                     \n\n"
+      "        -d domain                                                 \n"
+      "            REQUIRED                                              \n"
+      "            domain that will be used as prefix of returned paste  \n"
+      "            NOTE: should be the full name, including trailing /   \n"
+      "              e.g. https://bsd.ac/                              \n\n"
+      "        -s storage_directory                                      \n"
+      "            REQUIRED                                              \n"
+      "            path to the storage directory for storing the paste   \n"
+      "            NOTE: should exist prior to creation and should be    \n"
+      "                  writable by the user running purrito            \n"
+      "              e.g. /var/www/purrito                             \n\n"
+      "        -i bind_ip                                                \n"
+      "            DEFAULT: 0.0.0.0                                      \n"
+      "            IP on which to listen for incoming connections      \n\n"
+      "        -p bind_port                                              \n"
+      "            DEFAULT: 42069                                        \n"
+      "            port on which to listen for connections             \n\n"
+      "        -m max_paste_size (in bytes)                              \n"
+      "            DEFAULT: 65536 (64KB)                               \n\n"
+      "        -g slug_size                                              \n"
+      "            DEFAULT: 7                                          \n\n");
 }
 
 /*
  * main code for running the server
  */
-int
-main(int argc, char **argv) {
+int main(int argc, char **argv) {
   int opt;
   std::string domain, storage_directory, bind_ip;
   uint8_t slug_size;
   uint16_t bind_port;
   uint32_t max_paste_size;
 
-  /* we should define the default values for variables not considered essential */
+  /* we should define the default values for variables not
+   * considered essential
+   */
   bind_ip = "0.0.0.0";
-  slug_size = 7; // the magic number
-  bind_port = 42069; // dank af
+  slug_size = 7;          // the magic number
+  bind_port = 42069;      // dank af
   max_paste_size = 65536; // seems reasonable for most
 
-  while( (opt = getopt(argc, argv, "hd:s:i:p:m:g:")) != EOF )
-    switch(opt) {
+  while ((opt = getopt(argc, argv, "hd:s:i:p:m:g:")) != EOF)
+    switch (opt) {
     case 'h':
       print_help();
       return 0;
@@ -112,7 +111,8 @@ main(int argc, char **argv) {
   /* the only directory we need access to is the storage directory */
   int unveil_err = unveil(storage_directory.c_str(), "rwxc");
   if (unveil_err != 0) {
-    err(unveil_err, "Error: could not unveil storage folder: %s", storage_directory.c_str());
+    err(unveil_err, "Error: could not unveil storage folder: %s",
+        storage_directory.c_str());
   }
   /* also we only need small amounts of net and socket access */
   (void)pledge("stdio rpath wpath cpath inet unix", NULL);
@@ -130,10 +130,10 @@ main(int argc, char **argv) {
   }
 
   /*
-   * lets first check that we can even access it correcty, and afterwards we will do
-   * a write test to see if everything worked out a-OK
+   * lets first check that we can even access it correcty, and afterwards we
+   * will do a write test to see if everything worked out a-OK
    */
-  if (storage_directory == "" || access(storage_directory.c_str(), W_OK) != 0){
+  if (storage_directory == "" || access(storage_directory.c_str(), W_OK) != 0) {
     print_help();
     err(1, "Error: storage directory is invalid or is not writable");
   }
@@ -151,11 +151,11 @@ main(int argc, char **argv) {
   }
 
   /* initialize the settings to be passed to the server */
-  purrito_settings settings(domain, storage_directory, bind_ip, bind_port, max_paste_size, slug_size);
+  purrito_settings settings(domain, storage_directory, bind_ip, bind_port,
+                            max_paste_size, slug_size);
 
   /* create the server and start running it */
-  purrito purr(settings);
-  purr.start_server();
+  purr(settings);
 
   /* it should not be possible to reach here */
   return 0;

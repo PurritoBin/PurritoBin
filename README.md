@@ -1,34 +1,69 @@
 # Purrito Bin
 
-minimalistic command line paste-bin
+ultra fast, minimalistic, command line paste-bin
 
 ## Client
 
+### Basic client
 Define this function somewhere in the dot files of your shell (works on all POSIX shells)
 
 ```
 purr() {
-	nc bsd.ac 42069 < ${1:-/dev/stdin}
+	curl --data-binary "@${1:-/dev/stdin}" bsd.ac:42069;
 }
 ```
-NOTE: `nc` is the command for [netcat](https://en.wikipedia.org/wiki/Netcat), replace `nc` with the equivalent command for netcat in your system
 
-### Client usage
+NOTE (specific to bsd.ac):
+- One paste every 3 seconds, abusers will be automatically banned for 10 minutes
+- Paste size limited to 64KB (will be truncated)
+- Connection is not encrypted, use [zero-knowledge client](#zero) if you need full security
+
+#### Client usage
+You can paste the stdout from a command, paste a file or paste while taking 
+input from a file or from the command line
 ```
-~$ echo Hello world. | nc bsd.ac 42069
-Your paste is available at: https://bsd.ac/d4nkl1t
+~$ echo Hello world. | purr
+https://bsd.ac/d4nklit
 
-~$ echo Bye world. | purr
-Your paste is available at: https://bsd.ac/n0td4nk
+~$ purr dankfile.txt
+https://bsd.ac/noobm4x
 
-~$ purr d4nkf1l3.txt
-Your paste is available at: https://bsd.ac/n00bm4x
+~$ purr < litfile.txt
+https://bsd.ac/pron00b
 
-~$ purr < l1tf1l3.txt
-Your paste is available at: https://bsd.ac/pr0n00b
+~$ purr
+This is my input
+it can span multiple lines
+<Ctrl-d>
+https://bsd.ac/curlpr0
 ```
+
+### Zero Knowledge Storage Clients
+
+In a zero knowledge storage setting, the paste is encrypted before sending it to the server.  
+Now the server will only be used as a storage bin and even in case of a non-https connection, 
+you are guaranteed that no one else will be able to read
+
+#### How does it work?
+ Client side:
+ - Encrypt the *paste* using some *key*, the encrypted text is called the *cipher*
+ - Send the *cipher* to the pastebin, using any client and get a paste url *https://bsd.ac/pasteurl*
+ - You can view the unencrypted *paste* at *https://bsd.ac/pasteurl.html#key*
+
+There are clients in the [clients](clients/) folder which allow you to do all this automatically, including POSIX compliant shell clients 
+
+### Why is this secure?
+- The html webpage only contains the encrypted *cipher* and has no knowledge of the *paste*
+- When you visit the html webpage the *key* is in the hash property of the webpage, which is never sent to the server
+- All decryption is done inside the browser on the client side
+
+TODO: Write decent clients, which are readable and modifiable
 
 ## Server
+
+## Requirements
+
+- [uWebSockets](https://github.com/uNetworking/uWebSockets/)
 
 ### Installation
 
@@ -82,4 +117,6 @@ make install
 
 
 ## Credits
+[uNetworking](https://github.com/uNetworking): for their [uWebSockets](https://github.com/uNetworking/uWebSockets)
 [solusipse](https://github.com/solusipse): for their [fiche](https://github.com/solusipse/fiche/) pastebin
+
