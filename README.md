@@ -1,6 +1,6 @@
 # Purrito Bin
 
-minimalistic command line paste-bin
+ultra fast, minimalistic, command line paste-bin
 
 ## Client
 
@@ -8,24 +8,33 @@ Define this function somewhere in the dot files of your shell (works on all POSI
 
 ```
 purr() {
-	nc bsd.ac 42069 < ${1:-/dev/stdin}
+	curl --data-binary "@${1:-/dev/stdin}" bsd.ac:42069;
 }
 ```
-NOTE: `nc` is the command for [netcat](https://en.wikipedia.org/wiki/Netcat), replace `nc` with the equivalent command for netcat in your system
+
+NOTE (specific to bsd.ac):
+- One paste every 3 seconds, abusers will be automatically banned for 10 minutes
+- Paste size limited to 64KB (will be truncated)
+- Connection is not encrypted, use [zero-knowledge client](#zero) if you need full security
 
 ### Client usage
+You can paste the stdout from a command, paste a file or paste while taking 
+input from a file or from the command line
 ```
-~$ echo Hello world. | nc bsd.ac 42069
-Your paste is available at: https://bsd.ac/d4nkl1t
+~$ echo Hello world. | purr
+https://bsd.ac/d4nklit
 
-~$ echo Bye world. | purr
-Your paste is available at: https://bsd.ac/n0td4nk
+~$ purr dankfile.txt
+https://bsd.ac/noobm4x
 
-~$ purr d4nkf1l3.txt
-Your paste is available at: https://bsd.ac/n00bm4x
+~$ purr < litfile.txt
+https://bsd.ac/pron00b
 
-~$ purr < l1tf1l3.txt
-Your paste is available at: https://bsd.ac/pr0n00b
+~$ purr
+This is my input
+it can span multiple lines
+<Ctrl-d>
+https://bsd.ac/curlpro
 ```
 
 ## Server
@@ -86,4 +95,6 @@ make install
 
 
 ## Credits
+[uNetworking](https://github.com/uNetworking): for their [uWebSockets](https://github.com/uNetworking/uWebSockets)
 [solusipse](https://github.com/solusipse): for their [fiche](https://github.com/solusipse/fiche/) pastebin
+
