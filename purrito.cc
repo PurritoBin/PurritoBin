@@ -120,9 +120,10 @@ uint8_t read_paste(const purrito_settings &settings,
   uint32_t *read_count = new uint32_t;
   *read_count = 0;
 
-  /* uWebSockets doesn't cork something already corked so we just cork */
+  /* uWebSockets doesn't cork something already corked so we cork */
   res->cork([=]() {
     res->onData([=](std::string_view chunk, bool is_last) {
+
       /* calculate how much to copy over */
       uint32_t copy_size = std::max<int>(
           0, std::min<int>(max_chars - *read_count, chunk.size()));
@@ -130,13 +131,20 @@ uint8_t read_paste(const purrito_settings &settings,
       /* actually do copy it over */
       chunk.copy(buffer + *read_count, copy_size);
       if (is_last) {
+
         /* remember to increment the read count */
         *read_count = copy_size + *read_count;
+
         /* there are two condition when we stop and save */
         if (is_last || *read_count == max_chars) {
+
           /* set the last element correctly */
           buffer[*read_count] = '\0';
+
+          /* get the paste_url after saving */
           std::string paste_url = save_buffer(buffer, settings);
+
+          /* and return it to the user */
           res->end(paste_url.c_str());
         }
       }
@@ -146,7 +154,7 @@ uint8_t read_paste(const purrito_settings &settings,
 }
 
 /*
- * save the buffer to a file and save the paste url
+ * save the buffer to a file and return the paste url
  */
 std::string save_buffer(const char *buffer, const purrito_settings &settings) {
 
