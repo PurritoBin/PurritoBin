@@ -52,13 +52,12 @@ std::string random_slug(const int &);
  * try and save a buffer to file and return the error code
  * and also save the returned filename in the argument
  */
-uint8_t save_buffer(const char *, const purrito_settings &, char *);
+std::string save_buffer(const char *, const purrito_settings &);
 
 /*
  * read data in a registered call back function
  */
-uint8_t read_paste(const purrito_settings &, uWS::HttpResponse<false> *,
-                   char *);
+uint8_t read_paste(const purrito_settings &, uWS::HttpResponse<false> *);
 
 /******************************************************************************/
 
@@ -68,18 +67,8 @@ void purr(const purrito_settings &settings) {
   uWS::App()
       .post("/",
             [&](auto *res, auto *req) {
-              /* create an array for storing the returning string */
-              char *paste_url;
-
-              /* calculate number of characters in the paste_url */
-              uint32_t n = settings.domain.length() + settings.slug_size + 2;
-
-              /* now we can malloc it, remember to free */
-              paste_url = (char *)malloc(n * sizeof(char));
-              memset(paste_url, 0, n * sizeof(char));
-
               /* register the callback, which will cork the request properly */
-              int perr = read_paste(settings, res, paste_url);
+              int perr = read_paste(settings, res);
 
               /*
                * if something went wrong we are guaranteed that
@@ -89,17 +78,13 @@ void purr(const purrito_settings &settings) {
 
                 /* send out a warning */
                 warn("Purrito: WARNING (%d) - could not process the request\n",
-                     n);
-
-                /* free the malloc cuz we getting out of here */
-                free(paste_url);
+                     perr);
 
                 return;
               }
 
-              /* remember to free the paste_url */
-              free(paste_url);
-
+              /* attach a standard abort handler, in case something goes wrong
+               */
               res->onAborted([]() {
                 printf("Purrito: Warning - request was prematurely aborted\n");
               });
@@ -122,12 +107,10 @@ void purr(const purrito_settings &settings) {
  * process the request
  */
 uint8_t read_paste(const purrito_settings &settings,
-                   uWS::HttpResponse<false> *res, char *paste_url) {
+                   uWS::HttpResponse<false> *res) {
 
   /* calculate the correct number of characters allowed in the paste */
   uint32_t max_chars = settings.max_paste_size / sizeof(char);
-
-  printf("max_chars %d\n", max_chars);
 
   /* now create the buffer, remember to free */
   char *buffer;
@@ -137,31 +120,24 @@ uint8_t read_paste(const purrito_settings &settings,
   uint32_t *read_count = new uint32_t;
   *read_count = 0;
 
-  printf("going to start reading the paste\n");
-
   /* uWebSockets doesn't cork something already corked so we just cork */
   res->cork([=]() {
     res->onData([=](std::string_view chunk, bool is_last) {
       /* calculate how much to copy over */
-      printf("just got in\n");
       uint32_t copy_size = std::max<int>(
           0, std::min<int>(max_chars - *read_count, chunk.size()));
 
-      printf("copy size: %d\n", copy_size);
       /* actually do copy it over */
       chunk.copy(buffer + *read_count, copy_size);
-      printf("copied\n");
       if (is_last) {
-        printf("is_last %d\n", is_last);
         /* remember to increment the read count */
         *read_count = copy_size + *read_count;
-        printf("read_count %d\n", *read_count);
         /* there are two condition when we stop and save */
         if (is_last || *read_count == max_chars) {
           /* set the last element correctly */
           buffer[*read_count] = '\0';
-          save_buffer(buffer, settings, paste_url);
-          res->end(paste_url);
+          std::string paste_url = save_buffer(buffer, settings);
+          res->end(paste_url.c_str());
         }
       }
     });
@@ -172,13 +148,10 @@ uint8_t read_paste(const purrito_settings &settings,
 /*
  * save the buffer to a file and save the paste url
  */
-uint8_t save_buffer(const char *buffer, const purrito_settings &settings,
-                    char *paste_url) {
+std::string save_buffer(const char *buffer, const purrito_settings &settings) {
 
-  printf("going to start the save\n");
   /* generate the slug */
   std::string slug = random_slug(settings.slug_size);
-  printf("slug %s\n", slug.c_str());
 
   /* get the filename to open */
   std::filesystem::path ofile = settings.storage_directory;
@@ -194,11 +167,7 @@ uint8_t save_buffer(const char *buffer, const purrito_settings &settings,
   if (write_err < 0)
     warn("Purrito: WARNING (%d) - error while writing to file\n", write_err);
 
-  settings.domain.copy(paste_url, settings.domain.size());
-
-  slug.copy(paste_url + settings.domain.size(), slug.size());
-
-  return 0;
+  return settings.domain + slug + "\n";
 }
 
 /*
@@ -212,7 +181,7 @@ std::string random_slug(const int &slug_size) {
   size_t len = alphanum.size();
 
   /* work around variable length array iso dumbass */
-  char *rslug = new char[slug_size + 2];
+  char *rslug = new char[slug_size + 1];
 
   /* finally generate the random string by sampling */
   for (int i = 0; i < slug_size; i++) {
@@ -220,8 +189,7 @@ std::string random_slug(const int &slug_size) {
   }
 
   /* add the final character for converting back to string */
-  rslug[slug_size] = '\n';
-  rslug[slug_size + 1] = '\0';
+  rslug[slug_size] = '\0';
   std::string new_slug(rslug);
 
   /* definitely learning some weird paradigms in c++ */
