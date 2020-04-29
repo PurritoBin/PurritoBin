@@ -6,7 +6,7 @@ prefix	?= /usr/local
 exec_prefix	?= $(prefix)
 bindir	?= $(exec_prefix)/bin
 
-CXXFLAGS	+= -lpthread -std=c++17 -Wall -Wextra -Wpedantic -Wstrict-overflow
+CXXFLAGS	+= -lpthread -std=c++2a -Wall -Wextra -Wpedantic -Wstrict-overflow
 
 # requirements
 # uwebsockets: https://github.com/uNetworking/uWebSockets
