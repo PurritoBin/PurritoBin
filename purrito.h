@@ -77,6 +77,11 @@ public:
         slug_size(slug_size) {}
 };
 
+/*
+ * the default server and listener which will handle the requests
+ * this does is using the dank uWebSockets library
+ * https://github.com/uNetworking/uWebSockets
+ */
 void purr(const purrito_settings &);
 
 #endif //_PURRITO
