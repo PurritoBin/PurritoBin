@@ -68,8 +68,6 @@ void purr(const purrito_settings &settings) {
   uWS::App()
       .post("/",
             [&](auto *res, auto *req) {
-              std::cout << req->getUrl() << std::endl;
-
               /* create an array for storing the returning string */
               char *paste_url;
 
@@ -82,8 +80,6 @@ void purr(const purrito_settings &settings) {
 
               /* register the callback, which will cork the request properly */
               int perr = read_paste(settings, res, paste_url);
-
-              res->end();
 
               /*
                * if something went wrong we are guaranteed that
@@ -103,6 +99,10 @@ void purr(const purrito_settings &settings) {
 
               /* remember to free the paste_url */
               free(paste_url);
+
+              res->onAborted([]() {
+                printf("Purrito: Warning - request was prematurely aborted\n");
+              });
             })
       .listen(settings.bind_port,
               [](auto *listenSocket) {
@@ -155,7 +155,7 @@ uint8_t read_paste(const purrito_settings &settings,
         printf("is_last %d\n", is_last);
         /* remember to increment the read count */
         *read_count = copy_size + *read_count;
-        printf("read_count %d", *read_count);
+        printf("read_count %d\n", *read_count);
         /* there are two condition when we stop and save */
         if (is_last || *read_count == max_chars) {
           /* set the last element correctly */
@@ -212,7 +212,7 @@ std::string random_slug(const int &slug_size) {
   size_t len = alphanum.size();
 
   /* work around variable length array iso dumbass */
-  char *rslug = new char[slug_size + 1];
+  char *rslug = new char[slug_size + 2];
 
   /* finally generate the random string by sampling */
   for (int i = 0; i < slug_size; i++) {
@@ -220,7 +220,8 @@ std::string random_slug(const int &slug_size) {
   }
 
   /* add the final character for converting back to string */
-  rslug[slug_size] = '\0';
+  rslug[slug_size] = '\n';
+  rslug[slug_size + 1] = '\0';
   std::string new_slug(rslug);
 
   /* definitely learning some weird paradigms in c++ */
