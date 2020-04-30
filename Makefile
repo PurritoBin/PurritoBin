@@ -12,7 +12,7 @@ CXXFLAGS	+= -lpthread -std=c++2a -Wall -Wextra -Wpedantic -Wstrict-overflow
 CFLAGS	+= -I/usr/local/include -L/usr/local/lib -lusockets
 
 # on openbd we need libuv
-ifdef (WITH_LIBUV)
+ifeq ($(WITH_LIBUV), 1)
 CFLAGS	+= -luv
 endif
 
