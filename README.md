@@ -38,7 +38,7 @@ it can span multiple lines
 https://bsd.ac/curlpr0
 ```
 
-### Zero Knowledge Storage Clients (Work in Progress)
+### Zero Knowledge Storage Clients (Work in Progress)  (=｀ᆺ├┬┴┬┴
 
 In a zero knowledge storage setting, the paste is encrypted before sending it to the server.  
 Now the server will only be used as a storage bin and even in case of a non-https connection, 
