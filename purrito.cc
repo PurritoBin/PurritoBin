@@ -120,7 +120,6 @@ void read_paste(const purrito_settings &settings,
   res->cork([=]() {
     res->onData([=](std::string_view chunk, bool is_last) {
       /* calculate how much to copy over */
-      printf("chunk size: %d\n", chunk.size());
       uint32_t copy_size = std::max<int>(
           0, std::min<int>(max_chars - *read_count, chunk.size()));
 
