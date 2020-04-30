@@ -86,7 +86,8 @@ make install
 ```
  usage: purrito [-hdsipmg]                                       
         -h                                                      
-            print this help                                     
+            print this help                                   
+	    
         -d domain                                               
             REQUIRED                                            
             domain that will be used as prefix of returned paste
