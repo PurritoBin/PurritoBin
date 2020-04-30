@@ -80,7 +80,7 @@ void purr(const purrito_settings &settings) {
                 printf("Purrito: Warning - request was prematurely aborted\n");
               });
             })
-      .listen("0.0.0.0", settings.bind_port,
+      .listen(settings.bind_ip, settings.bind_port,
               [](auto *listenSocket) {
                 if (listenSocket) {
                   printf("Purrito: Listening for connections...\n"
