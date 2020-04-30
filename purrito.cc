@@ -120,37 +120,36 @@ void read_paste(const purrito_settings &settings,
   res->cork([=]() {
     res->onData([=](std::string_view chunk, bool is_last) {
       /* calculate how much to copy over */
-		    printf("chunk size: %d\n", chunk.size());
+      printf("chunk size: %d\n", chunk.size());
       uint32_t copy_size = std::max<int>(
           0, std::min<int>(max_chars - *read_count, chunk.size()));
 
       /* actually do copy it over */
       chunk.copy(buffer + *read_count, copy_size);
 
-        /* remember to increment the read count */
-        *read_count = copy_size + *read_count;
+      /* remember to increment the read count */
+      *read_count = copy_size + *read_count;
 
-        /* there are two condition when we stop and save */
-        if (is_last || *read_count == max_chars) {
+      /* there are two condition when we stop and save */
+      if (is_last || *read_count == max_chars) {
 
-          /* set the last element correctly */
-          buffer[*read_count] = '\0';
+        /* set the last element correctly */
+        buffer[*read_count] = '\0';
 
-          /* Log that we finished reading the paste */
-          printf("Purrito: Finished reading the paste of size %u\n",
-                 *read_count);
+        /* Log that we finished reading the paste */
+        printf("Purrito: Finished reading the paste of size %u\n", *read_count);
 
-          /* get the paste_url after saving */
-          std::string paste_url = save_buffer(buffer, *read_count, settings);
+        /* get the paste_url after saving */
+        std::string paste_url = save_buffer(buffer, *read_count, settings);
 
-          /* and return it to the user */
-          res->end(paste_url.c_str());
-          free(read_count);
+        /* and return it to the user */
+        res->end(paste_url.c_str());
+        free(read_count);
 
-          /* print out the separator */
-          printf("-----------------------------------"
-                 "-----------------------------------\n");
-        }
+        /* print out the separator */
+        printf("-----------------------------------"
+               "-----------------------------------\n");
+      }
     });
   });
 }
