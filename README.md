@@ -1,8 +1,8 @@
-# Purrito Bin
+# Purrito Bin (=♡ᆺ♡=)
 
 ultra fast, minimalistic, command line paste-bin
 
-## Client
+## Client (=｀ﻌ´=)
 
 ### Basic client
 Define this function somewhere in the dot files of your shell (works on all POSIX shells)
@@ -38,7 +38,7 @@ it can span multiple lines
 https://bsd.ac/curlpr0
 ```
 
-### Zero Knowledge Storage Clients
+### Zero Knowledge Storage Clients (Work in Progress)
 
 In a zero knowledge storage setting, the paste is encrypted before sending it to the server.  
 Now the server will only be used as a storage bin and even in case of a non-https connection, 
@@ -59,7 +59,7 @@ There are clients in the [clients](clients/) folder which allow you to do all th
 
 TODO: Write decent clients, which are readable and modifiable
 
-## Server
+## Server （ฅ＾・ﻌ・＾）ฅ
 
 ## Requirements
 
@@ -117,6 +117,6 @@ make install
 
 
 ## Credits
-[uNetworking](https://github.com/uNetworking): for their [uWebSockets](https://github.com/uNetworking/uWebSockets)
+[uNetworking](https://github.com/uNetworking): for their [uWebSockets](https://github.com/uNetworking/uWebSockets)  
 [solusipse](https://github.com/solusipse): for their [fiche](https://github.com/solusipse/fiche/) pastebin
 
