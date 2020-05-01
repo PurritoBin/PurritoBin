@@ -47,8 +47,10 @@ you are guaranteed that no one else will be able to read
 #### How does it work?
  Client side:
  - Encrypt the *paste* using some *key*, the encrypted text is called the *cipher*
- - Send the *cipher* to the pastebin, using any client and get a paste url *https://bsd.ac/pasteurl*
- - You can view the unencrypted *paste* at *https://bsd.ac/pasteurl.html#key*
+ - Send the *cipher* to the pastebin, using any of the encryption clients (in the clients directory) and get a paste url 
+ ```
+ https://bsd.ac/paste.html#pasteID_encryptionKEY
+ ```
 
 There are clients in the [clients](clients/) folder which allow you to do all this automatically, including POSIX compliant shell clients 
 
@@ -57,7 +59,7 @@ There are clients in the [clients](clients/) folder which allow you to do all th
 - When you visit the html webpage the *key* is in the hash property of the webpage, which is never sent to the server
 - All decryption is done inside the browser on the client side
 
-TODO: Write decent clients, which are readable and modifiable
+
 
 ## Server （ฅ＾・ﻌ・＾）ฅ
 
