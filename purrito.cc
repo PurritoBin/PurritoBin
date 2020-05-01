@@ -130,8 +130,16 @@ void read_paste(const purrito_settings &settings,
       /* remember to increment the read count */
       *read_count = copy_size + *read_count;
 
+      if (!is_last && *read_count == max_chars) {
+        res->close();
+        printf("Purrito: Warning - paste was too large, was "
+               " forced to close the request\n"
+               "-----------------------------------"
+               "-----------------------------------\n");
+
+      }
       /* there are two condition when we stop and save */
-      if (is_last || *read_count == max_chars) {
+      else if (is_last) {
 
         /* set the last element correctly */
         buffer[*read_count] = '\0';
