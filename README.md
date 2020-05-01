@@ -1,8 +1,8 @@
-# [Purrito Bin](#tag) (=♡ᆺ♡=)
+# Purrito Bin (=♡ᆺ♡=)
 
 ultra fast, minimalistic, zero-knowledge command line paste-bin
 
-## [Client](#client) (=｀ﻌ´=)
+## Client (=｀ﻌ´=)
 
 ### Basic client
 Define this function somewhere in the dot files of your shell (works on all POSIX compliant shells).
@@ -16,9 +16,9 @@ purr() {
 NOTE (specific to bsd.ac):
 - One paste every 3 seconds, abusers will be automatically banned for 10 minutes.
 - Paste size limited to 64KB (will be truncated).
-- Connection is not encrypted, use any of the [zero-knowledge clients](#zero) if you need full security.
+- Connection is not encrypted, use any of the **zero-knowledge clients** if you need full security.
 
-#### [Client usage](#usage)
+#### Client usage
 You can paste the `stdout` from a command, paste a file or paste while taking 
 input from a file or from the command line.
 ```
@@ -38,13 +38,13 @@ input from a file or from the command line.
     https://bsd.ac/curlpr0
 ```
 
-### [Zero Knowledge Storage Clients](#zero) (Work in Progress)  (=｀ᆺ├┬┴┬┴
+### Zero Knowledge Storage Clients (Work in Progress)  (=｀ᆺ├┬┴┬┴
 
 In a zero knowledge storage setting, the paste is encrypted before sending it to the server.  
 Now the server will only be used as a storage bin and even in case of a non-https connection, 
 you are guaranteed that no one else will be able to read the data that you have sent.
 
-#### [How does it work?](#method)
+#### How does it work?
  Steps automatically done by the provided clients, on the client side:
  - Randomly generate a **key**.
  - Encrypt your **data** using said **key**, the encrypted data is called the **cipher**.
@@ -56,7 +56,7 @@ you are guaranteed that no one else will be able to read the data that you have 
 There are clients in the [clients](clients/) folder which allow you to do all this automatically.  
 There are POSIX compliant shell clients which work on all platforms, the only dependency on the client side is the presence of [LibreSSL](https://www.libressl.org/) or [OpenSSL](https://www.openssl.org/).
 
-### [Why is this secure?](#proof)
+### Why is this secure?
 - All the encryption is done on the client side.
 - Only the **cipher** is sent to PurritoBin.
 - The url only contains the encrypted **cipher** and has no knowledge of the actual data.
@@ -65,13 +65,13 @@ There are POSIX compliant shell clients which work on all platforms, the only de
 
 NOTE: Anyone who has the full link is going to be able to read the decrypted text. Only send the full hash included url to people you trust, through a secure communications channel.
 
-## [Server](#server) （ฅ＾・ﻌ・＾）ฅ
+## Server （ฅ＾・ﻌ・＾）ฅ
 
 ## Requirements
 
 - [uWebSockets](https://github.com/uNetworking/uWebSockets/)
 
-### [Installation](#install)
+### Installation
 
 Clone the repository and compile
 
@@ -87,7 +87,7 @@ make
 make install
 ```
 
-### [Usage](#susage)
+### Usage
 
 ```
  usage: purrito [-hdsipmg]                                       
@@ -123,7 +123,8 @@ make install
 ```
 
 
-## [Credits](#credits)
+## Credits
 [uNetworking](https://github.com/uNetworking): for their [uWebSockets](https://github.com/uNetworking/uWebSockets)  
+[bitwiseshiftleft](https://github.com/bitwiseshiftleft): for the [sjcl](https://github.com/bitwiseshiftleft/sjcl)  
 [solusipse](https://github.com/solusipse): for their [fiche](https://github.com/solusipse/fiche/) pastebin
 
