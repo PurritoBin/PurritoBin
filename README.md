@@ -1,8 +1,8 @@
-# Purrito Bin (=♡ᆺ♡=)
+# [Purrito Bin](#tag) (=♡ᆺ♡=)
 
 ultra fast, minimalistic, command line paste-bin
 
-## Client (=｀ﻌ´=)
+## [Client](#client) (=｀ﻌ´=)
 
 ### Basic client
 Define this function somewhere in the dot files of your shell (works on all POSIX shells)
@@ -18,7 +18,7 @@ NOTE (specific to bsd.ac):
 - Paste size limited to 64KB (will be truncated)
 - Connection is not encrypted, use [zero-knowledge client](#zero) if you need full security
 
-#### Client usage
+#### [Client usage](#usage)
 You can paste the stdout from a command, paste a file or paste while taking 
 input from a file or from the command line
 ```
@@ -38,13 +38,13 @@ it can span multiple lines
 https://bsd.ac/curlpr0
 ```
 
-### Zero Knowledge Storage Clients (Work in Progress)  (=｀ᆺ├┬┴┬┴
+### [Zero Knowledge Storage Clients](#zero) (Work in Progress)  (=｀ᆺ├┬┴┬┴
 
 In a zero knowledge storage setting, the paste is encrypted before sending it to the server.  
 Now the server will only be used as a storage bin and even in case of a non-https connection, 
 you are guaranteed that no one else will be able to read
 
-#### How does it work?
+#### [How does it work?](#method)
  Client side:
  - Encrypt the *paste* using some *key*, the encrypted text is called the *cipher*
  - Send the *cipher* to the pastebin, using any of the encryption clients (in the clients directory) and get a paste url 
@@ -54,20 +54,20 @@ you are guaranteed that no one else will be able to read
 
 There are clients in the [clients](clients/) folder which allow you to do all this automatically, including POSIX compliant shell clients 
 
-### Why is this secure?
+### [Why is this secure?](#proof)
 - The html webpage only contains the encrypted *cipher* and has no knowledge of the *paste*
 - When you visit the html webpage the *key* is in the hash property of the webpage, which is never sent to the server
 - All decryption is done inside the browser on the client side
 
 
 
-## Server （ฅ＾・ﻌ・＾）ฅ
+## [Server](#server) （ฅ＾・ﻌ・＾）ฅ
 
 ## Requirements
 
 - [uWebSockets](https://github.com/uNetworking/uWebSockets/)
 
-### Installation
+### [Installation](#install)
 
 Clone the repository and compile
 
@@ -83,7 +83,7 @@ make
 make install
 ```
 
-### Usage
+### [Usage](#susage)
 
 ```
  usage: purrito [-hdsipmg]                                       
@@ -119,7 +119,7 @@ make install
 ```
 
 
-## Credits
+## [Credits](#credits)
 [uNetworking](https://github.com/uNetworking): for their [uWebSockets](https://github.com/uNetworking/uWebSockets)  
 [solusipse](https://github.com/solusipse): for their [fiche](https://github.com/solusipse/fiche/) pastebin
 
