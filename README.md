@@ -42,7 +42,7 @@ input from a file or from the command line.
 
 In a zero knowledge storage setting, the paste is encrypted before sending it to the server.  
 Now the server will only be used as a storage bin and even in case of a non-https connection, 
-you are guaranteed that no one else will be able to read
+you are guaranteed that no one else will be able to read the data that you have sent.
 
 #### [How does it work?](#method)
  Steps automatically done by the provided clients, on the client side:
