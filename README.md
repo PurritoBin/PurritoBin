@@ -1,11 +1,11 @@
 # [Purrito Bin](#tag) (=♡ᆺ♡=)
 
-ultra fast, minimalistic, command line paste-bin
+ultra fast, minimalistic, zero-knowledge command line paste-bin
 
 ## [Client](#client) (=｀ﻌ´=)
 
 ### Basic client
-Define this function somewhere in the dot files of your shell (works on all POSIX shells)
+Define this function somewhere in the dot files of your shell (works on all POSIX compliant shells).
 
 ```
 purr() {
@@ -14,28 +14,28 @@ purr() {
 ```
 
 NOTE (specific to bsd.ac):
-- One paste every 3 seconds, abusers will be automatically banned for 10 minutes
-- Paste size limited to 64KB (will be truncated)
-- Connection is not encrypted, use [zero-knowledge client](#zero) if you need full security
+- One paste every 3 seconds, abusers will be automatically banned for 10 minutes.
+- Paste size limited to 64KB (will be truncated).
+- Connection is not encrypted, use any of the [zero-knowledge clients](#zero) if you need full security.
 
 #### [Client usage](#usage)
-You can paste the stdout from a command, paste a file or paste while taking 
-input from a file or from the command line
+You can paste the `stdout` from a command, paste a file or paste while taking 
+input from a file or from the command line.
 ```
-~$ echo Hello world. | purr
-https://bsd.ac/d4nklit
+    ~$ purr c00lfile.txt
+    https://bsd.ac/purrit0
 
-~$ purr dankfile.txt
-https://bsd.ac/noobm4x
+    ~$ purr < h0tfile.txt 
+    https://bsd.ac/purri1o
 
-~$ purr < litfile.txt
-https://bsd.ac/pron00b
+    ~$ echo Hello world. | purr
+    https://bsd.ac/d4nklit
 
-~$ purr
-This is my input
-it can span multiple lines
-<Ctrl-d>
-https://bsd.ac/curlpr0
+    ~$ purr
+    This is my input
+    it can span multiple lines
+    <Ctrl-d to exit>
+    https://bsd.ac/curlpr0
 ```
 
 ### [Zero Knowledge Storage Clients](#zero) (Work in Progress)  (=｀ᆺ├┬┴┬┴
@@ -45,21 +45,25 @@ Now the server will only be used as a storage bin and even in case of a non-http
 you are guaranteed that no one else will be able to read
 
 #### [How does it work?](#method)
- Client side:
- - Encrypt the *paste* using some *key*, the encrypted text is called the *cipher*
- - Send the *cipher* to the pastebin, using any of the encryption clients (in the clients directory) and get a paste url 
+ Steps automatically done by the provided clients, on the client side:
+ - Randomly generate a **key**.
+ - Encrypt your **data** using said **key**, the encrypted data is called the **cipher**.
+ - Send the **cipher** to PurritoBin and get a stadard paste url as above, which will be converted to the form
  ```
  https://bsd.ac/paste.html#pasteID_encryptionKEY
  ```
 
-There are clients in the [clients](clients/) folder which allow you to do all this automatically, including POSIX compliant shell clients 
+There are clients in the [clients](clients/) folder which allow you to do all this automatically.  
+There are POSIX compliant shell clients which work on all platforms, the only dependency on the client side is the presence of [LibreSSL](https://www.libressl.org/) or [OpenSSL](https://www.openssl.org/).
 
 ### [Why is this secure?](#proof)
-- The html webpage only contains the encrypted *cipher* and has no knowledge of the *paste*
-- When you visit the html webpage the *key* is in the hash property of the webpage, which is never sent to the server
-- All decryption is done inside the browser on the client side
+- All the encryption is done on the client side.
+- Only the **cipher** is sent to PurritoBin.
+- The url only contains the encrypted **cipher** and has no knowledge of the actual data.
+- When you visit the html webpage the **key** is in the **hash property** of the webpage, which is never sent to the server.
+- All decryption is done inside the browser, using javascript, [Stanford Javascript Crypto Library](bitwiseshiftleft.github.com/sjcl/) on the client side.
 
-
+NOTE: Anyone who has the full link is going to be able to read the decrypted text. Only send the full hash included url to people you trust, through a secure communications channel.
 
 ## [Server](#server) （ฅ＾・ﻌ・＾）ฅ
 
