@@ -9,7 +9,7 @@ Define this function somewhere in the dot files of your shell (works on all POSI
 
 ```
 purr() {
-	curl --data-binary "@${1:-/dev/stdin}" bsd.ac:42069;
+	curl --silent --data-binary "@${1:-/dev/stdin}" bsd.ac:42069;
 }
 ```
 
