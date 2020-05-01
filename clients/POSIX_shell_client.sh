@@ -20,5 +20,5 @@ meow() {
 	# calculate its encryption and upload it
 	# pbkdf2 is considered a lot more secure
 	url="$(openssl enc -aes-256-cbc -pbkdf2 -salt -pass pass:"${key}" < ${1:-/dev/stdin} | purr)"
-	echo "${url%\/*}/paste.html\#${url##*\/}_${key}"
+	echo "${url%\/*}/paste.html#${url##*\/}_${key}"
 }
