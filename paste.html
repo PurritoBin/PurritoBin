@@ -1,33 +1,68 @@
 <!DOCTYPE html>
 <html>
     <meta charset="utf-8"/>
-    <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/sjcl/1.0.8/sjcl.min.js"></script>
+    <title>Purrito Bin</title>
+    <!-- TODO: find a better source to pull this library from, DON'T TRUST CLOUDFLARE -->
+    <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/crypto-js/4.0.0/crypto-js.min.js"></script>
     <script type="text/javascript">
-     var password = "password";
-     var text = "my secret text";
-     var parameters = { "iter" : 1000 };
-     var rp = {};
-     var cipherTextJson = {};
+ 
+     // first we get the needed values from the hash
+     // this is still secure cuz nothing is sent to the server
+     var hashv = window.location.hash.substr(1).split("_");
 
-     sjcl.misc.cachedPbkdf2(password, parameters);
-     cipherTextJson = sjcl.encrypt(password, text, parameters, rp);
-     console.log(cipherTextJson);
+     var pasteurl = "https://bsd.ac/" + hashv[0] ;
+     var key = hashv[1];
+     var iter = parseInt(hashv[2]);
 
-     var key=window.location.hash;
-     key=key.substr(1);
+     // helper functions which will be used after
+     // the html request has been fulfilled
 
-     var encrypted_data=document.getElementById('enc');
-     var ciphertext={ct: encrypted_data,
-         mode: "pbkdf2",
-         cipher: "aes",
-         ks: 256,
+     function convertWordArrayToUint8Array(wordArray) {
+         var arrayOfWords = wordArray.hasOwnProperty("words") ? wordArray.words : [];
+         var length = wordArray.hasOwnProperty("sigBytes") ? wordArray.sigBytes : arrayOfWords.length * 4;
+         var uInt8Array = new Uint8Array(length), index=0, word, i;
+         for (i=0; i<length; i++) {
+             word = arrayOfWords[i];
+             uInt8Array[index++] = word >> 24;
+             uInt8Array[index++] = (word >> 16) & 0xff;
+             uInt8Array[index++] = (word >> 8) & 0xff;
+             uInt8Array[index++] = word & 0xff;
+         }
+         return uInt8Array;
+     }
+
+     function makeHttpObject() {
+         try {return new XMLHttpRequest();}
+         catch (error) {}
+         try {return new ActiveXObject("Msxml2.XMLHTTP");}
+         catch (error) {}
+         try {return new ActiveXObject("Microsoft.XMLHTTP");}
+         catch (error) {}
+
+         throw new Error("Could not create HTTP request object.");
+     }
+
+     // this part is async, so we need to define the decryption calls
+     // after the request has been fullfilled
+     // the joys of asyn, damn
+     var request = makeHttpObject();
+     request.open("GET", pasteurl, true);
+     request.send(null);
+     request.onreadystatechange = function() {
+         if (request.readyState == 4){
+             cipher = request.responseText;
+             //decrypted = CryptoJS.AES.decrypt(cipher, key);
+//             console.log(enc.ciphertext.toString(CryptoJS.enc.Utf8));
+             var words = CryptoJS.enc.Base64.parse("U2FsdGVkX1+pwmHhOF+nDhOPT4nnmzROkXN4T2ieo9k=");
+             console.log(CryptoJS.enc.Utf8.stringify(CryptoJS.AES.decrypt(words, "123")));
+             return;
+         }
      };
-     var decrypted_data=sjcl.decrypt(key, ciphertext);
-     var decrypted_storage=document.getElementById('dec');
-     decrypted_storage.innerHTML=decrypted_data;
+
     </script>
+
+
     <body>
         <pre id="dec"></pre>
-        <pre id="enc"></pre>
     </body>
 </html>

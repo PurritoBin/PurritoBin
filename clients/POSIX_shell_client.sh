@@ -16,10 +16,9 @@ purr() {
 # POSIX shell client to upload encrypted message
 meow() {
 	# change this number to a larger one if you want to
-	iter=1000
 	key="$(openssl rand -hex 8)"
 	# calculate its encryption and upload it
 	# pbkdf2 is considered a lot more secure
-	url="$(openssl enc -aes-256-cbc -pbkdf2 -iter ${iter} -nosalt -pass pass:"${key}" < ${1:-/dev/stdin} | purr)"
+	url="$(openssl enc -aes-256-cbc -pass pass:"${key}" -e -base64 < ${1:-/dev/stdin} | purr)"
 	echo "${url%\/*}/paste.html#${url##*\/}_${key}"
 }
