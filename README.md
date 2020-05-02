@@ -125,6 +125,6 @@ make install
 
 ## Credits
 [uNetworking](https://github.com/uNetworking): for their [uWebSockets](https://github.com/uNetworking/uWebSockets)  
-[bitwiseshiftleft](https://github.com/bitwiseshiftleft): for the [sjcl](https://github.com/bitwiseshiftleft/sjcl)  
+[brix](https://github.com/brix/): for their [crypto-js](https://github.com/brix/crypto-js/)
 [solusipse](https://github.com/solusipse): for their [fiche](https://github.com/solusipse/fiche/) pastebin
 
