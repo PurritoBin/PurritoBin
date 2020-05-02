@@ -1,6 +1,6 @@
 # Purrito Bin (=♡ᆺ♡=)
 
-ultra fast, minimalistic, zero-knowledge command line paste-bin
+ultra fast, minimalistic, encrypted command line paste-bin
 
 ## Client (=｀ﻌ´=)
 
@@ -16,7 +16,7 @@ purr() {
 NOTE (specific to bsd.ac):
 - One paste every 3 seconds, abusers will be automatically banned for 10 minutes.
 - Paste size limited to 64KB (will be truncated).
-- Connection is not encrypted, use any of the **zero-knowledge clients** if you need full security.
+- Connection is not encrypted, use any of the **encrypted storage clients** if you need full security.
 
 #### Client usage
 You can paste the `stdout` from a command, paste a file or paste while taking 
@@ -38,9 +38,9 @@ input from a file or from the command line.
     https://bsd.ac/curlpr0
 ```
 
-### Zero Knowledge Storage Clients (Work in Progress)  (=｀ᆺ├┬┴┬┴
+### Encrypted Storage Clients (Work in Progress)  (=｀ᆺ├┬┴┬┴
 
-In a zero knowledge storage setting, the paste is encrypted before sending it to the server.  
+In a encrypted storage setting, the paste is encrypted before sending it to the server.  
 Now the server will only be used as a storage bin and even in case of a non-https connection, 
 you are guaranteed that no one else will be able to read the data that you have sent.
 
