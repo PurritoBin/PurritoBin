@@ -1,8 +1,8 @@
-# Purrito Bin (=♡ᆺ♡=)
+# Purrito Bin  (=♡ᆺ♡=)
 
 ultra fast, minimalistic, encrypted command line paste-bin
 
-## Client (=｀ﻌ´=)
+## Client  (=｀ﻌ´=)
 
 ### Basic client
 Define this function somewhere in the dot files of your shell (works on all POSIX compliant shells).
@@ -38,7 +38,7 @@ LIMITS (specific to bsd.ac):
 - Connection is not encrypted, use any of the **encrypted storage clients** if you need full security.
 
 
-### Encrypted Storage Clients (Work in Progress)  (=｀ᆺ├┬┴┬┴
+### Encrypted Storage Clients  (=｀ᆺ├┬┴┬┴
 
 In a encrypted storage setting, the paste is encrypted before sending it to the server.  
 Now the server will only be used as a storage bin and even in case of a non-https connection, 
@@ -82,16 +82,16 @@ NOTE: Anyone who has the full link is going to be able to read the decrypted tex
 ## Server （ฅ＾・ﻌ・＾）ฅ
 
 ### What PurritoBin provides
-- Submission port for users to submit
-- S
+- Submission port for users to submit.
+- Auto slug generation and returning paste url.
 
 ### What PurritoBin does NOT provide
 - Sever to browse the pastes
-  - The pastes are plain text files, so can be shown using httpd, apache, nginx or literally any other server. Use them, they are much better at this and can implement a lot of other functionality.
+  - The pastes are plain text files, so they can be shown using [httpd(8)](https://man.openbsd.org/httpd.8), [apache](https://httpd.apache.org/), [nginx](https://www.nginx.com/) or literally any other server. Use them, they are much better at this and can implement a lot of other functionality.
 - Auto cleaning of pastes
-  - Use a cron job to manage this, it is much more efficient and also gives you a lot more control.
+  - Use a [cron](https://en.wikipedia.org/wiki/Cron) job to manage this. It is a lot more efficient and also gives you more control.
 - Request throttling
-  - Use a firewall to manage this, they are designed for exactly this kind of feature.
+  - Use a firewall, like [pf](https://www.openbsd.org/faq/pf/filter.html) or [iptables](https://linux.die.net/man/8/iptables), to manage this, they are designed for exactly this kind of feature.
   
 The design principle is to follow the philosophy of KISS]
 ### Requirements
