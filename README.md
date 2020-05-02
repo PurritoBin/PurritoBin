@@ -82,8 +82,9 @@ NOTE: Anyone who has the full link is going to be able to read the decrypted tex
 ## Server （ฅ＾・ﻌ・＾）ฅ
 
 ### What PurritoBin provides
-- Submission port for users to submit.
 - Auto slug generation and returning paste url.
+- Efficient limiting of paste size by cutting off requests at threshold, stopping network blockage. 
+- Submission port for users to submit.
 
 ### What PurritoBin does NOT provide
 - Sever to browse the pastes
