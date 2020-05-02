@@ -13,11 +13,6 @@ purr() {
 }
 ```
 
-NOTE (specific to bsd.ac):
-- One paste every 3 seconds, abusers will be automatically banned for 10 minutes.
-- Paste size limited to 64KB (will be truncated).
-- Connection is not encrypted, use any of the **encrypted storage clients** if you need full security.
-
 #### Client usage
 You can paste the `stdout` from a command, paste a file or paste while taking 
 input from a file or from the command line.
@@ -37,6 +32,11 @@ input from a file or from the command line.
     <Ctrl-d to exit>
     https://bsd.ac/curlpr0
 ```
+LIMITS (specific to bsd.ac):
+- One paste every 3 seconds, abusers will be automatically banned for 10 minutes.
+- Paste size limited to 64KB (will be truncated).
+- Connection is not encrypted, use any of the **encrypted storage clients** if you need full security.
+
 
 ### Encrypted Storage Clients (Work in Progress)  (=｀ᆺ├┬┴┬┴
 
@@ -81,7 +81,20 @@ NOTE: Anyone who has the full link is going to be able to read the decrypted tex
 
 ## Server （ฅ＾・ﻌ・＾）ฅ
 
-## Requirements
+### What PurritoBin provides
+- Submission port for users to submit
+- S
+
+### What PurritoBin does NOT provide
+- Sever to browse the pastes
+  - The pastes are plain text files, so can be shown using httpd, apache, nginx or literally any other server. Use them, they are much better at this and can implement a lot of other functionality.
+- Auto cleaning of pastes
+  - Use a cron job to manage this, it is much more efficient and also gives you a lot more control.
+- Request throttling
+  - Use a firewall to manage this, they are designed for exactly this kind of feature.
+  
+The design principle is to follow the philosophy of KISS]
+### Requirements
 
 - [uWebSockets](https://github.com/uNetworking/uWebSockets/)
 
@@ -139,6 +152,6 @@ make install
 
 ## Credits
 [uNetworking](https://github.com/uNetworking): for their [uWebSockets](https://github.com/uNetworking/uWebSockets)  
-[brix](https://github.com/brix/): for their [crypto-js](https://github.com/brix/crypto-js/)
+[brix](https://github.com/brix/): for their [crypto-js](https://github.com/brix/crypto-js/)  
 [solusipse](https://github.com/solusipse): for their [fiche](https://github.com/solusipse/fiche/) pastebin
 
