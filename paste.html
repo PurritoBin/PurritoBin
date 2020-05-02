@@ -5,31 +5,15 @@
     <!-- TODO: find a better source to pull this library from, DON'T TRUST CLOUDFLARE -->
     <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/crypto-js/4.0.0/crypto-js.min.js"></script>
     <script type="text/javascript">
- 
      // first we get the needed values from the hash
      // this is still secure cuz nothing is sent to the server
      var hashv = window.location.hash.substr(1).split("_");
 
      var pasteurl = "https://bsd.ac/" + hashv[0] ;
-     var key = hashv[1];
-     var iter = parseInt(hashv[2]);
-
-     // helper functions which will be used after
-     // the html request has been fulfilled
-
-     function convertWordArrayToUint8Array(wordArray) {
-         var arrayOfWords = wordArray.hasOwnProperty("words") ? wordArray.words : [];
-         var length = wordArray.hasOwnProperty("sigBytes") ? wordArray.sigBytes : arrayOfWords.length * 4;
-         var uInt8Array = new Uint8Array(length), index=0, word, i;
-         for (i=0; i<length; i++) {
-             word = arrayOfWords[i];
-             uInt8Array[index++] = word >> 24;
-             uInt8Array[index++] = (word >> 16) & 0xff;
-             uInt8Array[index++] = (word >> 8) & 0xff;
-             uInt8Array[index++] = word & 0xff;
-         }
-         return uInt8Array;
-     }
+     var key = CryptoJS.enc.Hex.parse(hashv[1]);
+     // default IV doesn't matter much because this is a one time
+     // use key that is going to be discarded
+     var default_iv = CryptoJS.enc.Hex.parse("00000000000000000000000000000000")
 
      function makeHttpObject() {
          try {return new XMLHttpRequest();}
@@ -50,18 +34,15 @@
      request.send(null);
      request.onreadystatechange = function() {
          if (request.readyState == 4){
-             cipher = request.responseText;
-             //decrypted = CryptoJS.AES.decrypt(cipher, key);
-//             console.log(enc.ciphertext.toString(CryptoJS.enc.Utf8));
-             var words = CryptoJS.enc.Base64.parse("U2FsdGVkX1+pwmHhOF+nDhOPT4nnmzROkXN4T2ieo9k=");
-             console.log(CryptoJS.enc.Utf8.stringify(CryptoJS.AES.decrypt(words, "123")));
+             decrypted = CryptoJS.AES.decrypt(request.responseText, key, { iv: default_iv, mode: CryptoJS.mode.CBC });
+             decoded = decrypted.toString(CryptoJS.enc.Utf8);
+
+             data_div = document.getElementById("dec");
+             data_div.innerHTML = decoded;
              return;
          }
      };
-
     </script>
-
-
     <body>
         <pre id="dec"></pre>
     </body>

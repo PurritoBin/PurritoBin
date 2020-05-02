@@ -15,10 +15,12 @@ purr() {
 
 # POSIX shell client to upload encrypted message
 meow() {
-	# change this number to a larger one if you want to
-	key="$(openssl rand -hex 8)"
+	# we need to generate a 256 byte random key
+	# for using the aes-256-cbc cipher
+	key="$(openssl rand -hex 32)"
 	# calculate its encryption and upload it
-	# pbkdf2 is considered a lot more secure
-	url="$(openssl enc -aes-256-cbc -pass pass:"${key}" -e -base64 < ${1:-/dev/stdin} | purr)"
+	# iv doesn't matter as this is a one time use key
+  # and we dont worry about salting and stuff
+	url="$(openssl enc -aes-256-cbc -K ${key} -iv 00000000000000000000000000000000 -e -base64 -A < ${1:-/dev/stdin} | purr)"
 	echo "${url%\/*}/paste.html#${url##*\/}_${key}"
 }
