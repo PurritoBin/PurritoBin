@@ -20,7 +20,7 @@ meow() {
 	key="$(openssl rand -hex 32)"
 	# calculate its encryption and upload it
 	# iv doesn't matter as this is a one time use key
-  # and we dont worry about salting and stuff
+	# and we dont worry about salting and stuff
 	url="$(openssl enc -aes-256-cbc -K ${key} -iv 00000000000000000000000000000000 -e -base64 -A < ${1:-/dev/stdin} | purr)"
 	echo "${url%\/*}/paste.html#${url##*\/}_${key}"
 }

@@ -52,9 +52,23 @@ you are guaranteed that no one else will be able to read the data that you have 
  ```
  https://bsd.ac/paste.html#pasteID_encryptionKEY
  ```
-
-There are clients in the [clients](clients/) folder which allow you to do all this automatically.  
-There are POSIX compliant shell clients which work on all platforms, the only dependency on the client side is the presence of [LibreSSL](https://www.libressl.org/) or [OpenSSL](https://www.openssl.org/). Pull requests for other clients are highly welcome.
+The standard client is `meow`, a companion to the above `purr`, which is also POSIX compliant and should work in all shells.  
+The only dependency on the client side is the presence of [LibreSSL](https://www.libressl.org/) or [OpenSSL](https://www.openssl.org/), to do the encryption.
+```
+# POSIX shell client to upload encrypted message
+meow() {
+	# we need to generate a 256 byte random key
+	# for using the aes-256-cbc cipher
+	key="$(openssl rand -hex 32)"
+	# calculate its encryption and upload it
+	# iv doesn't matter as this is a one time use key
+	# and we dont worry about salting and stuff
+	url="$(openssl enc -aes-256-cbc -K ${key} -iv 00000000000000000000000000000000 -e -base64 -A < ${1:-/dev/stdin} | purr)"
+	echo "${url%\/*}/paste.html#${url##*\/}_${key}"
+}
+```
+There will be other clients in the [clients](clients/) folder, added on demand for other platforms, which will allow you to do all this automatically.  
+Pull requests for other clients are highly welcome.
 
 ### Why is this secure?
 - All the encryption is done on the client side.
