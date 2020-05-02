@@ -46,7 +46,7 @@ you are guaranteed that no one else will be able to read the data that you have 
 
 #### How does it work?
  Steps automatically done by the provided clients, on the client side:
- - Randomly generate a **key**.
+ - Randomly generate an ecryption **key**.
  - Encrypt your **data** using said **key**, the encrypted data is called the **cipher**.
  - Send the **cipher** to PurritoBin and get a stadard paste url as above, which will be converted to the form
  ```
@@ -54,7 +54,7 @@ you are guaranteed that no one else will be able to read the data that you have 
  ```
 
 There are clients in the [clients](clients/) folder which allow you to do all this automatically.  
-There are POSIX compliant shell clients which work on all platforms, the only dependency on the client side is the presence of [LibreSSL](https://www.libressl.org/) or [OpenSSL](https://www.openssl.org/).
+There are POSIX compliant shell clients which work on all platforms, the only dependency on the client side is the presence of [LibreSSL](https://www.libressl.org/) or [OpenSSL](https://www.openssl.org/). Pull requests for other clients are highly welcome.
 
 ### Why is this secure?
 - All the encryption is done on the client side.
