@@ -84,7 +84,7 @@ NOTE: Anyone who has the full link is going to be able to read the decrypted tex
 ### Design principles
 The aim is to follow the [KISS](https://en.wikipedia.org/wiki/KISS_principle) philosophy and only aim to do one thing. There are tools which manage to do the other things better, so make the current one as integrable as possible.
 
-Purrito Bin is very, very easily integrated into any setup. It runs can run as an unprivileged user in a single directory without access to any other systems resource.
+Purrito Bin is very, very easily integrated into any setup. It runs as an unprivileged user in a single directory without access to any other systems resource.
 
 In OpenBSD, it is automatically [pledges](https://man.openbsd.org/pledge) and [unveils](https://man.openbsd.org/unveil) the bare minimum to function, so even in the case of a bug in the code, an attacker has no access to the system.
 
