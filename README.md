@@ -81,10 +81,20 @@ NOTE: Anyone who has the full link is going to be able to read the decrypted tex
 
 ## Server （ฅ＾・ﻌ・＾）ฅ
 
+### Design principles
+The aim is to follow the [KISS](https://en.wikipedia.org/wiki/KISS_principle) philosophy and only aim to do one thing. There are tools which manage to do the other things better, so make the current one as integrable as possible.
+
+Purrito Bin is very, very easily integrated into any setup. It runs can run as an unprivileged user in a single directory without access to any other systems resource.
+
+In OpenBSD, it is automatically [pledges](https://man.openbsd.org/pledge) and [unveils](https://man.openbsd.org/unveil) the bare minimum to function, so even in the case of a bug in the code, an attacker has no access to the system.
+
+Pull requests to harden the code by default in linux and other operating systems are highly welcome.
+
 ### What PurritoBin provides
 - Auto slug generation and returning paste url.
 - Efficient limiting of paste size by cutting off requests at threshold, stopping network blockage. 
 - Submission port for users to submit.
+- You can run it on an internal system so that it is accessible only by the people inside the network.
 
 ### What PurritoBin does NOT provide
 - Sever to browse the pastes
@@ -93,8 +103,7 @@ NOTE: Anyone who has the full link is going to be able to read the decrypted tex
   - Use a [cron](https://en.wikipedia.org/wiki/Cron) job to manage this. It is a lot more efficient and also gives you more control.
 - Request throttling
   - Use a firewall, like [pf](https://www.openbsd.org/faq/pf/filter.html) or [iptables](https://linux.die.net/man/8/iptables), to manage this, they are designed for exactly this kind of feature.
-  
-The design principle is to follow the philosophy of KISS]
+
 ### Requirements
 
 - [uWebSockets](https://github.com/uNetworking/uWebSockets/)
