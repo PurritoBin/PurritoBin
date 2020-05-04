@@ -1,4 +1,7 @@
-# Purrito Bin  (=♡ᆺ♡=)
+# Purrito Bin  (=♡ᆺ♡=)  
+[![GitHub tag](https://img.shields.io/github/tag/PurritoBin/PurritoBin.svg)](https://github.com/PurritoBin/PurritoBin/tags/)
+[![GitHub license](https://img.shields.io/github/license/PurritoBin/PurritoBin.svg)](https://github.com/PurritoBin/PurritoBin/blobl/master/LICENSE)
+[![contributions welcome](https://img.shields.io/badge/contributions-welcome-brightgreen.svg?style=flat)](https://github.com/PurritoBin/PurritoBin/issues)
 
 ultra fast, minimalistic, encrypted command line paste-bin
 
