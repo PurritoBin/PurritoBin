@@ -70,7 +70,7 @@ Pull requests for other clients are highly welcome.
 - Only the **cipher** is sent to PurritoBin.
 - The url only contains the encrypted **cipher** and has no knowledge of the actual data.
 - When you visit the html webpage the **key** is in the **hash property** of the webpage, which is never sent to the server.
-- All decryption is done inside the browser, using javascript, [Stanford Javascript Crypto Library](bitwiseshiftleft.github.com/sjcl/) on the client side.
+- All decryption is done inside the browser, using javascript, [Crypto JS](https://github.com/brix/crypto-js) on the client side.
 
 NOTE: Anyone who has the full link is going to be able to read the decrypted text. Only send the full hash included url to people you trust, through a secure communications channel.
 
