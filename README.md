@@ -96,12 +96,12 @@ Pull requests to harden the code by default in linux and other operating systems
 - You can run it on an internal system so that it is accessible only by the people inside the network.
 
 ### What PurritoBin does NOT provide
-- Sever to browse the pastes
-  - The pastes are plain text files, so they can be shown using [httpd(8)](https://man.openbsd.org/httpd.8), [apache](https://httpd.apache.org/), [nginx](https://www.nginx.com/) or literally any other server. Use them, they are much better at this and can implement a lot of other functionality.
+- Server to browse the pastes
+  - The pastes are plain text files, so they can be shown using [httpd(8)](https://man.openbsd.org/httpd.8), [apache](https://httpd.apache.org/), [nginx](https://www.nginx.com/) or literally any other web server. Use them, they are much better at this and can implement a lot of other functionality.
 - Auto cleaning of pastes
   - Use a [cron](https://en.wikipedia.org/wiki/Cron) job to manage this. It is a lot more efficient and also gives you more control.
 - Request throttling
-  - Use a firewall, like [pf](https://www.openbsd.org/faq/pf/filter.html) or [iptables](https://linux.die.net/man/8/iptables), to manage this, they are designed for exactly this kind of feature.
+  - Use a firewall, like [pf](https://www.openbsd.org/faq/pf/filter.html), [nftables](https://wiki.nftables.org/wiki-nftables/index.php/Main_Page) or **(god forbid)** [iptables](https://linux.die.net/man/8/iptables), to manage this, they are designed for exactly this kind of feature.
 
 ### Requirements
 
@@ -158,6 +158,9 @@ make install
             DEFAULT: 7                                          
 ```
 
+### Running the encrypted PurritoBin
+
+Make sure that whatever link is provided to the  `-d ` domain option, is also able to serve the `paste.html` from this repository.
 
 ## Credits
 [uNetworking](https://github.com/uNetworking): for their [uWebSockets](https://github.com/uNetworking/uWebSockets)  
