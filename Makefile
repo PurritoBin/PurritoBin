@@ -9,9 +9,9 @@ bindir	?= $(exec_prefix)/bin
 CXXFLAGS	+= -lpthread -std=c++2a -Wall -Wextra -Wpedantic -Wstrict-overflow
 
 # include additional standard directories
-CFLAGS	+= -I/usr/local/include -L/usr/local/lib -lusockets
+CFLAGS	+= -I/usr/local/include -L/usr/local/lib -l:libusockets.a
 
-# on openbd we need libuv
+# on openbsd we need libuv
 ifeq ($(WITH_LIBUV), 1)
 CFLAGS	+= -luv
 endif
