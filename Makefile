@@ -14,16 +14,16 @@ CXXFLAGS += -I${LOCALBASE}/include -I${LOCALBASE}/include/uSockets
 # uwebsockets: https://github.com/uNetworking/uWebSockets
 # uSockets   : https://github.com/uNetworking/uSockets
 .ifdef USE_STATIC
-LDFLAGS += -L${LOCALBASE}/lib -l:libcrypto.a -l:libssl.a -l:libpthread.a
+LDFLAGS += -L$(LOCALBASE)/lib -l:libcrypto.a -l:libssl.a -l:libpthread.a
 # on openbsd we need libuv
-.ifeq ($(WITH_LIBUV), 1)
-CFLAGS	+= -l:libuv.a
+.ifdef USE_LIBUV
+LDFLAGS	+= -l:libuv.a
 .endif
 LDFLAGS	+= -l:libusockets.a
 .else
-LDFLAGS	+= -L${LOCALBASE}/lib -lssl -lpthread
-.ifeq ($(WITH_LIBUV), 1)
-CFLAGS	+= -luv
+LDFLAGS	+= -L$(LOCALBASE)/lib -lssl -lpthread
+.ifdef USE_LIBUV
+LDFLAGS	+= -luv
 .endif
 LDFLAGS	+= -lusockets
 .endif
