@@ -1,0 +1,13 @@
+#!/bin/ksh
+#
+# $OpenBSD$
+
+daemon="${TRUEPREFIX}/bin/purrito"
+daemon_user="www"
+
+. /etc/rc.d/rc.subr
+
+rc_bg=YES
+rc_reload=NO
+
+rc_cmd $1
