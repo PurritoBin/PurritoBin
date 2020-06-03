@@ -106,18 +106,6 @@ int main(int argc, char **argv) {
       break;
     }
 
-  /* based and lit method to make sure that nothing goes wrong */
-#if defined(__OpenBSD__)
-  /* the only directory we need access to is the storage directory */
-  int unveil_err = unveil(storage_directory.c_str(), "rwxc");
-  if (unveil_err != 0) {
-    err(unveil_err, "Error: could not unveil storage folder: %s",
-        storage_directory.c_str());
-  }
-  /* also we only need small amounts of net and socket access */
-  (void)pledge("stdio rpath wpath cpath inet unix", NULL);
-#endif
-
   /*
    * we also do a basic check to see that the domain name is given
    * NOTE: this is not a full check to see a valid domain name
@@ -137,6 +125,18 @@ int main(int argc, char **argv) {
     print_help();
     err(1, "Error: storage directory is invalid or is not writable");
   }
+
+  /* based and lit method to make sure that nothing goes wrong */
+#if defined(__OpenBSD__)
+  /* the only directory we need access to is the storage directory */
+  int unveil_err = unveil(storage_directory.c_str(), "rwxc");
+  if (unveil_err != 0) {
+    err(unveil_err, "Error: could not unveil storage folder: %s",
+        storage_directory.c_str());
+  }
+  /* also we only need small amounts of net and socket access */
+  (void)pledge("stdio rpath wpath cpath inet unix", NULL);
+#endif
 
   /*
    * the best method to take care of the fact that the given path
