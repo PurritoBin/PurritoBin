@@ -126,36 +126,35 @@ make install
 ### Usage
 
 ```
- usage: purrito [-hdsipmg]                                       
-        -h                                                      
-            print this help                                   
-	    
-        -d domain                                               
-            REQUIRED                                            
+usage: purrito [-hdsipmg]
+
+        -h
+            print this help
+
+        -d domain
+            REQUIRED
             domain that will be used as prefix of returned paste
-            NOTE: should be the full name, including trailing / 
-              e.g. https://bsd.ac/                              
+            NOTE: should be the full name, including trailing /
+              e.g. https://bsd.ac/
 
-        -s storage_directory                                    
-            REQUIRED                                            
-            path to the storage directory for storing the paste 
-            NOTE: should exist prior to creation and should be  
-                  writable by the user running purrito          
-              e.g. /var/www/purrito                             
+        -s storage_directory
+            DEFAULT: /var/www/purritobin
+            path to the storage directory for storing the paste
+            NOTE: should exist prior to creation and should be
+                  writable by the user running purrito
+        -i bind_ip
+            DEFAULT: 0.0.0.0
+            IP on which to listen for incoming connections
 
-        -i bind_ip                                              
-            DEFAULT: 0.0.0.0                                    
-            IP on which to listen for incoming connections      
+        -p bind_port
+            DEFAULT: 42069
+            port on which to listen for connections
 
-        -p bind_port                                            
-            DEFAULT: 42069                                      
-            port on which to listen for connections             
+        -m max_paste_size (in bytes)
+            DEFAULT: 65536 (64KB)
 
-        -m max_paste_size (in bytes)                            
-            DEFAULT: 65536 (64KB)                               
-
-        -g slug_size                                            
-            DEFAULT: 7                                          
+        -g slug_size
+            DEFAULT: 7
 ```
 
 ### Running the encrypted PurritoBin
