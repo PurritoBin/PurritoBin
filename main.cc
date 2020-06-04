@@ -72,9 +72,11 @@ int main(int argc, char **argv) {
    * considered essential
    */
   bind_ip = "0.0.0.0";
-  slug_size = 7;          // the magic number
-  bind_port = 42069;      // dank af
-  max_paste_size = 65536; // seems reasonable for most
+  slug_size = 7;                             // the magic number
+  bind_port = 42069;                         // dank af
+  max_paste_size = 65536;                    // seems reasonable for most
+  storage_directory = "/var/www/purritobin"; // should probably be owned
+                                             // by user running the program
 
   while ((opt = getopt(argc, argv, "hd:s:i:p:m:g:")) != EOF)
     switch (opt) {
@@ -121,9 +123,21 @@ int main(int argc, char **argv) {
    * lets first check that we can even access it correcty, and afterwards we
    * will do a write test to see if everything worked out a-OK
    */
-  if (storage_directory == "" || access(storage_directory.c_str(), W_OK) != 0) {
+  if (access(storage_directory.c_str(), W_OK) != 0) {
     print_help();
     err(1, "Error: storage directory is invalid or is not writable");
+  }
+
+  /*
+   * the best method to take care of the fact that the given path
+   * is a directory of a link to a directory or anything there of, is to try and
+   * make a init file and write to it and then we delete it
+   */
+  {
+    std::filesystem::path fpath = storage_directory;
+    fpath /= "__init__";
+    std::ofstream output(fpath.string());
+    (void)remove(fpath.c_str());
   }
 
   /* based and lit method to make sure that nothing goes wrong */
@@ -137,18 +151,6 @@ int main(int argc, char **argv) {
   /* also we only need small amounts of net and socket access */
   (void)pledge("stdio rpath wpath cpath inet unix", NULL);
 #endif
-
-  /*
-   * the best method to take care of the fact that the given path
-   * is a directory of a link to a directory or anything there of, is to try and
-   * make a init file and write to it and then we delete it
-   */
-  {
-    std::filesystem::path fpath = storage_directory;
-    fpath /= "__init__";
-    std::ofstream output(fpath.string());
-    (void)remove(fpath.c_str());
-  }
 
   /* initialize the settings to be passed to the server */
   purrito_settings settings(domain, storage_directory, bind_ip, bind_port,
