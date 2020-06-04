@@ -6,6 +6,8 @@ prefix	?= /usr/local
 exec_prefix	?= $(prefix)
 bindir	?= $(exec_prefix)/bin
 
+OBJS	= src/main.cc src/purrito.cc
+
 CXXFLAGS	+= -std=c++2a -Wall -Wextra -Wpedantic -Wstrict-overflow
 
 CXXFLAGS += -I${LOCALBASE}/include -I${LOCALBASE}/include/uSockets
@@ -29,13 +31,13 @@ LDFLAGS	+= -lusockets
 .endif
 
 all:
-	$(CXX) -DUWS_NO_ZLIB main.cc purrito.cc $(CXXFLAGS) -o $(TARGET) $(LDFLAGS)
+	$(CXX) -DUWS_NO_ZLIB $(OBJS) $(CXXFLAGS) -o $(TARGET) $(LDFLAGS)
 
 install:
 	install -d $(DESTDIR)$(bindir)
 	install -m 0755 $(TARGET) $(DESTDIR)$(bindir)/$(TARGET)
 
 clean:
-	$(RM) $(TARGET)
+	rm $(TARGET)
 
 .PHONY: clean
