@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<meta charset="utf-8">
+		<meta name="viewport" content="width=device-width">
+		<title>Purrito Bin</title>
+	</head>
+	<body>
+		<pre>
+purrito(1)                                           purr(1)
+                             /\_/\
+                            ( o.o )
+                             > ^ <
+
+NAME
+
+    purrito: ultra fast, minimalistic, encrypted command line paste-bin
+    purr: shell client to paste to bsd.ac
+
+CLIENT
+
+    # POSIX shell client to upload standard paste
+    purr() {
+        url="$(curl --silent --data-binary "@${1:-/dev/stdin}" bsd.ac:42069)"
+	echo "${url}"
+    }
+
+    # POSIX shell client to upload encrypted paste
+    meow() {
+        key="$(openssl rand -hex 32)"
+        url="$(openssl enc -aes-256-cbc -K ${key} -iv 00000000000000000000000000000000 -e -base64 -A &lt; ${1:-/dev/stdin} | purr)"
+        echo "${url%\/*}/paste.html#${url##*\/}_${key}"
+    }
+
+USAGE
+
+    ~$ purr c00lfile.txt
+    https://bsd.ac/purrit0
+
+    ~$ purr &lt; h0tfile.txt 
+    https://bsd.ac/purri1o
+
+    ~$ echo Hello world. | purr
+    https://bsd.ac/d4nklit
+
+    ~$ purr
+    This is my input
+    it can span multiple lines
+    &lt;Ctrl-d to exit&gt;
+    https://bsd.ac/curlpr0
+
+LIMITS
+
+    max paste size: 64KB
+
+    limit of one paste every 3 seconds, abusing ip is 
+    banned for 10 minutes
+
+    all pastes are cleared daily at 1:30am EST, so you 
+    have 12 hrs on average for your paste
+
+SOURCE
+
+    https://github.com/PurritoBin/PurritoBin
+		</pre>
+	</body>
+</html>

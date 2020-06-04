@@ -7,10 +7,9 @@ $OpenBSD$
 Set proper daemon flags
 =======================
 
-You need to set at least the following two options for PurritoBin
+You need to set at least the following option for PurritoBin
   -d <domain-name>   # e.g. https://bsd.ac/
                      # needs to include the trailing slash
-  -s <paste folder>  # e.g. /var/www/purritobin
 
 To look at all the possible options and descriptions
   purrito -h
