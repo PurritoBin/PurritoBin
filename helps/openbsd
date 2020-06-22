@@ -65,7 +65,7 @@ pass		# establish keep-state
 
 block quick from <bruteforce>
 
-# no more than one connection every 10 seconds
+# no more than one connection every 3 seconds
 pass in on egress proto tcp from any to any port $purritobin_port \
 		flags S/SA keep state \
 		(max-src-conn-rate 1/3, \

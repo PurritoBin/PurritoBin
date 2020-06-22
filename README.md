@@ -159,7 +159,7 @@ usage: purrito [-hdsipmg]
 
 ### Running the encrypted PurritoBin
 
-Make sure that whatever link is provided to the  `-d ` domain option, is also able to serve the `paste.html` from this repository.
+Make sure that whatever link is provided to the `-d ` domain option, is also able to serve the `paste.html` from this repository.
 
 ## Credits
 [uNetworking](https://github.com/uNetworking): for their [uWebSockets](https://github.com/uNetworking/uWebSockets)  
