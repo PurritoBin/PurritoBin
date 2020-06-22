@@ -3,7 +3,7 @@
 # $OpenBSD$
 
 daemon="${TRUEPREFIX}/bin/purrito"
-daemon_user="www"
+daemon_user="_purritobin"
 
 . /etc/rc.d/rc.subr
 
@@ -11,3 +11,4 @@ rc_bg=YES
 rc_reload=NO
 
 rc_cmd $1
+
