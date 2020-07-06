@@ -135,7 +135,8 @@ void read_paste(const purrito_settings &settings,
                "forced to close the request\n"
                "-----------------------------------"
                "-----------------------------------\n");
-        free(read_count);
+        delete read_count;
+	free(buffer);
         res->close();
       }
       /* there are two condition when we stop and save */
@@ -150,13 +151,16 @@ void read_paste(const purrito_settings &settings,
         /* get the paste_url after saving */
         std::string paste_url = save_buffer(buffer, *read_count, settings);
 
-        /* and return it to the user */
-        res->end(paste_url.c_str());
-        free(read_count);
+	/* free the proper variables */
+        delete read_count;
+	free(buffer);
 
         /* print out the separator */
         printf("-----------------------------------"
                "-----------------------------------\n");
+
+        /* and return it to the user */
+        res->end(paste_url.c_str());
       }
     });
   });
