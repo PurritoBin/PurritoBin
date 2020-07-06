@@ -45,7 +45,7 @@ input from a file or from the command line.
 ```
 LIMITS (specific to bsd.ac):
 - One paste every 3 seconds, abusers will be automatically banned for 10 minutes.
-- Paste size limited to 64KB (will be truncated).
+- Paste size limited to 64KB (larger pastes will be aborted).
 - Connection in `purr` is not encrypted, use any of the **encrypted storage clients** if you need full security.
 
 
