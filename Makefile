@@ -37,6 +37,9 @@ install:
 	install -d $(DESTDIR)$(bindir)
 	install -m 0755 $(TARGET) $(DESTDIR)$(bindir)/$(TARGET)
 
+uninstall:
+	rm $(DESTDIR)$(bindir)/$(TARGET)
+
 clean:
 	rm $(TARGET)
 
