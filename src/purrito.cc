@@ -136,7 +136,7 @@ void read_paste(const purrito_settings &settings,
                "-----------------------------------"
                "-----------------------------------\n");
         delete read_count;
-	free(buffer);
+        free(buffer);
         res->close();
       }
       /* there are two condition when we stop and save */
@@ -153,7 +153,7 @@ void read_paste(const purrito_settings &settings,
 
 	/* free the proper variables */
         delete read_count;
-	free(buffer);
+        free(buffer);
 
         /* print out the separator */
         printf("-----------------------------------"
