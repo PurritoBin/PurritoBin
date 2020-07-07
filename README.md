@@ -14,13 +14,32 @@ Define these functions somewhere in the dot files of your shell (works on all PO
 ```
 # POSIX shell client to upload standard message
 purr() {
-	curl --silent --data-binary "@${1:-/dev/stdin}" bsd.ac:42069;
+	url="$(curl --silent --data-binary "@${1:-/dev/stdin}" bsd.ac:42069)"
+	printf '%s\n' "${url}"
 }
+
+
 # POSIX shell client to upload encrypted message
 meow() {
+	# we need to generate a 256 byte random key
+	# for using the aes-256-cbc cipher
 	key="$(openssl rand -hex 32)"
-	url="$(openssl enc -aes-256-cbc -K ${key} -iv 00000000000000000000000000000000 -e -base64 -A < ${1:-/dev/stdin} | purr)"
-	echo "${url%\/*}/paste.html#${url##*\/}_${key}"
+	iv="$(openssl rand -hex 12)"
+	# calculate its encryption and upload it
+	url="$(openssl enc -aes-256-cbc -K ${key} -iv ${iv} -e -base64 -A < ${1:-/dev/stdin} | purr)"
+	printf '%s\n' "${url%\/*}/paste.html#${url##*\/}_${key}_${iv}"
+}
+
+
+# POSIX shell client to decrypt the message
+meowd() {
+	url="$1"
+	baseurl="${url%\/*}"
+	vals="${url##*\#}"
+	IFS="_" set -- $vals
+	encrypteddata="$(curl --silent ${baseurl}/$1)"
+	decrypteddata="$(printf '%s\n' $encrypteddata | openssl enc -aes-256-cbc -base64 -d -K $2 -iv $3)"
+	printf '%s\n' "${decrypteddata}"
 }
 ```
 
@@ -46,7 +65,6 @@ input from a file or from the command line.
 LIMITS (specific to bsd.ac):
 - One paste every 3 seconds, abusers will be automatically banned for 10 minutes.
 - Paste size limited to 64KB (larger pastes will be aborted).
-- Connection in `purr` is not encrypted, use any of the **encrypted storage clients** if you need full security.
 
 
 ### Encrypted Storage Clients  (=｀ᆺ├┬┴┬┴

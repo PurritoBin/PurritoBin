@@ -41,7 +41,6 @@
             .hash
             .substr(1);
         var hashv = hash.split("_");
-        console.log("hash value is: ", hashv);
         if (hashv.length > 0 && hash != "") {
             var pasteurl = "https://bsd.ac/" + hashv[0];
             console.log("paste url is: ", pasteurl);
@@ -52,13 +51,19 @@
                     .enc
                     .Hex
                     .parse(hashv[1]);
-                // default IV doesn't matter much because this is a
-                // one time use key that is going to be discarded
+            }
+            if (hashv.length > 2){
                 default_iv = CryptoJS
                     .enc
                     .Hex
-                    .parse("00000000000000000000000000000000")
+                    .parse(hashv[2]);
+	    } else {
+                default_iv = CryptoJS
+                    .enc
+                    .Hex
+                    .parse("00000000000000000000000000000000");
             }
+
             // this part is async, so we need to define the
             // decryption calls after the request has been fullfilled
             // the joys of async, damn
