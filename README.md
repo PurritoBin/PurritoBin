@@ -179,6 +179,14 @@ usage: purrito [-hdsipmg]
 
 Make sure that whatever link is provided to the `-d ` domain option, is also able to serve the `paste.html` from this repository.
 
+## Workarounds for musl
+
+When building with musl you also need to provide the `stdc++fs` library which can be done by compiling using
+
+```
+make CXXFLAGS=-lstdc++
+```
+
 ## Credits
 [uNetworking](https://github.com/uNetworking): for their [uWebSockets](https://github.com/uNetworking/uWebSockets)  
 [brix](https://github.com/brix/): for their [crypto-js](https://github.com/brix/crypto-js/)  
