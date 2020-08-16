@@ -184,7 +184,7 @@ Make sure that whatever link is provided to the `-d ` domain option, is also abl
 When building with musl you also need to provide the `stdc++fs` library which can be done by compiling using
 
 ```
-make CXXFLAGS=-lstdc++
+make CXXFLAGS=-lstdc++fs
 ```
 
 ## Credits
