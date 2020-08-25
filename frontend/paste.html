@@ -72,18 +72,18 @@
             request.send(null);
             request.onreadystatechange = function () {
                 if (request.readyState == 4) {
-                    decoded = request.responseText;
+                    var decoded = request.responseText;
                     console.log("got the paste: ", decoded);
                     if (hashv.length > 1) {
                         console.log("decoding the paste...");
-                        decrypted = CryptoJS.AES.decrypt(decoded, key, {
+                        var decrypted = CryptoJS.AES.decrypt(decoded, key, {
                             iv: default_iv,
                             mode: CryptoJS.mode.CBC
                         });
                         decoded = decrypted.toString(CryptoJS.enc.Utf8);
                         console.log("decoded paste is: ", decoded);
                     }
-                    data_div = document.getElementById("dec");
+                    var data_div = document.getElementById("dec");
                     data_div.innerText = decoded;
                     return;
                 }
