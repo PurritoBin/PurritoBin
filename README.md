@@ -6,6 +6,8 @@
 
 ultra fast, minimalistic, encrypted command line paste-bin
 
+[![Packaging status](https://repology.org/badge/vertical-allrepos/purritobin.svg)](https://repology.org/project/purritobin/versions)
+
 ## Client  (=｀ﻌ´=)
 
 ### Shell client definitions
