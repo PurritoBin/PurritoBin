@@ -1,6 +1,7 @@
 TARGET	=	purrito
 
 DESTDIR ?=
+LOCALBASE ?=	/usr/local
 
 prefix ?=	/usr/local
 exec_prefix ?=	$(prefix)
@@ -10,24 +11,17 @@ OBJS =	src/main.cc src/purrito.cc
 
 CXXFLAGS +=	-std=c++2a -Wall -Wextra -Wpedantic -Wstrict-overflow
 
-CXXFLAGS +=	-I${LOCALBASE}/include -I${LOCALBASE}/include/uSockets
-
 # requirements
 # uwebsockets: https://github.com/uNetworking/uWebSockets
 # uSockets   : https://github.com/uNetworking/uSockets
+CXXFLAGS +=	-I$(LOCALBASE)/include
+LDFLAGS +=	-L$(LOCALBASE)/lib -lcrypto -lssl -lpthread -lusockets
+
 .ifdef USE_STATIC
-LDFLAGS +=	-L$(LOCALBASE)/lib -l:libcrypto.a -l:libssl.a -l:libpthread.a
-# on openbsd we need libuv
-.ifdef USE_LIBUV
-LDFLAGS +=	-l:libuv.a
+CXXFLAGS +=	-static
 .endif
-LDFLAGS +=	-l:libusockets.a
-.else
-LDFLAGS +=	-L$(LOCALBASE)/lib -lssl -lpthread
 .ifdef USE_LIBUV
 LDFLAGS +=	-luv
-.endif
-LDFLAGS +=	-lusockets
 .endif
 
 all:
