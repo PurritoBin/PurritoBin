@@ -31,6 +31,7 @@
 #include <stdint.h>
 #include <stdio.h>
 #include <stdlib.h>
+#include <syslog.h>
 #include <unistd.h>
 
 #include <uWebSockets/App.h>
@@ -65,10 +66,10 @@ void purr(const purrito_settings &settings) {
   /* create a standard non tls app to listen for requests */
   uWS::App()
       .post("/",
-            /* specifically ignoring the requet parameter, as c++ is dumb */
+            /* specifically ignoring the request parameter, as c++ is dumb */
             [&](auto *res, auto *) {
               /* Log that we are getting a connection */
-              printf("Purrito: Got a connection\n");
+              syslog(LOG_INFO, "Got a connection...");
 
               /* register the callback, which will cork the request properly
                */
@@ -78,21 +79,20 @@ void purr(const purrito_settings &settings) {
                * attach a standard abort handler, in case something goes wrong
                */
               res->onAborted([]() {
-                printf("Purrito: Warning - request was prematurely aborted\n");
+                syslog(LOG_WARNING, "Warning: request was prematurely aborted");
               });
             })
       .listen(settings.bind_ip, settings.bind_port,
               [](auto *listenSocket) {
                 if (listenSocket) {
-                  printf("Purrito: Listening for connections...\n"
-                         "-----------------------------------"
-                         "-----------------------------------\n");
+                  syslog(LOG_INFO, "Listening for connections...");
                 }
               })
       .run();
 
   /* if we reached here, it means something went wrong
    */
+  syslog(LOG_ERR, "Error: could not start listening on the socket");
   err(EXIT_FAILURE, "Error: could not start listening on the socket");
 }
 
@@ -115,7 +115,7 @@ void read_paste(const purrito_settings &settings,
   *read_count = 0;
 
   /* Log that we are starting to read the paste */
-  printf("Purrito: Starting to read the paste\n");
+  syslog(LOG_INFO, "Starting to read the paste");
 
   /* uWebSockets doesn't cork something already corked so we cork */
   res->cork([=]() {
@@ -131,10 +131,8 @@ void read_paste(const purrito_settings &settings,
       *read_count = copy_size + *read_count;
 
       if (!is_last && *read_count == max_chars) {
-        printf("Purrito: Warning - paste was too large, was "
-               "forced to close the request\n"
-               "-----------------------------------"
-               "-----------------------------------\n");
+        syslog(LOG_WARNING, "Warning: paste was too large, "
+			"forced to close the request");
         delete read_count;
         free(buffer);
         res->close();
@@ -146,7 +144,7 @@ void read_paste(const purrito_settings &settings,
         buffer[*read_count] = '\0';
 
         /* Log that we finished reading the paste */
-        printf("Purrito: Finished reading the paste of size %u\n", *read_count);
+        syslog(LOG_INFO, "Finished reading a paste of size %u", *read_count);
 
         /* get the paste_url after saving */
         std::string paste_url = save_buffer(buffer, *read_count, settings);
@@ -156,8 +154,7 @@ void read_paste(const purrito_settings &settings,
         free(buffer);
 
         /* print out the separator */
-        printf("-----------------------------------"
-               "-----------------------------------\n");
+        syslog(LOG_INFO, "Sent paste url back");
 
         /* and return it to the user */
         res->end(paste_url.c_str());
@@ -186,9 +183,10 @@ std::string save_buffer(const char *buffer, const uint32_t buffer_size,
   fclose(output_file);
 
   if (write_count < 0) {
-    warn("Purrito: WARNING (%d) - error while writing to file\n", write_count);
-    return "PurritoBin: Error while pasting\n";
+    syslog(LOG_WARNING, "Warning: error (%d) while writing to file", write_count);
+    return "";
   }
+  syslog(LOG_INFO, "Saved paste to file %s", slug.c_str());
 
   return settings.domain + slug + "\n";
 }

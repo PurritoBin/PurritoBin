@@ -23,6 +23,7 @@
 #include <errno.h>
 #include <stdint.h>
 #include <stdio.h>
+#include <syslog.h>
 #include <unistd.h>
 
 #include "purrito.h"
@@ -41,7 +42,7 @@ void print_help() {
       "            NOTE: should be the full name, including trailing /   \n"
       "              e.g. https://bsd.ac/                              \n\n"
       "        -s storage_directory                                      \n"
-      "            DEFAULT: /var/www/purritobin                                              \n"
+      "            DEFAULT: /var/www/purritobin                          \n"
       "            path to the storage directory for storing the paste   \n"
       "            NOTE: should exist prior to creation and should be    \n"
       "                  writable by the user running purrito            \n"
@@ -66,6 +67,9 @@ int main(int argc, char **argv) {
   uint8_t slug_size;
   uint16_t bind_port;
   uint32_t max_paste_size;
+
+  /* open syslog with purritobin identity */
+  openlog("purritobin", LOG_PERROR | LOG_PID, LOG_DAEMON);
 
   /* we should define the default values for variables not
    * considered essential
@@ -151,6 +155,18 @@ int main(int argc, char **argv) {
   (void)pledge("stdio rpath wpath cpath inet unix", NULL);
 #endif
 
+  syslog(LOG_INFO, "Started PurritoBin with settings - "
+		  "{ "
+		  "domain: %s, "
+		  "storage_directory: %s, "
+		  "bind_ip: %s, "
+		  "bind_port: %d, "
+		  "max_paste_size: %d, "
+		  "slug_size: %d "
+		  "}",
+		  domain.c_str(), storage_directory.c_str(), bind_ip.c_str(),
+		  bind_port, max_paste_size, slug_size
+		);
   /* initialize the settings to be passed to the server */
   purrito_settings settings(domain, storage_directory, bind_ip, bind_port,
                             max_paste_size, slug_size);
