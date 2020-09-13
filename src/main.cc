@@ -58,6 +58,21 @@ void print_help() {
       "            (can be specified multiple times for multiple ports,  \n"
       "             if more ports than ips, then last ip is used for     \n"
       "             to all remaining ports)                            \n\n"
+      "        -c public_certificate_file                                \n"
+      "            DEFAULT: null                                         \n"
+      "            certificate to use if using ssl server              \n\n"
+      "        -l                                                        \n"
+      "            enable listening using an ssl server                  \n"
+      "            if -l then -k -c are required                       \n\n"
+      "        -k private_key                                            \n"
+      "            DEFAULT: null                                         \n"
+      "            private key to use if using ssl server              \n\n"
+      "        -e dhparams                                               \n"
+      "            DEFAULT: null                                         \n"
+      "            diffie hellman prime file to use if ssl server      \n\n"
+      "        -w passphrase                                             \n"
+      "            DEFAULT: null                                         \n"
+      "            pass phrase for certificates if they are locked     \n\n"
       "        -m max_paste_size (in bytes)                              \n"
       "            DEFAULT: 65536 (64KB)                               \n\n"
       "        -g slug_size                                              \n"
@@ -86,9 +101,10 @@ int main(int argc, char **argv) {
   storage_directory = "/var/www/purritobin"; // should probably be owned
                                              // by user running the program
 
+  bool ssl_server = false;
   struct us_socket_context_options_t ssl_options = {};
 
-  while ((opt = getopt(argc, argv, "hd:s:i:p:m:g:")) != EOF)
+  while ((opt = getopt(argc, argv, "hd:s:i:p:m:g:c:k:e:w:l")) != EOF)
     switch (opt) {
     case 'h':
       print_help();
@@ -111,6 +127,21 @@ int main(int argc, char **argv) {
       break;
     case 'g':
       slug_size = std::stoi(optarg);
+      break;
+    case 'c':
+      ssl_options.cert_file_name = optarg;
+      break;
+    case 'k':
+      ssl_options.key_file_name = optarg;
+      break;
+    case 'e':
+      ssl_options.dh_params_file_name = optarg;
+      break;
+    case 'w':
+      ssl_options.passphrase = optarg;
+      break;
+    case 'l':
+      ssl_server = true;
       break;
     default:
       print_help();
@@ -196,8 +227,13 @@ int main(int argc, char **argv) {
                             max_paste_size, slug_size, ssl_options);
 
   /* create the server and start running it */
-  auto purrito = purr<false>(settings);
-  purrito.run();
+  if (ssl_server) {
+    auto purrito = purr<true>(settings);
+    purrito.run();
+  } else {
+    auto purrito = purr<false>(settings);
+    purrito.run();
+  }
 
   /* it should not be possible to reach here */
   return 0;

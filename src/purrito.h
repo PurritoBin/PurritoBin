@@ -93,7 +93,7 @@ public:
    * - dhparam
    * - passphrase
    */
-   const struct us_socket_context_options_t ssl_options;
+  const struct us_socket_context_options_t ssl_options;
 
   purrito_settings(const std::string &domain,
                    const std::string &storage_directory,
@@ -111,8 +111,7 @@ public:
  * this does is using the dank uWebSockets library
  * https://github.com/uNetworking/uWebSockets
  */
-template <bool SSL>
-uWS::TemplatedApp<SSL> purr(const purrito_settings &);
+template <bool SSL> uWS::TemplatedApp<SSL> purr(const purrito_settings &);
 
 /*
  * high precision timer and random number generator
@@ -142,7 +141,7 @@ template <bool SSL>
 uWS::TemplatedApp<SSL> purr(const purrito_settings &settings) {
 
   /* create a standard non tls app to listen for requests */
-  auto purrito = uWS::App();
+  auto purrito = uWS::TemplatedApp<SSL>();
   purrito.post(
       "/",
       /* specifically ignoring the request parameter, as c++ is dumb */

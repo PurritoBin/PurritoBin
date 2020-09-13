@@ -9,7 +9,8 @@ bindir ?=	$(exec_prefix)/bin
 
 OBJS =	src/main.cc
 
-CXXFLAGS +=	-std=c++2a -Wall -Wextra -Wpedantic -Wstrict-overflow
+CXXFLAGS +=	-std=c++2a
+#-Wall -Wextra -Wpedantic -Wstrict-overflow
 
 # requirements
 # uwebsockets: https://github.com/uNetworking/uWebSockets
