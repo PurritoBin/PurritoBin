@@ -66,38 +66,37 @@ void purr(const purrito_settings &settings) {
 
   /* create a standard non tls app to listen for requests */
   auto purrito = uWS::App();
-  purrito
-      .post(
-          "/",
-          /* specifically ignoring the request parameter, as c++ is dumb */
-          [&](auto *res, auto *) {
-            /* Log that we are getting a connection */
-            size_t ip_size = res->getRemoteAddressAsText().size();
-            auto paste_ip = new char[ip_size + 1];
-            memcpy(paste_ip, std::string(res->getRemoteAddressAsText()).c_str(),
-                   ip_size + 1);
-            syslog(LOG_INFO, "(%s) Got a connection...", paste_ip);
+  purrito.post(
+      "/",
+      /* specifically ignoring the request parameter, as c++ is dumb */
+      [&](auto *res, auto *) {
+        /* Log that we are getting a connection */
+        size_t ip_size = res->getRemoteAddressAsText().size();
+        auto paste_ip = new char[ip_size + 1];
+        memcpy(paste_ip, std::string(res->getRemoteAddressAsText()).c_str(),
+               ip_size + 1);
+        syslog(LOG_INFO, "(%s) Got a connection...", paste_ip);
 
-            /* register the callback, which will cork the request properly
-             */
-            res->cork([=]() { read_paste(settings, paste_ip, res); });
+        /* register the callback, which will cork the request properly
+         */
+        res->cork([=]() { read_paste(settings, paste_ip, res); });
 
-            /*
-             * attach a standard abort handler, in case something goes wrong
-             */
-            res->onAborted([&]() {
-              syslog(LOG_WARNING,
-                     "(%s) Warning: request was prematurely aborted", paste_ip);
-            });
-          });
-  for (size_t i = 0; i < settings.bind_ip.size(); i++){
-    purrito
-      .listen(settings.bind_ip[i], settings.bind_port[i],
-              [&](auto *listenSocket) {
-                if (listenSocket) {
-                  syslog(LOG_INFO, "Listening for connections on %s:%d...", settings.bind_ip[i].c_str(), settings.bind_port[i]);
-                }
-              });
+        /*
+         * attach a standard abort handler, in case something goes wrong
+         */
+        res->onAborted([&]() {
+          syslog(LOG_WARNING, "(%s) Warning: request was prematurely aborted",
+                 paste_ip);
+        });
+      });
+  for (size_t i = 0; i < settings.bind_ip.size(); i++) {
+    purrito.listen(
+        settings.bind_ip[i], settings.bind_port[i], [&](auto *listenSocket) {
+          if (listenSocket) {
+            syslog(LOG_INFO, "Listening for connections on %s:%d...",
+                   settings.bind_ip[i].c_str(), settings.bind_port[i]);
+          }
+        });
   }
   purrito.run();
 

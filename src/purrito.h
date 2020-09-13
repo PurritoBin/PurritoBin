@@ -71,7 +71,8 @@ public:
 
   purrito_settings(const std::string &domain,
                    const std::string &storage_directory,
-                   const std::vector<std::string> &bind_ip, const std::vector<uint16_t> &bind_port,
+                   const std::vector<std::string> &bind_ip,
+                   const std::vector<uint16_t> &bind_port,
                    const uint32_t &max_paste_size, const uint8_t &slug_size)
       : domain(domain), storage_directory(storage_directory), bind_ip(bind_ip),
         bind_port(bind_port), max_paste_size(max_paste_size),

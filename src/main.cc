@@ -161,24 +161,23 @@ int main(int argc, char **argv) {
 #endif
 
   /* sanitize the settings for ports and ips */
-  if (bind_ip.size() == 0){
+  if (bind_ip.size() == 0) {
     bind_ip.push_back("0.0.0.0");
     bind_ip.push_back("::");
   }
-  if(bind_port.size() == 0){
+  if (bind_port.size() == 0) {
     bind_port.push_back(42069);
   }
-  while(bind_ip.size() < bind_port.size()){
+  while (bind_ip.size() < bind_port.size()) {
     bind_ip.push_back(bind_ip[bind_ip.size() - 1]);
   }
-  while(bind_port.size() < bind_ip.size()){
+  while (bind_port.size() < bind_ip.size()) {
     bind_port.push_back(bind_port[bind_port.size() - 1]);
   }
 
-  if(bind_port.size() != bind_ip.size()){
+  if (bind_port.size() != bind_ip.size()) {
     err(1, "Error: Could not normalize and sanitize ips and ports.");
   }
-
 
   syslog(LOG_INFO,
          "Starting PurritoBin with settings - "
@@ -188,8 +187,7 @@ int main(int argc, char **argv) {
          "max_paste_size: %d, "
          "slug_size: %d "
          "}",
-         domain.c_str(), storage_directory.c_str(),
-         max_paste_size, slug_size);
+         domain.c_str(), storage_directory.c_str(), max_paste_size, slug_size);
 
   /* initialize the settings to be passed to the server */
   purrito_settings settings(domain, storage_directory, bind_ip, bind_port,
