@@ -52,7 +52,8 @@ std::string random_slug(const int &);
  * try and save a buffer to file and return the error code
  * and also save the returned filename in the argument
  */
-std::string save_buffer(const char *, const uint32_t, const char *, const purrito_settings &);
+std::string save_buffer(const char *, const uint32_t, const char *,
+                        const purrito_settings &);
 
 /*
  * read data in a registered call back function
@@ -65,26 +66,29 @@ void purr(const purrito_settings &settings) {
 
   /* create a standard non tls app to listen for requests */
   uWS::App()
-      .post("/",
-            /* specifically ignoring the request parameter, as c++ is dumb */
-            [&](auto *res, auto *) {
-              /* Log that we are getting a connection */
-              size_t ip_size = res->getRemoteAddressAsText().size();
-              auto paste_ip = new char[ip_size + 1];
-	      memcpy(paste_ip, std::string(res->getRemoteAddressAsText()).c_str(), ip_size + 1);
-              syslog(LOG_INFO, "(%s) Got a connection...", paste_ip);
+      .post(
+          "/",
+          /* specifically ignoring the request parameter, as c++ is dumb */
+          [&](auto *res, auto *) {
+            /* Log that we are getting a connection */
+            size_t ip_size = res->getRemoteAddressAsText().size();
+            auto paste_ip = new char[ip_size + 1];
+            memcpy(paste_ip, std::string(res->getRemoteAddressAsText()).c_str(),
+                   ip_size + 1);
+            syslog(LOG_INFO, "(%s) Got a connection...", paste_ip);
 
-              /* register the callback, which will cork the request properly
-               */
-              res->cork([=]() { read_paste(settings, paste_ip, res); });
+            /* register the callback, which will cork the request properly
+             */
+            res->cork([=]() { read_paste(settings, paste_ip, res); });
 
-              /*
-               * attach a standard abort handler, in case something goes wrong
-               */
-              res->onAborted([&]() {
-                syslog(LOG_WARNING, "(%s) Warning: request was prematurely aborted", paste_ip);
-              });
-            })
+            /*
+             * attach a standard abort handler, in case something goes wrong
+             */
+            res->onAborted([&]() {
+              syslog(LOG_WARNING,
+                     "(%s) Warning: request was prematurely aborted", paste_ip);
+            });
+          })
       .listen(settings.bind_ip, settings.bind_port,
               [](auto *listenSocket) {
                 if (listenSocket) {
@@ -135,10 +139,12 @@ void read_paste(const purrito_settings &settings, char *paste_ip,
       *read_count = copy_size + *read_count;
 
       if (!is_last && *read_count == max_chars) {
-        syslog(LOG_WARNING, "(%s) Warning: paste was too large, "
-			"forced to close the request", paste_ip);
+        syslog(LOG_WARNING,
+               "(%s) Warning: paste was too large, "
+               "forced to close the request",
+               paste_ip);
         delete read_count;
-	delete[] paste_ip;
+        delete[] paste_ip;
         free(buffer);
         res->close();
       }
@@ -149,17 +155,19 @@ void read_paste(const purrito_settings &settings, char *paste_ip,
         buffer[*read_count] = '\0';
 
         /* Log that we finished reading the paste */
-        syslog(LOG_INFO, "(%s) Finished reading a paste of size %u", paste_ip, *read_count);
+        syslog(LOG_INFO, "(%s) Finished reading a paste of size %u", paste_ip,
+               *read_count);
 
         /* get the paste_url after saving */
-        std::string paste_url = save_buffer(buffer, *read_count, paste_ip, settings);
+        std::string paste_url =
+            save_buffer(buffer, *read_count, paste_ip, settings);
 
         /* print out the separator */
         syslog(LOG_INFO, "(%s) Sent paste url back", paste_ip);
 
-	/* free the proper variables */
+        /* free the proper variables */
         delete read_count;
-	delete[] paste_ip;
+        delete[] paste_ip;
         free(buffer);
 
         /* and return it to the user */
@@ -172,7 +180,8 @@ void read_paste(const purrito_settings &settings, char *paste_ip,
 /*
  * save the buffer to a file and return the paste url
  */
-std::string save_buffer(const char *buffer, const uint32_t buffer_size, const char * paste_ip,
+std::string save_buffer(const char *buffer, const uint32_t buffer_size,
+                        const char *paste_ip,
                         const purrito_settings &settings) {
   /* generate the slug */
   std::string slug = random_slug(settings.slug_size);
@@ -189,7 +198,8 @@ std::string save_buffer(const char *buffer, const uint32_t buffer_size, const ch
   fclose(output_file);
 
   if (write_count < 0) {
-    syslog(LOG_WARNING, "(%s) Warning: error (%d) while writing to file", paste_ip, write_count);
+    syslog(LOG_WARNING, "(%s) Warning: error (%d) while writing to file",
+           paste_ip, write_count);
     return "";
   }
   syslog(LOG_INFO, "(%s) Saved paste to file %s", paste_ip, slug.c_str());

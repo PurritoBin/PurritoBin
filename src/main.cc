@@ -155,18 +155,18 @@ int main(int argc, char **argv) {
   (void)pledge("stdio rpath wpath cpath inet unix", NULL);
 #endif
 
-  syslog(LOG_INFO, "Started PurritoBin with settings - "
-		  "{ "
-		  "domain: %s, "
-		  "storage_directory: %s, "
-		  "bind_ip: %s, "
-		  "bind_port: %d, "
-		  "max_paste_size: %d, "
-		  "slug_size: %d "
-		  "}",
-		  domain.c_str(), storage_directory.c_str(), bind_ip.c_str(),
-		  bind_port, max_paste_size, slug_size
-		);
+  syslog(LOG_INFO,
+         "Started PurritoBin with settings - "
+         "{ "
+         "domain: %s, "
+         "storage_directory: %s, "
+         "bind_ip: %s, "
+         "bind_port: %d, "
+         "max_paste_size: %d, "
+         "slug_size: %d "
+         "}",
+         domain.c_str(), storage_directory.c_str(), bind_ip.c_str(), bind_port,
+         max_paste_size, slug_size);
   /* initialize the settings to be passed to the server */
   purrito_settings settings(domain, storage_directory, bind_ip, bind_port,
                             max_paste_size, slug_size);
