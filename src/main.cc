@@ -196,7 +196,7 @@ int main(int argc, char **argv) {
                             max_paste_size, slug_size, ssl_options);
 
   /* create the server and start running it */
-  auto purrito = purr(settings);
+  auto purrito = purr<false>(settings);
   purrito.run();
 
   /* it should not be possible to reach here */

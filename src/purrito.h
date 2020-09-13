@@ -111,7 +111,8 @@ public:
  * this does is using the dank uWebSockets library
  * https://github.com/uNetworking/uWebSockets
  */
-uWS::App purr(const purrito_settings &);
+template <bool SSL>
+uWS::TemplatedApp<SSL> purr(const purrito_settings &);
 
 /*
  * high precision timer and random number generator
@@ -133,11 +134,12 @@ std::string save_buffer(const char *, const uint32_t, const char *,
 /*
  * read data in a registered call back function
  */
-void read_paste(const purrito_settings &, char *, uWS::HttpResponse<false> *);
+template <bool SSL>
+void read_paste(const purrito_settings &, char *, uWS::HttpResponse<SSL> *);
 
 /******************************************************************************/
-
-uWS::App purr(const purrito_settings &settings) {
+template <bool SSL>
+uWS::TemplatedApp<SSL> purr(const purrito_settings &settings) {
 
   /* create a standard non tls app to listen for requests */
   auto purrito = uWS::App();
@@ -154,7 +156,7 @@ uWS::App purr(const purrito_settings &settings) {
 
         /* register the callback, which will cork the request properly
          */
-        res->cork([=]() { read_paste(settings, paste_ip, res); });
+        res->cork([=]() { read_paste<SSL>(settings, paste_ip, res); });
 
         /*
          * attach a standard abort handler, in case something goes wrong
@@ -181,8 +183,9 @@ uWS::App purr(const purrito_settings &settings) {
 /*
  * process the request
  */
+template <bool SSL>
 void read_paste(const purrito_settings &settings, char *paste_ip,
-                uWS::HttpResponse<false> *res) {
+                uWS::HttpResponse<SSL> *res) {
   /* calculate the correct number of characters allowed in the paste */
   uint32_t max_chars = settings.max_paste_size / sizeof(char);
 
