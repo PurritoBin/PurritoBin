@@ -62,7 +62,7 @@ void read_paste(const purrito_settings &, char *, uWS::HttpResponse<false> *);
 
 /******************************************************************************/
 
-void purr(const purrito_settings &settings) {
+uWS::App purr(const purrito_settings &settings) {
 
   /* create a standard non tls app to listen for requests */
   auto purrito = uWS::App();
@@ -98,12 +98,7 @@ void purr(const purrito_settings &settings) {
           }
         });
   }
-  purrito.run();
-
-  /* if we reached here, it means something went wrong
-   */
-  syslog(LOG_ERR, "Error: could not start listening on the socket");
-  err(EXIT_FAILURE, "Error: could not start listening on the socket");
+  return purrito;
 }
 
 /******************************************************************************/

@@ -23,6 +23,8 @@
 
 #include <stdint.h>
 
+#include <uWebSockets/App.h>
+
 class purrito_settings {
 public:
   /*
@@ -84,6 +86,6 @@ public:
  * this does is using the dank uWebSockets library
  * https://github.com/uNetworking/uWebSockets
  */
-void purr(const purrito_settings &);
+uWS::App purr(const purrito_settings &);
 
 #endif //_PURRITO
