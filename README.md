@@ -162,13 +162,20 @@ usage: purrito [-hdsipmg]
             path to the storage directory for storing the paste
             NOTE: should exist prior to creation and should be
                   writable by the user running purrito
+
         -i bind_ip
-            DEFAULT: 0.0.0.0
+            DEFAULT: 0.0.0.0, ::
             IP on which to listen for incoming connections
+            (can be specified multiple times for multiple ips,
+             if more ips than ports, then last port is used for
+             all remaining ips)
 
         -p bind_port
             DEFAULT: 42069
             port on which to listen for connections
+            (can be specified multiple times for multiple ports,
+             if more ports than ips, then last ip is used for
+             to all remaining ports)
 
         -m max_paste_size (in bytes)
             DEFAULT: 65536 (64KB)
