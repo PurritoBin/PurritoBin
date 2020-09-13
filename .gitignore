@@ -1,6 +1,9 @@
 # output of make
 purrito
 
+# coredumps
+*.core
+
 # Prerequisites
 *.d
 
