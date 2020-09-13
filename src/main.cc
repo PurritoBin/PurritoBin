@@ -45,13 +45,19 @@ void print_help() {
       "            DEFAULT: /var/www/purritobin                          \n"
       "            path to the storage directory for storing the paste   \n"
       "            NOTE: should exist prior to creation and should be    \n"
-      "                  writable by the user running purrito            \n"
+      "                  writable by the user running purrito          \n\n"
       "        -i bind_ip                                                \n"
-      "            DEFAULT: 0.0.0.0                                      \n"
-      "            IP on which to listen for incoming connections      \n\n"
+      "            DEFAULT: 0.0.0.0, ::                                  \n"
+      "            IP on which to listen for incoming connections        \n"
+      "            (can be specified multiple times for multiple ips,    \n"
+      "             if more ips than ports, then last ip is used for     \n"
+      "             all remaining ports)                               \n\n"
       "        -p bind_port                                              \n"
       "            DEFAULT: 42069                                        \n"
-      "            port on which to listen for connections             \n\n"
+      "            port on which to listen for connections               \n"
+      "            (can be specified multiple times for multiple ports,  \n"
+      "             if more ports than ips, then last port is applied    \n"
+      "             to all remaining ips)                              \n\n"
       "        -m max_paste_size (in bytes)                              \n"
       "            DEFAULT: 65536 (64KB)                               \n\n"
       "        -g slug_size                                              \n"
@@ -170,7 +176,7 @@ int main(int argc, char **argv) {
   }
 
   if(bind_port.size() != bind_ip.size()){
-    err(1, "Error: Could not normalize ips and ports.");
+    err(1, "Error: Could not normalize and sanitize ips and ports.");
   }
 
 
