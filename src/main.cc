@@ -86,6 +86,8 @@ int main(int argc, char **argv) {
   storage_directory = "/var/www/purritobin"; // should probably be owned
                                              // by user running the program
 
+  struct us_socket_context_options_t ssl_options = {};
+
   while ((opt = getopt(argc, argv, "hd:s:i:p:m:g:")) != EOF)
     switch (opt) {
     case 'h':
@@ -191,7 +193,7 @@ int main(int argc, char **argv) {
 
   /* initialize the settings to be passed to the server */
   purrito_settings settings(domain, storage_directory, bind_ip, bind_port,
-                            max_paste_size, slug_size);
+                            max_paste_size, slug_size, ssl_options);
 
   /* create the server and start running it */
   auto purrito = purr(settings);

@@ -7,7 +7,7 @@ prefix ?=	/usr/local
 exec_prefix ?=	$(prefix)
 bindir ?=	$(exec_prefix)/bin
 
-OBJS =	src/main.cc src/purrito.cc
+OBJS =	src/main.cc
 
 CXXFLAGS +=	-std=c++2a -Wall -Wextra -Wpedantic -Wstrict-overflow
 
