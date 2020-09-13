@@ -65,7 +65,8 @@ void read_paste(const purrito_settings &, char *, uWS::HttpResponse<false> *);
 void purr(const purrito_settings &settings) {
 
   /* create a standard non tls app to listen for requests */
-  uWS::App()
+  auto purrito = uWS::App();
+  purrito
       .post(
           "/",
           /* specifically ignoring the request parameter, as c++ is dumb */
@@ -88,14 +89,17 @@ void purr(const purrito_settings &settings) {
               syslog(LOG_WARNING,
                      "(%s) Warning: request was prematurely aborted", paste_ip);
             });
-          })
-      .listen(settings.bind_ip, settings.bind_port,
-              [](auto *listenSocket) {
+          });
+  for (size_t i = 0; i < settings.bind_ip.size(); i++){
+    purrito
+      .listen(settings.bind_ip[i], settings.bind_port[i],
+              [&](auto *listenSocket) {
                 if (listenSocket) {
-                  syslog(LOG_INFO, "Listening for connections...");
+                  syslog(LOG_INFO, "Listening for connections on %s:%d...", settings.bind_ip[i].c_str(), settings.bind_port[i]);
                 }
-              })
-      .run();
+              });
+  }
+  purrito.run();
 
   /* if we reached here, it means something went wrong
    */
@@ -128,7 +132,6 @@ void read_paste(const purrito_settings &settings, char *paste_ip,
   res->cork([=]() {
     res->onData([=](std::string_view chunk, bool is_last) {
       /* calculate how much to copy over */
-      syslog(LOG_INFO, "(%s) Just started", paste_ip);
       uint32_t copy_size = std::max<int>(
           0, std::min<int>(max_chars - *read_count, chunk.size()));
 

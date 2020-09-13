@@ -19,6 +19,7 @@
 #define _PURRITO
 
 #include <string>
+#include <vector>
 
 #include <stdint.h>
 
@@ -45,7 +46,7 @@ public:
    * IP on which to listen for incoming connections
    * NOTE: defaults to all
    */
-  const std::string bind_ip;
+  const std::vector<std::string> bind_ip;
 
   /*
    * DEFAULT: 42069 // dank af
@@ -54,7 +55,7 @@ public:
    *       are not going to be abused, look at something
    *       such as fail2ban
    */
-  const uint16_t bind_port;
+  const std::vector<uint16_t> bind_port;
 
   /*
    * DEFAULT: 65536 // 64KB
@@ -70,7 +71,7 @@ public:
 
   purrito_settings(const std::string &domain,
                    const std::string &storage_directory,
-                   const std::string &bind_ip, const uint16_t &bind_port,
+                   const std::vector<std::string> &bind_ip, const std::vector<uint16_t> &bind_port,
                    const uint32_t &max_paste_size, const uint8_t &slug_size)
       : domain(domain), storage_directory(storage_directory), bind_ip(bind_ip),
         bind_port(bind_port), max_paste_size(max_paste_size),

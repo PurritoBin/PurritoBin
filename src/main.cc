@@ -63,9 +63,10 @@ void print_help() {
  */
 int main(int argc, char **argv) {
   int opt;
-  std::string domain, storage_directory, bind_ip;
+  std::string domain, storage_directory;
+  std::vector<std::string> bind_ip;
+  std::vector<uint16_t> bind_port;
   uint8_t slug_size;
-  uint16_t bind_port;
   uint32_t max_paste_size;
 
   /* open syslog with purritobin identity */
@@ -74,9 +75,7 @@ int main(int argc, char **argv) {
   /* we should define the default values for variables not
    * considered essential
    */
-  bind_ip = "0.0.0.0";
   slug_size = 7;                             // the magic number
-  bind_port = 42069;                         // dank af
   max_paste_size = 65536;                    // seems reasonable for most
   storage_directory = "/var/www/purritobin"; // should probably be owned
                                              // by user running the program
@@ -94,10 +93,10 @@ int main(int argc, char **argv) {
       storage_directory = optarg;
       break;
     case 'i':
-      bind_ip = optarg;
+      bind_ip.push_back(optarg);
       break;
     case 'p':
-      bind_port = std::stoi(optarg);
+      bind_port.push_back(std::stoi(optarg));
       break;
     case 'm':
       max_paste_size = std::stoi(optarg);
@@ -155,18 +154,37 @@ int main(int argc, char **argv) {
   (void)pledge("stdio rpath wpath cpath inet unix", NULL);
 #endif
 
+  /* sanitize the settings for ports and ips */
+  if (bind_ip.size() == 0){
+    bind_ip.push_back("0.0.0.0");
+    bind_ip.push_back("::");
+  }
+  if(bind_port.size() == 0){
+    bind_port.push_back(42069);
+  }
+  while(bind_ip.size() < bind_port.size()){
+    bind_ip.push_back(bind_ip[bind_ip.size() - 1]);
+  }
+  while(bind_port.size() < bind_ip.size()){
+    bind_port.push_back(bind_port[bind_port.size() - 1]);
+  }
+
+  if(bind_port.size() != bind_ip.size()){
+    err(1, "Error: Could not normalize ips and ports.");
+  }
+
+
   syslog(LOG_INFO,
-         "Started PurritoBin with settings - "
+         "Starting PurritoBin with settings - "
          "{ "
          "domain: %s, "
          "storage_directory: %s, "
-         "bind_ip: %s, "
-         "bind_port: %d, "
          "max_paste_size: %d, "
          "slug_size: %d "
          "}",
-         domain.c_str(), storage_directory.c_str(), bind_ip.c_str(), bind_port,
+         domain.c_str(), storage_directory.c_str(),
          max_paste_size, slug_size);
+
   /* initialize the settings to be passed to the server */
   purrito_settings settings(domain, storage_directory, bind_ip, bind_port,
                             max_paste_size, slug_size);
