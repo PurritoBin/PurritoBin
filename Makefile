@@ -1,12 +1,11 @@
 TARGET	?=	purrito
 
 DESTDIR ?=
-LOCALBASE ?=	/usr/local
 PKG_CONFIG ?=	pkg-config
 INSTALL ?=	install
 
-prefix ?=	/usr/local
-bindir ?=	${prefix}/bin
+PREFIX ?=	/usr/local
+BINDIR ?=	${PREFIX}/bin
 
 OBJS =		src/main.cc
 
@@ -24,8 +23,8 @@ all:
 	${CXX} -DUWS_NO_ZLIB ${OBJS} ${CXXFLAGS} -o ${TARGET} ${LDFLAGS}
 
 install:
-	${INSTALL} -d ${DESTDIR}${bindir}
-	${INSTALL} -m 0755 ${TARGET} ${DESTDIR}${bindir}/${TARGET}
+	${INSTALL} -d ${DESTDIR}${BINDIR}
+	${INSTALL} -m 0755 ${TARGET} ${DESTDIR}${BINDIR}/${TARGET}
 
 uninstall:
 	rm ${DESTDIR}${bindir}/${TARGET}
