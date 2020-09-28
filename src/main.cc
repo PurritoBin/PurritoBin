@@ -103,8 +103,9 @@ int main(int argc, char **argv) {
 
   bool ssl_server = false;
   struct us_socket_context_options_t ssl_options = {};
+  std::vector<std::string> server_names;
 
-  while ((opt = getopt(argc, argv, "hd:s:i:p:m:g:c:k:e:w:l")) != EOF)
+  while ((opt = getopt(argc, argv, "hd:s:i:p:m:g:c:k:e:w:ln:")) != EOF)
     switch (opt) {
     case 'h':
       print_help();
@@ -142,6 +143,9 @@ int main(int argc, char **argv) {
       break;
     case 'l':
       ssl_server = true;
+      break;
+    case 'n':
+      server_names.push_back(optarg);
       break;
     default:
       print_help();
@@ -228,9 +232,13 @@ int main(int argc, char **argv) {
 
   /* create the server and start running it */
   if (ssl_server) {
+    syslog(LOG_INFO, "Listening with SSL");
     auto purrito = purr<true>(settings);
+    for(auto server_name: server_names)
+      purrito.addServerName(server_name, ssl_options);
     purrito.run();
   } else {
+    syslog(LOG_INFO, "Listening without SSL");
     auto purrito = purr<false>(settings);
     purrito.run();
   }
