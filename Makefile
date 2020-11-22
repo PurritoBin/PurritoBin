@@ -1,17 +1,17 @@
 TARGET	?=	purrito
 
 DESTDIR ?=
-PKG_CONFIG ?=	pkg-config
-INSTALL ?=	install
-
 PREFIX ?=	/usr/local
 BINDIR ?=	${PREFIX}/bin
 
-OBJS =		src/main.cc
+PKG_CONFIG ?=	pkg-config
+INSTALL ?=	install
 
-CXXFLAGS +=	-std=c++2a -Wall -Wextra -Wpedantic -Wstrict-overflow
+SRC =		src/main.cc
 
-LIBS +=		usockets libssl
+CXXFLAGS +=	-std=c++2a
+
+LIBS +=		libusockets
 
 # requirements
 # uwebsockets: https://github.com/uNetworking/uWebSockets
@@ -20,16 +20,16 @@ CXXFLAGS +=	`${PKG_CONFIG} --cflags ${LIBS}`
 LDFLAGS +=	`${PKG_CONFIG} --libs ${LIBS}`
 
 all:
-	${CXX} -DUWS_NO_ZLIB ${OBJS} ${CXXFLAGS} -o ${TARGET} ${LDFLAGS}
+	${CXX} ${CXXFLAGS} -DUWS_NO_ZLIB ${SRC} -o ${TARGET} ${LDFLAGS}
 
 install:
 	${INSTALL} -d ${DESTDIR}${BINDIR}
 	${INSTALL} -m 0755 ${TARGET} ${DESTDIR}${BINDIR}/${TARGET}
 
 uninstall:
-	rm ${DESTDIR}${bindir}/${TARGET}
+	rm -f ${DESTDIR}${bindir}/${TARGET}
 
 clean:
-	rm ${TARGET}
+	rm -f ${TARGET}
 
-.PHONY: clean
+.PHONY: all install uninstall clean

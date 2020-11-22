@@ -28,6 +28,10 @@
 
 #include "purrito.h"
 
+#ifndef PURRITO_PORT
+#define PURRITO_PORT 42069
+#endif
+
 /*
  * function for printing the help of the code
  */
@@ -203,7 +207,7 @@ int main(int argc, char **argv) {
     bind_ip.push_back("::");
   }
   if (bind_port.size() == 0) {
-    bind_port.push_back(42069);
+    bind_port.push_back(PURRITO_PORT);
   }
   while (bind_ip.size() < bind_port.size()) {
     bind_ip.push_back(bind_ip[bind_ip.size() - 1]);
