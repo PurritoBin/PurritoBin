@@ -65,6 +65,7 @@ input from a file or from the command line.
 LIMITS (specific to bsd.ac):
 - One paste every 3 seconds, abusers will be automatically banned for 10 minutes.
 - Paste size limited to 64KB (larger pastes will be aborted).
+- Even though SSL is supported for pasting connections, the server on bsd.ac does not use the SSL capabilities because the author is a dumb hoe.
 
 
 ### Encrypted Storage Clients  (=｀ᆺ├┬┴┬┴
@@ -144,51 +145,74 @@ make install
 ### Usage
 
 ```
-usage: purrito [-hdsipmg]
+usage: purrito [-hdsipmglnckew]                                 
 
-        -h
-            print this help
+        -h                                                        
+            print this help                                     
 
-        -d domain
-            REQUIRED
-            domain that will be used as prefix of returned paste
-            NOTE: should be the full name, including trailing /
-              e.g. https://bsd.ac/
+        -d domain                                                 
+            REQUIRED                                              
+            domain that will be used as prefix of returned paste  
+            NOTE: should be the full name, including trailing /   
+              e.g. https://bsd.ac/                              
 
-        -s storage_directory
-            DEFAULT: /var/www/purritobin
-            path to the storage directory for storing the paste
-            NOTE: should exist prior to creation and should be
-                  writable by the user running purrito
+        -s storage_directory                                      
+            DEFAULT: /var/www/purritobin                          
+            path to the storage directory for storing the paste   
+            NOTE: should exist prior to creation and should be    
+                  writable by the user running purrito          
 
-        -i bind_ip
-            DEFAULT: 0.0.0.0, ::
-            IP on which to listen for incoming connections
-            (can be specified multiple times for multiple ips,
-             if more ips than ports, then last port is used for
-             all remaining ips)
+        -i bind_ip                                                
+            DEFAULT: 0.0.0.0, ::                                  
+            IP on which to listen for incoming connections        
+            (can be specified multiple times for multiple ips,    
+             if more ips than ports, then last port is used for   
+             all remaining ips)                                  
 
-        -p bind_port
-            DEFAULT: 42069
-            port on which to listen for connections
-            (can be specified multiple times for multiple ports,
-             if more ports than ips, then last ip is used for
-             to all remaining ports)
+        -p bind_port                                              
+            DEFAULT: 42069                                        
+            port on which to listen for connections               
+            (can be specified multiple times for multiple ports,  
+             if more ports than ips, then last ip is used for     
+             to all remaining ports)                            
 
-        -m max_paste_size (in bytes)
-            DEFAULT: 65536 (64KB)
+        -m max_paste_size (in bytes)                              
+            DEFAULT: 65536 (64KB)                               
 
-        -g slug_size
-            DEFAULT: 7
+        -g slug_size                                              
+            DEFAULT: 7                                          
+
+        -l                                                        
+            enable listening using ssl                            
+            if -l then -k -c -n should probably be given        
+
+        -n server_name                                            
+            DEFAULT: null                                         
+            server name to be used if using ssl                   
+        -c public_certificate_file                                
+            DEFAULT: null                                         
+            certificate to use if using ssl                      
+
+        -k private_key                                            
+            DEFAULT: null                                         
+            private key to use if using ssl                      
+
+        -e dhparams                                               
+            DEFAULT: null                                         
+            diffie hellman prime file to use if ssl              
+
+        -w passphrase                                             
+            DEFAULT: null                                         
+            pass phrase for ssl files if they are locked        
 ```
 
 ### Running the encrypted PurritoBin
 
 Make sure that whatever link is provided to the `-d ` domain option, is also able to serve the `paste.html` from this repository.
 
-## Workarounds for musl
+## Workarounds for older compilers
 
-When building with musl you also need to provide the `stdc++fs` library which can be done by compiling using
+When building with older compilers, you also need to provide the `stdc++fs` library which can be done by compiling using
 
 ```
 make CXXFLAGS=-lstdc++fs
