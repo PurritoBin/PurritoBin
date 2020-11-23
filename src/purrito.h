@@ -134,7 +134,7 @@ std::string save_buffer(const char *, const uint32_t, const char *,
  * read data in a registered call back function
  */
 template <bool SSL>
-void read_paste(const purrito_settings &, char *, uWS::HttpResponse<SSL> *);
+void read_paste(const purrito_settings &, const char *, uWS::HttpResponse<SSL> *);
 
 /******************************************************************************/
 template <bool SSL>
@@ -147,22 +147,19 @@ uWS::TemplatedApp<SSL> purr(const purrito_settings &settings) {
       /* specifically ignoring the request parameter, as c++ is dumb */
       [&](auto *res, auto *) {
         /* Log that we are getting a connection */
-        size_t ip_size = res->getRemoteAddressAsText().size();
-        auto paste_ip = new char[ip_size + 1];
-        memcpy(paste_ip, std::string(res->getRemoteAddressAsText()).c_str(),
-               ip_size + 1);
-        syslog(LOG_INFO, "(%s) Got a connection...", paste_ip);
+        std::string paste_ip = std::string(res->getRemoteAddressAsText());
+        syslog(LOG_INFO, "(%s) Got a connection...", paste_ip.c_str());
 
         /* register the callback, which will cork the request properly
          */
-        res->cork([=]() { read_paste<SSL>(settings, paste_ip, res); });
+        res->cork([=]() { read_paste<SSL>(settings, paste_ip.c_str(), res); });
 
         /*
          * attach a standard abort handler, in case something goes wrong
          */
-        res->onAborted([&]() {
+        res->onAborted([=]() {
           syslog(LOG_WARNING, "(%s) Warning: request was prematurely aborted",
-                 paste_ip);
+		 paste_ip.c_str());
         });
       });
   for (size_t i = 0; i < settings.bind_ip.size(); i++) {
@@ -183,7 +180,7 @@ uWS::TemplatedApp<SSL> purr(const purrito_settings &settings) {
  * process the request
  */
 template <bool SSL>
-void read_paste(const purrito_settings &settings, char *paste_ip,
+void read_paste(const purrito_settings &settings, const char *paste_ip,
                 uWS::HttpResponse<SSL> *res) {
   /* calculate the correct number of characters allowed in the paste */
   uint32_t max_chars = settings.max_paste_size / sizeof(char);
@@ -218,7 +215,6 @@ void read_paste(const purrito_settings &settings, char *paste_ip,
                "forced to close the request",
                paste_ip);
         delete read_count;
-        delete[] paste_ip;
         free(buffer);
         res->close();
       }
@@ -241,7 +237,6 @@ void read_paste(const purrito_settings &settings, char *paste_ip,
 
         /* free the proper variables */
         delete read_count;
-        delete[] paste_ip;
         free(buffer);
 
         /* and return it to the user */
