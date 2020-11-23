@@ -37,7 +37,7 @@
  */
 void print_help() {
   printf(
-      "usage: purrito [-hdsipmg]                                       \n\n"
+      "usage: purrito [-hdsipmglnckew]                                 \n\n"
       "        -h                                                        \n"
       "            print this help                                     \n\n"
       "        -d domain                                                 \n"
@@ -62,25 +62,29 @@ void print_help() {
       "            (can be specified multiple times for multiple ports,  \n"
       "             if more ports than ips, then last ip is used for     \n"
       "             to all remaining ports)                            \n\n"
-      "        -c public_certificate_file                                \n"
-      "            DEFAULT: null                                         \n"
-      "            certificate to use if using ssl server              \n\n"
-      "        -l                                                        \n"
-      "            enable listening using an ssl server                  \n"
-      "            if -l then -k -c are required                       \n\n"
-      "        -k private_key                                            \n"
-      "            DEFAULT: null                                         \n"
-      "            private key to use if using ssl server              \n\n"
-      "        -e dhparams                                               \n"
-      "            DEFAULT: null                                         \n"
-      "            diffie hellman prime file to use if ssl server      \n\n"
-      "        -w passphrase                                             \n"
-      "            DEFAULT: null                                         \n"
-      "            pass phrase for certificates if they are locked     \n\n"
       "        -m max_paste_size (in bytes)                              \n"
       "            DEFAULT: 65536 (64KB)                               \n\n"
       "        -g slug_size                                              \n"
-      "            DEFAULT: 7                                          \n\n");
+      "            DEFAULT: 7                                          \n\n"
+      "        -l                                                        \n"
+      "            enable listening using ssl                            \n"
+      "            if -l then -k -c -n should probably be given        \n\n"
+      "        -n server_name                                            \n"
+      "            DEFAULT: null                                         \n"
+      "            server name to be used if using ssl                   \n"
+      "        -c public_certificate_file                                \n"
+      "            DEFAULT: null                                         \n"
+      "            certificate to use if using ssl                      \n\n"
+      "        -k private_key                                            \n"
+      "            DEFAULT: null                                         \n"
+      "            private key to use if using ssl                      \n\n"
+      "        -e dhparams                                               \n"
+      "            DEFAULT: null                                         \n"
+      "            diffie hellman prime file to use if ssl              \n\n"
+      "        -w passphrase                                             \n"
+      "            DEFAULT: null                                         \n"
+      "            pass phrase for ssl files if they are locked        \n\n"
+  );
 }
 
 /*
@@ -107,9 +111,9 @@ int main(int argc, char **argv) {
 
   bool ssl_server = false;
   struct us_socket_context_options_t ssl_options = {};
-  std::vector<std::string> server_names;
+  std::string server_name;
 
-  while ((opt = getopt(argc, argv, "hd:s:i:p:m:g:c:k:e:w:ln:")) != EOF)
+  while ((opt = getopt(argc, argv, "hd:s:i:p:m:g:ln:c:k:e:w:")) != EOF)
     switch (opt) {
     case 'h':
       print_help();
@@ -133,6 +137,12 @@ int main(int argc, char **argv) {
     case 'g':
       slug_size = std::stoi(optarg);
       break;
+    case 'l':
+      ssl_server = true;
+      break;
+    case 'n':
+      server_name = optarg;
+      break;
     case 'c':
       ssl_options.cert_file_name = optarg;
       break;
@@ -145,15 +155,9 @@ int main(int argc, char **argv) {
     case 'w':
       ssl_options.passphrase = optarg;
       break;
-    case 'l':
-      ssl_server = true;
-      break;
-    case 'n':
-      server_names.push_back(optarg);
-      break;
     default:
       print_help();
-      err(1, "Error: incomplete arguments");
+      err(1, "Error: incorrect parameters");
       break;
     }
 
@@ -238,8 +242,7 @@ int main(int argc, char **argv) {
   if (ssl_server) {
     syslog(LOG_INFO, "Listening with SSL");
     auto purrito = purr<true>(settings);
-    for(auto server_name: server_names)
-      purrito.addServerName(server_name, ssl_options);
+    purrito.addServerName(server_name, ssl_options);
     purrito.run();
   } else {
     syslog(LOG_INFO, "Listening without SSL");
