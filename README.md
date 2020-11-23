@@ -16,8 +16,7 @@ Define these functions somewhere in the dot files of your shell (works on all PO
 ```
 # POSIX shell client to upload standard message
 purr() {
-	url="$(curl --silent --data-binary "@${1:-/dev/stdin}" bsd.ac:42069)"
-	printf '%s\n' "${url}"
+	curl --silent --data-binary "@${1:-/dev/stdin}" bsd.ac:42069
 }
 
 
@@ -29,7 +28,7 @@ meow() {
 	iv="$(openssl rand -hex 12)"
 	# calculate its encryption and upload it
 	url="$(openssl enc -aes-256-cbc -K ${key} -iv ${iv} -e -base64 -A < ${1:-/dev/stdin} | purr)"
-	printf '%s\n' "${url%\/*}/paste.html#${url##*\/}_${key}_${iv}"
+	printf %s\\n "${url%\/*}/paste.html#${url##*\/}_${key}_${iv}"
 }
 
 
@@ -40,8 +39,7 @@ meowd() {
 	vals="${url##*\#}"
 	IFS="_" set -- $vals
 	encrypteddata="$(curl --silent ${baseurl}/$1)"
-	decrypteddata="$(printf '%s\n' $encrypteddata | openssl enc -aes-256-cbc -base64 -d -K $2 -iv $3)"
-	printf '%s\n' "${decrypteddata}"
+	printf %s\\n $encrypteddata | openssl enc -aes-256-cbc -base64 -d -K $2 -iv $3
 }
 ```
 
@@ -195,6 +193,14 @@ When building with musl you also need to provide the `stdc++fs` library which ca
 ```
 make CXXFLAGS=-lstdc++fs
 ```
+
+### Extras
+
+#### Pure C client
+
+[ericonr](https://github.com/ericonr) has made a very nice C client, which also supports encrypted pastes - https://github.com/ericonr/purr-c
+It uses [BearSSL](https://www.bearssl.org/) and is very instructive for all who wish to get a small example of using SSL in C together with networking.
+
 
 ## Credits
 [uNetworking](https://github.com/uNetworking): for their [uWebSockets](https://github.com/uNetworking/uWebSockets)  

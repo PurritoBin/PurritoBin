@@ -8,8 +8,7 @@
 
 # POSIX shell client to upload standard message
 purr() {
-	url="$(curl --silent --data-binary "@${1:-/dev/stdin}" bsd.ac:42069)"
-	printf '%s\n' "${url}"
+	curl --silent --data-binary "@${1:-/dev/stdin}" bsd.ac:42069
 }
 
 
@@ -21,7 +20,7 @@ meow() {
 	iv="$(openssl rand -hex 12)"
 	# calculate its encryption and upload it
 	url="$(openssl enc -aes-256-cbc -K ${key} -iv ${iv} -e -base64 -A < ${1:-/dev/stdin} | purr)"
-	printf '%s\n' "${url%\/*}/paste.html#${url##*\/}_${key}_${iv}"
+	printf %s\\n "${url%\/*}/paste.html#${url##*\/}_${key}_${iv}"
 }
 
 
@@ -32,7 +31,5 @@ meowd() {
 	vals="${url##*\#}"
 	IFS="_" set -- $vals
 	encrypteddata="$(curl --silent ${baseurl}/$1)"
-	decrypteddata="$(printf '%s\n' $encrypteddata | openssl enc -aes-256-cbc -base64 -d -K $2 -iv $3)"
-	printf '%s\n' "${decrypteddata}"
+	printf %s\\n $encrypteddata | openssl enc -aes-256-cbc -base64 -d -K $2 -iv $3
 }
-
