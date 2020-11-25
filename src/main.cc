@@ -83,8 +83,7 @@ void print_help() {
       "            diffie hellman prime file to use if ssl             \n\n"
       "        -w passphrase                                             \n"
       "            DEFAULT: null                                         \n"
-      "            pass phrase for ssl files if they are locked        \n\n"
-  );
+      "            pass phrase for ssl files if they are locked        \n\n");
 }
 
 /*
@@ -172,6 +171,14 @@ int main(int argc, char **argv) {
     err(1, "Error: empty domain name");
   }
 
+  if (ssl_server && ((ssl_options.cert_file_name != NULL &&
+                      strlen(ssl_options.cert_file_name) == 0) ||
+                     (ssl_options.key_file_name != NULL &&
+                      strlen(ssl_options.key_file_name) == 0))) {
+    print_help();
+    err(1, "Error: public certificate or private key not specified");
+  }
+
   /*
    * lets first check that we can even access it correcty, and afterwards we
    * will do a write test to see if everything worked out a-OK
@@ -196,10 +203,28 @@ int main(int argc, char **argv) {
   /* based and lit method to make sure that nothing goes wrong */
 #if defined(__OpenBSD__)
   /* the only directory we need access to is the storage directory */
-  int unveil_err = unveil(storage_directory.c_str(), "rwxc");
+  int unveil_err = unveil(storage_directory.c_str(), "rwc");
   if (unveil_err != 0) {
     err(unveil_err, "Error: could not unveil storage folder: %s",
         storage_directory.c_str());
+  }
+
+  if (ssl_server) {
+    unveil_err = unveil(ssl_options.cert_file_name, "r");
+    if (unveil_err != 0)
+      err(unveil_err, "Error: could not unveil public certificate file: %s",
+          ssl_options.cert_file_name);
+    unveil_err = unveil(ssl_options.key_file_name, "r");
+    if (unveil_err != 0)
+      err(unveil_err, "Error: could not unveil private key file: %s",
+          ssl_options.key_file_name);
+    if (ssl_options.dh_params_file_name != NULL &&
+        strlen(ssl_options.dh_params_file_name) != 0) {
+      unveil_err = unveil(ssl_options.dh_params_file_name, "r");
+      if (unveil_err != 0)
+        err(unveil_err, "Error: could not unveil dhparams file: %s",
+            ssl_options.dh_params_file_name);
+    }
   }
   /* also we only need small amounts of net and socket access */
   (void)pledge("stdio rpath wpath cpath inet unix", NULL);
