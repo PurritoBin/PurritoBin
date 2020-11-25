@@ -3,11 +3,13 @@ TARGET	?=	purrito
 DESTDIR ?=
 PREFIX ?=	/usr/local
 BINDIR ?=	${PREFIX}/bin
+MANDIR ?=	${PREFIX}/share/man
 
 PKG_CONFIG ?=	pkg-config
 INSTALL ?=	install
 
 SRC =		src/main.cc
+MAN =		man/purrito.1
 
 CXXFLAGS +=	-std=c++2a
 
@@ -23,8 +25,9 @@ all:
 	${CXX} ${CXXFLAGS} -DUWS_NO_ZLIB ${SRC} -o ${TARGET} ${LDFLAGS}
 
 install:
-	${INSTALL} -d ${DESTDIR}${BINDIR}
-	${INSTALL} -m 0755 ${TARGET} ${DESTDIR}${BINDIR}/${TARGET}
+	${INSTALL} -d ${DESTDIR}${BINDIR} ${DESTDIR}${MANDIR}/man1
+	${INSTALL} -m 0755 ${TARGET} ${DESTDIR}${BINDIR}
+	${INSTALL} -m 0644 ${MAN} ${DESTDIR}${MANDIR}/man1
 
 uninstall:
 	rm -f ${DESTDIR}${bindir}/${TARGET}

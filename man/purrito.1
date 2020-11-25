@@ -1,0 +1,176 @@
+.\" Copyright (c) Aisha Tammy <purrito@bsd.ac>
+.\"
+.\" Permission to use, copy, modify, and distribute this software for any
+.\" purpose with or without fee is hereby granted, provided that the above
+.\" copyright notice and this permission notice appear in all copies.
+.\"
+.\" THE SOFTWARE IS PROVIDED "AS IS" AND THE AUTHOR DISCLAIMS ALL WARRANTIES
+.\" WITH REGARD TO THIS SOFTWARE INCLUDING ALL IMPLIED WARRANTIES OF
+.\" MERCHANTABILITY AND FITNESS. IN NO EVENT SHALL THE AUTHOR BE LIABLE FOR
+.\" ANY SPECIAL, DIRECT, INDIRECT, OR CONSEQUENTIAL DAMAGES OR ANY DAMAGES
+.\" WHATSOEVER RESULTING FROM LOSS OF USE, DATA OR PROFITS, WHETHER IN AN
+.\" ACTION OF CONTRACT, NEGLIGENCE OR OTHER TORTIOUS ACTION, ARISING OUT OF
+.\" OR IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
+.\"
+.Dd $Mdocdate: November 25 2020 $
+.Dt PURRITO 1
+.Os
+.Sh NAME
+.Nm purrito
+.Nd PurritoBin pastebin server
+.Sh SYNOPSIS
+.Nm purrito
+.Op Fl hdsipmglnckew
+.Op Fl h
+.Fl d Ar domain
+.Op Fl s Ar storage_directory
+.Op Fl i Ar bind_ip
+.Op Fl p Ar bind_port
+.Op Fl m Ar max_paste_size
+.Op Fl g Ar slug_size
+.Op Fl l
+.Op Fl n Ar server name
+.Op Fl c Ar public_cert_file
+.Op Fl k Ar private_key_file
+.Op Fl e Ar dhparams_file
+.Op Fl w Ar passphrase
+.Ar
+.Sh DESCRIPTION
+The
+.Nm
+server is a pastebin server for accepting files on multiple interfaces.
+It is designed to have a very low memory and CPU requirements and on
+an average requires 2-3 MB of RAM to run.
+.Pp
+The options are as follows:
+.Pp
+.Bl -tag -width Ds -compact
+.It Fl h
+show this help and exit
+.Pp
+.It Fl d Ar domain
+.Cm REQUIRED
+.Pp
+.Ar domain
+that will be used as prefix of returned paste
+.Pp
+.Cm NOTE :
+should be the full name, including trailing /
+.Pp
+e.g. https://bsd.ac/
+.Pp
+.It Fl s Ar storage_directory
+.Cm DEFAULT :
+/var/www/purritobin
+.Pp
+path to the
+.Ar storage_directory
+for storing the pastes
+.Pp
+.Cm NOTE :
+should exist prior to starting the server and should
+be writable by the user running
+.Nm .
+.Pp
+.It Fl i Ar bind_ip
+.Cm DEFAULT :
+0.0.0.0, ::
+.Pp
+IP on which to listen for incoming connections.
+Can be specified multiple times for multiple ips.
+If more
+.Ar bind_ip
+options than
+.Ar bind_port
+options are specified, then the last
+.Ar bind_port
+option is used for all remaining
+.Ar bind_ip
+options.
+.Pp
+.It Fl p Ar bind_port
+.Cm DEFAULT :
+42069
+.Pp
+Port on which to listen for connections.
+Can be specified multiple times for multiple ports.
+If more
+.Ar bind_port
+options than
+.Ar bind_ip
+options are specified, then the last
+.Ar bind_ip
+is used for all remaining
+.Ar bind_port
+options.
+.Pp
+.It Fl m Ar max_paste_size
+.Cm DEFAULT :
+65536 (64KB)
+.Pp
+Maximum paste size to accept, in BYTES.
+.Pp
+.It Fl g Ar slug_size
+.Cm DEFAULT :
+7
+.Pp
+Length of the randomly generated alpha-numeric slug
+for the paste.
+.Pp
+.It Fl l
+Enable listening using an SSL server.
+If enabled then the
+.Fl k ,
+.Fl c ,
+.Fl n
+options should also be specified.
+.Pp
+.It Fl n Ar server_name
+.Cm DEFAULT :
+null
+.Pp
+.Ar server_name
+to be used if using SSL.
+.Pp
+.It Fl c Ar public_cert_file
+.Cm DEFAULT :
+null
+.Pp
+Public key certificate to use if using SSL.
+.Pp
+.It Fl k Ar private_key_file
+.Cm DEFAULT :
+null
+.Pp
+Private key certificate to use if using SSL.
+.Pp
+.It Fl e Ar dhparams_file
+.Cm DEFAULT :
+null
+.Pp
+Diffie-Hellman prime file to use if using SSL.
+.Pp
+.It Fl w Ar passphrase
+.Cm DEFAULT :
+null
+.Pp
+.Ar passphrase
+for unlocking the
+.Ar private_key_file
+files if it is locked.
+.El
+.Sh EXAMPLES
+Run the
+.Nm
+server with the domain name set to
+https://bsd.ac
+:
+.Pp
+.Dl $ purrito -d https://bsd.ac/
+.Sh DIAGNOSTICS
+.Nm
+logs to syslog with the
+.Cm purritobin
+identity, along with the
+.Cm PID
+of the server.
