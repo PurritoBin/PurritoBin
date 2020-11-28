@@ -49,31 +49,31 @@ The options are as follows:
 show this help and exit
 .Pp
 .It Fl d Ar domain
-.Cm REQUIRED
+.Sy REQUIRED
 .Pp
 .Ar domain
 that will be used as prefix of returned paste
 .Pp
-.Cm NOTE :
+.Sy NOTE :
 should be the full name, including trailing /
 .Pp
 e.g. https://bsd.ac/
 .Pp
 .It Fl s Ar storage_directory
-.Cm DEFAULT :
+.Sy DEFAULT :
 /var/www/purritobin
 .Pp
 path to the
 .Ar storage_directory
 for storing the pastes
 .Pp
-.Cm NOTE :
+.Sy NOTE :
 should exist prior to starting the server and should
 be writable by the user running
 .Nm .
 .Pp
 .It Fl i Ar bind_ip
-.Cm DEFAULT :
+.Sy DEFAULT :
 0.0.0.0, ::
 .Pp
 IP on which to listen for incoming connections.
@@ -89,7 +89,7 @@ option is used for all remaining
 options.
 .Pp
 .It Fl p Ar bind_port
-.Cm DEFAULT :
+.Sy DEFAULT :
 42069
 .Pp
 Port on which to listen for connections.
@@ -105,13 +105,13 @@ is used for all remaining
 options.
 .Pp
 .It Fl m Ar max_paste_size
-.Cm DEFAULT :
+.Sy DEFAULT :
 65536 (64KB)
 .Pp
 Maximum paste size to accept, in BYTES.
 .Pp
 .It Fl g Ar slug_size
-.Cm DEFAULT :
+.Sy DEFAULT :
 7
 .Pp
 Length of the randomly generated alpha-numeric slug
@@ -126,32 +126,32 @@ If enabled then the
 options should also be specified.
 .Pp
 .It Fl n Ar server_name
-.Cm DEFAULT :
+.Sy DEFAULT :
 null
 .Pp
 .Ar server_name
 to be used if using SSL.
 .Pp
 .It Fl c Ar public_cert_file
-.Cm DEFAULT :
+.Sy DEFAULT :
 null
 .Pp
 Public key certificate to use if using SSL.
 .Pp
 .It Fl k Ar private_key_file
-.Cm DEFAULT :
+.Sy DEFAULT :
 null
 .Pp
 Private key certificate to use if using SSL.
 .Pp
 .It Fl e Ar dhparams_file
-.Cm DEFAULT :
+.Sy DEFAULT :
 null
 .Pp
 Diffie-Hellman prime file to use if using SSL.
 .Pp
 .It Fl w Ar passphrase
-.Cm DEFAULT :
+.Sy DEFAULT :
 null
 .Pp
 .Ar passphrase
@@ -170,7 +170,7 @@ https://bsd.ac
 .Sh DIAGNOSTICS
 .Nm
 logs to syslog with the
-.Cm purritobin
+.Sy purritobin
 identity, along with the
-.Cm PID
+.Sy PID
 of the server.
