@@ -3,7 +3,7 @@ TARGET	?=	purrito
 DESTDIR ?=
 PREFIX ?=	/usr/local
 BINDIR ?=	${PREFIX}/bin
-MANDIR ?=	${PREFIX}/share/man
+MANDIR ?=	${PREFIX}/man
 
 PKG_CONFIG ?=	pkg-config
 INSTALL ?=	install
@@ -29,10 +29,7 @@ install:
 	${INSTALL} -m 0755 ${TARGET} ${DESTDIR}${BINDIR}
 	${INSTALL} -m 0644 ${MAN} ${DESTDIR}${MANDIR}/man1
 
-uninstall:
-	rm -f ${DESTDIR}${bindir}/${TARGET}
-
 clean:
 	rm -f ${TARGET}
 
-.PHONY: all install uninstall clean
+.PHONY: all install clean
