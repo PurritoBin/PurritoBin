@@ -20,21 +20,20 @@
 .Nd PurritoBin pastebin server
 .Sh SYNOPSIS
 .Nm purrito
-.Op Fl hdsipmglnckew
-.Op Fl h
+.Op Fl cdeghiklmnpsw
 .Fl d Ar domain
-.Op Fl s Ar storage_directory
-.Op Fl i Ar bind_ip
-.Op Fl p Ar bind_port
-.Op Fl m Ar max_paste_size
-.Op Fl g Ar slug_size
-.Op Fl l
-.Op Fl n Ar server name
 .Op Fl c Ar public_cert_file
-.Op Fl k Ar private_key_file
 .Op Fl e Ar dhparams_file
+.Op Fl g Ar slug_size
+.Op Fl h
+.Op Fl i Ar bind_ip
+.Op Fl k Ar private_key_file
+.Op Fl l
+.Op Fl m Ar max_paste_size
+.Op Fl n Ar server name
+.Op Fl p Ar bind_port
+.Op Fl s Ar storage_directory
 .Op Fl w Ar passphrase
-.Ar
 .Sh DESCRIPTION
 The
 .Nm
@@ -45,9 +44,6 @@ average requires 2-3 MB of RAM to run.
 The options are as follows:
 .Pp
 .Bl -tag -width Ds -compact
-.It Fl h
-show this help and exit
-.Pp
 .It Fl d Ar domain
 .Sy REQUIRED
 .Pp
@@ -59,18 +55,27 @@ should be the full name, including trailing /
 .Pp
 e.g. https://bsd.ac/
 .Pp
-.It Fl s Ar storage_directory
+.It Fl c Ar public_cert_file
 .Sy DEFAULT :
-/var/www/purritobin
+null
 .Pp
-path to the
-.Ar storage_directory
-for storing the pastes
+Public key certificate to use if using SSL.
 .Pp
-.Sy NOTE :
-should exist prior to starting the server and should
-be writable by the user running
-.Nm .
+.It Fl e Ar dhparams_file
+.Sy DEFAULT :
+null
+.Pp
+Diffie-Hellman prime file to use if using SSL.
+.Pp
+.It Fl g Ar slug_size
+.Sy DEFAULT :
+7
+.Pp
+Length of the randomly generated alpha-numeric slug
+for the paste.
+.Pp
+.It Fl h
+show help and exit
 .Pp
 .It Fl i Ar bind_ip
 .Sy DEFAULT :
@@ -88,6 +93,33 @@ option is used for all remaining
 .Ar bind_ip
 options.
 .Pp
+.It Fl k Ar private_key_file
+.Sy DEFAULT :
+null
+.Pp
+Private key certificate to use if using SSL.
+.Pp
+.It Fl l
+Enable listening using an SSL server.
+If enabled then the
+.Fl k ,
+.Fl c ,
+.Fl n
+options should also be specified.
+.Pp
+.It Fl m Ar max_paste_size
+.Sy DEFAULT :
+65536 (64KB)
+.Pp
+Maximum paste size to accept, in BYTES.
+.Pp
+.It Fl n Ar server_name
+.Sy DEFAULT :
+null
+.Pp
+.Ar server_name
+to be used if using SSL.
+.Pp
 .It Fl p Ar bind_port
 .Sy DEFAULT :
 42069
@@ -104,51 +136,18 @@ is used for all remaining
 .Ar bind_port
 options.
 .Pp
-.It Fl m Ar max_paste_size
+.It Fl s Ar storage_directory
 .Sy DEFAULT :
-65536 (64KB)
+/var/www/purritobin
 .Pp
-Maximum paste size to accept, in BYTES.
+path to the
+.Ar storage_directory
+for storing the pastes
 .Pp
-.It Fl g Ar slug_size
-.Sy DEFAULT :
-7
-.Pp
-Length of the randomly generated alpha-numeric slug
-for the paste.
-.Pp
-.It Fl l
-Enable listening using an SSL server.
-If enabled then the
-.Fl k ,
-.Fl c ,
-.Fl n
-options should also be specified.
-.Pp
-.It Fl n Ar server_name
-.Sy DEFAULT :
-null
-.Pp
-.Ar server_name
-to be used if using SSL.
-.Pp
-.It Fl c Ar public_cert_file
-.Sy DEFAULT :
-null
-.Pp
-Public key certificate to use if using SSL.
-.Pp
-.It Fl k Ar private_key_file
-.Sy DEFAULT :
-null
-.Pp
-Private key certificate to use if using SSL.
-.Pp
-.It Fl e Ar dhparams_file
-.Sy DEFAULT :
-null
-.Pp
-Diffie-Hellman prime file to use if using SSL.
+.Sy NOTE :
+should exist prior to starting the server and should
+be writable by the user running
+.Nm .
 .Pp
 .It Fl w Ar passphrase
 .Sy DEFAULT :
@@ -157,7 +156,7 @@ null
 .Ar passphrase
 for unlocking the
 .Ar private_key_file
-files if it is locked.
+file if it is locked.
 .El
 .Sh EXAMPLES
 Run the
@@ -165,8 +164,17 @@ Run the
 server with the domain name set to
 https://bsd.ac
 :
+.Bd -literal
+    $ purrito -d https://bsd.ac/
+.Ed
 .Pp
-.Dl $ purrito -d https://bsd.ac/
+Run an SSL server with the accepted domain,
+.Fl n ,
+for SSL:
+.Bd -literal
+    $ purrito -d https://bsd.ac/ -l -n bsd.ac \\
+        -c /etc/ssl/bsd.ac.crt -k /etc/ssl/private/bsd.ac.key
+.Ed
 .Sh DIAGNOSTICS
 .Nm
 logs to syslog with the

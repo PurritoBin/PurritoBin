@@ -37,53 +37,11 @@
  */
 void print_help() {
   printf(
-      "usage: purrito [-hdsipmglnckew]                                 \n\n"
-      "        -h                                                        \n"
-      "            print this help                                     \n\n"
-      "        -d domain                                                 \n"
-      "            REQUIRED                                              \n"
-      "            domain that will be used as prefix of returned paste  \n"
-      "            NOTE: should be the full name, including trailing /   \n"
-      "              e.g. https://bsd.ac/                              \n\n"
-      "        -s storage_directory                                      \n"
-      "            DEFAULT: /var/www/purritobin                          \n"
-      "            path to the storage directory for storing the paste   \n"
-      "            NOTE: should exist prior to creation and should be    \n"
-      "                  writable by the user running purrito          \n\n"
-      "        -i bind_ip                                                \n"
-      "            DEFAULT: 0.0.0.0, ::                                  \n"
-      "            IP on which to listen for incoming connections        \n"
-      "            (can be specified multiple times for multiple ips,    \n"
-      "             if more ips than ports, then last port is used for   \n"
-      "             all remaining ips)                                 \n\n"
-      "        -p bind_port                                              \n"
-      "            DEFAULT: 42069                                        \n"
-      "            port on which to listen for connections               \n"
-      "            (can be specified multiple times for multiple ports,  \n"
-      "             if more ports than ips, then last ip is used for     \n"
-      "             to all remaining ports)                            \n\n"
-      "        -m max_paste_size (in bytes)                              \n"
-      "            DEFAULT: 65536 (64KB)                               \n\n"
-      "        -g slug_size                                              \n"
-      "            DEFAULT: 7                                          \n\n"
-      "        -l                                                        \n"
-      "            enable listening using ssl                            \n"
-      "            if -l then -k -c -n should probably be given        \n\n"
-      "        -n server_name                                            \n"
-      "            DEFAULT: null                                         \n"
-      "            server name to be used if using ssl                 \n\n"
-      "        -c public_certificate_file                                \n"
-      "            DEFAULT: null                                         \n"
-      "            certificate to use if using ssl                     \n\n"
-      "        -k private_key                                            \n"
-      "            DEFAULT: null                                         \n"
-      "            private key to use if using ssl                     \n\n"
-      "        -e dhparams                                               \n"
-      "            DEFAULT: null                                         \n"
-      "            diffie hellman prime file to use if ssl             \n\n"
-      "        -w passphrase                                             \n"
-      "            DEFAULT: null                                         \n"
-      "            pass phrase for ssl files if they are locked        \n\n");
+      "usage: purrito [-cdeghiklmnpsw] -d domain [-c public_cert_file]\n"
+      "               [-e dhparams_file] [-g slug_size] [-h] [-i bind_ip]\n"
+      "               [-k private_key_file] [-l] [-m max_paste_size] [-n "
+      "server name]\n"
+      "               [-p bind_port] [-s storage_directory] [-w passphrase]\n");
 }
 
 /*
@@ -109,7 +67,7 @@ int main(int argc, char **argv) {
                                              // by user running the program
 
   bool ssl_server = false;
-  struct us_socket_context_options_t ssl_options = {};
+  uWS::SocketContextOptions ssl_options = {};
   std::string server_name;
 
   while ((opt = getopt(argc, argv, "hd:s:i:p:m:g:ln:c:k:e:w:")) != EOF)
