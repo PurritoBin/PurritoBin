@@ -168,6 +168,11 @@ make LDFLAGS=-lstdc++fs
 
 ### Extras
 
+#### System services
+
+The [services](services/) directory consists of OpenRC and SystemD service files.
+They need the `purritobin` user and group to exist.
+
 #### Pure C client
 
 [ericonr](https://github.com/ericonr) has made a very nice C client, which also supports encrypted pastes - https://github.com/ericonr/purr-c   
