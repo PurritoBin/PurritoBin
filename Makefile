@@ -25,9 +25,9 @@ all:
 	${CXX} ${CXXFLAGS} -DUWS_NO_ZLIB ${SRC} -o ${TARGET} ${LDFLAGS}
 
 install:
-	${INSTALL} -d ${DESTDIR}${BINDIR} ${DESTDIR}${MANDIR}/man1
-	${INSTALL} -m 0755 ${TARGET} ${DESTDIR}${BINDIR}
-	${INSTALL} -m 0644 ${MAN} ${DESTDIR}${MANDIR}/man1
+	${INSTALL} -d "${DESTDIR}${BINDIR}" "${DESTDIR}${MANDIR}/man1"
+	${INSTALL} -m 0755 ${TARGET} "${DESTDIR}${BINDIR}"
+	${INSTALL} -m 0644 ${MAN} "${DESTDIR}${MANDIR}/man1"
 
 clean:
 	rm -f ${TARGET}
