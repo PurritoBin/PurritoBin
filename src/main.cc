@@ -37,11 +37,11 @@
  */
 void print_help() {
   printf(
-      "usage: purrito [-cdeghiklmnpsw] -d domain [-c public_cert_file]\n"
+      "usage: purrito [-cdeghiklmnpsvwx] -d domain [-c public_cert_file]\n"
       "               [-e dhparams_file] [-g slug_size] [-h] [-i bind_ip]\n"
-      "               [-k private_key_file] [-l] [-m max_paste_size] [-n "
-      "server name]\n"
-      "               [-p bind_port] [-s storage_directory] [-w passphrase]\n");
+      "               [-k private_key_file] [-l] [-m max_paste_size] [-n server name]\n"
+      "               [-p bind_port] [-s storage_directory] [-v header_value]\n"
+      "               [-w passphrase] [-x header]\n");
 }
 
 /*
