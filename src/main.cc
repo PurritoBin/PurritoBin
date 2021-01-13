@@ -52,6 +52,8 @@ int main(int argc, char **argv) {
   std::string domain, storage_directory;
   std::vector<std::string> bind_ip;
   std::vector<uint16_t> bind_port;
+  std::map<std::string, std::string> headers;
+  std::vector<std::string> header_names, header_values;
   uint8_t slug_size;
   uint32_t max_paste_size;
 
@@ -70,7 +72,7 @@ int main(int argc, char **argv) {
   uWS::SocketContextOptions ssl_options = {};
   std::string server_name;
 
-  while ((opt = getopt(argc, argv, "hd:s:i:p:m:g:ln:c:k:e:w:")) != EOF)
+  while ((opt = getopt(argc, argv, "hd:s:i:p:m:g:ln:c:k:e:w:x:v:")) != EOF)
     switch (opt) {
     case 'h':
       print_help();
@@ -111,6 +113,12 @@ int main(int argc, char **argv) {
       break;
     case 'w':
       ssl_options.passphrase = optarg;
+      break;
+    case 'x':
+      header_names.push_back(optarg);
+      break;
+    case 'v':
+      header_values.push_back(optarg);
       break;
     default:
       print_help();
@@ -207,6 +215,12 @@ int main(int argc, char **argv) {
     err(1, "Error: Could not normalize and sanitize ips and ports.");
   }
 
+  if (header_names.size() != header_values.size()) {
+    err(1, "Error: header names and values can't be matched");
+  }
+  for (size_t i = 0; i < header_names.size(); i++)
+    headers[header_names[i]] = header_values[i];
+
   syslog(LOG_INFO,
          "Starting PurritoBin with settings - "
          "{ "
@@ -219,7 +233,7 @@ int main(int argc, char **argv) {
 
   /* initialize the settings to be passed to the server */
   purrito_settings settings(domain, storage_directory, bind_ip, bind_port,
-                            max_paste_size, slug_size, ssl_options);
+                            max_paste_size, slug_size, headers, ssl_options);
 
   /* create the server and start running it */
   if (ssl_server) {

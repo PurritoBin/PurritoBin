@@ -23,6 +23,7 @@
 #include <filesystem>
 #include <fstream>
 #include <functional>
+#include <map>
 #include <memory>
 #include <random>
 #include <string>
@@ -93,17 +94,24 @@ public:
    * - dhparam
    * - passphrase
    */
-  const struct us_socket_context_options_t ssl_options;
+  const uWS::SocketContextOptions ssl_options;
+
+  /*
+   * DEFAULT: {}
+   * response headers
+   */
+  const std::map<std::string, std::string> headers;
 
   purrito_settings(const std::string &domain,
                    const std::string &storage_directory,
                    const std::vector<std::string> &bind_ip,
                    const std::vector<uint16_t> &bind_port,
                    const uint32_t &max_paste_size, const uint8_t &slug_size,
-                   const struct us_socket_context_options_t ssl_options)
+                   const std::map<std::string, std::string> &headers,
+                   const uWS::SocketContextOptions ssl_options)
       : domain(domain), storage_directory(storage_directory), bind_ip(bind_ip),
         bind_port(bind_port), max_paste_size(max_paste_size),
-        slug_size(slug_size), ssl_options(ssl_options) {}
+        slug_size(slug_size), headers(headers), ssl_options(ssl_options) {}
 };
 
 /*
@@ -146,6 +154,9 @@ uWS::TemplatedApp<SSL> purr(const purrito_settings &settings) {
                  /* Log that we are getting a connection */
                  auto paste_ip = std::string(res->getRemoteAddressAsText());
                  syslog(LOG_INFO, "(%s) Got a connection...", paste_ip.c_str());
+
+                 for (auto it: settings.headers)
+                   res->writeHeader(it.first, it.second);
 
                  /* register the callback, which will cork the request properly
                   */
