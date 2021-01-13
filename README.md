@@ -8,6 +8,15 @@ ultra fast, minimalistic, encrypted command line paste-bin
 
 [![Packaging status](https://repology.org/badge/vertical-allrepos/purritobin.svg)](https://repology.org/project/purritobin/versions)
 
+## Highlights
+
+- Listen on multiple address/port combinations, both IPv4 and IPv6
+- Very lightweight - 2-3 MB of RAM on average
+- Optional SSL support for secure communication
+- Configurable paste size limit
+- Paste storage in plain text, easy to integrate with all web servers (Apache, Nginx, etc.)
+- Well documented, `man purrito`
+
 ## Client  (=｀ﻌ´=)
 
 ### Shell client definitions
@@ -62,11 +71,6 @@ input from a file or from the command line.
     <Ctrl-d to exit>
     https://bsd.ac/curlpr0
 ```
-LIMITS (specific to bsd.ac):
-- One paste every 3 seconds, abusers will be automatically banned for 10 minutes.
-- Paste size limited to 64KB (larger pastes will be aborted).
-- Even though SSL is supported for pasting connections, the server on bsd.ac does not use the SSL capabilities because the author is a dumb hoe.
-
 
 ### Encrypted Storage Clients  (=｀ᆺ├┬┴┬┴
 
@@ -76,11 +80,11 @@ you are guaranteed that no one else will be able to read the data that you have 
 
 #### How does it work?
  Steps automatically done by the provided clients, on the client side:
- - Randomly generate an ecryption **key**.
- - Encrypt your **data** using said **key**, the encrypted data is called the **cipher**.
- - Send the **cipher** to PurritoBin and get a stadard paste url as above, which will be converted to the form
+ - Randomly generate an ecryption **key** and initialization vector **iv**.
+ - Encrypt your **data** using said **key** and **iv**, the encrypted data is called the **cipher**.
+ - Send the **cipher** to the pastebin and get a standard paste url as above, which will be converted to the form
  ```
- https://bsd.ac/paste.html#pasteID_encryptionKEY
+ https://bsd.ac/paste.html#pasteID_key_iv
  ```
 The standard client is `meow`, a companion to the above `purr`, which is also POSIX compliant and should work in all shells. It has exactly the same usage as `purr`, so please look at those examples to see how to use it.  
 The only dependency on the client side is the presence of [LibreSSL](https://www.libressl.org/) or [OpenSSL](https://www.openssl.org/), to do the encryption.
@@ -88,7 +92,7 @@ The only dependency on the client side is the presence of [LibreSSL](https://www
 There will be other clients in the [clients](clients/) folder, added on demand for other platforms, which will allow you to do all this automatically.  
 Pull requests for other clients are highly welcome.
 
-### Why is this secure?
+#### Why is this secure?
 - All the encryption is done on the client side.
 - Only the **cipher** is sent to PurritoBin.
 - The url only contains the encrypted **cipher** and has no knowledge of the actual data.
@@ -134,7 +138,7 @@ $ make
 $ make install
 ```
 
-or to install to a different location, use the `DESTDIR` variable.
+or to install to a different location, use the `DESTDIR` or `PREFIX` variables.
 
 ### Usage
 
@@ -177,7 +181,6 @@ They need the `purritobin` user and group to exist.
 
 [ericonr](https://github.com/ericonr) has made a very nice C client, which also supports encrypted pastes - https://github.com/ericonr/purr-c   
 It uses [BearSSL](https://www.bearssl.org/) and is very instructive for all who wish to get a small example of using SSL in C together with networking.
-
 
 ## Credits
 [uNetworking](https://github.com/uNetworking): for their [uWebSockets](https://github.com/uNetworking/uWebSockets) and [uSockets](https://github.com/uNetworking/uSockets)

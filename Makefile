@@ -4,6 +4,7 @@ DESTDIR ?=
 PREFIX ?=	/usr/local
 BINDIR ?=	${PREFIX}/bin
 MANDIR ?=	${PREFIX}/man
+DATADIR ?=	${PREFIX}/share/purritobin
 
 PKG_CONFIG ?=	pkg-config
 INSTALL ?=	install
@@ -25,9 +26,10 @@ all:
 	${CXX} ${CXXFLAGS} -DUWS_NO_ZLIB ${SRC} -o ${TARGET} ${LDFLAGS}
 
 install:
-	${INSTALL} -d "${DESTDIR}${BINDIR}" "${DESTDIR}${MANDIR}/man1"
+	${INSTALL} -d "${DESTDIR}${BINDIR}" "${DESTDIR}${DATADIR}" "${DESTDIR}${MANDIR}/man1"
 	${INSTALL} -m 0755 ${TARGET} "${DESTDIR}${BINDIR}"
 	${INSTALL} -m 0644 ${MAN} "${DESTDIR}${MANDIR}/man1"
+	${INSTALL} -m 0644 frontend/paste.html clients/POSIX_shell_client.sh "${DESTDIR}${DATADIR}"
 
 clean:
 	rm -f ${TARGET}
