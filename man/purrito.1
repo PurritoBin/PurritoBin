@@ -105,7 +105,9 @@ If enabled then the
 .Fl k ,
 .Fl c ,
 .Fl n
-options should also be specified.
+options should also be specified,
+.Fl e
+is optional.
 .Pp
 .It Fl m Ar max_paste_size
 .Sy DEFAULT :
@@ -162,18 +164,33 @@ file if it is locked.
 Run the
 .Nm
 server with the domain name set to
-https://bsd.ac
+.Lk https://bsd.ac/
 :
 .Bd -literal
     $ purrito -d https://bsd.ac/
 .Ed
 .Pp
-Run an SSL server with the accepted domain,
-.Fl n ,
-for SSL:
+Run an SSL server with :
 .Bd -literal
     $ purrito -d https://bsd.ac/ -l -n bsd.ac \\
         -c /etc/ssl/bsd.ac.crt -k /etc/ssl/private/bsd.ac.key
+.Ed
+.Pp
+Run an SSL server, while listening on
+.Ar 10.7.0.1:9876 ,
+.Ar 192.168.1.2:9999 ,
+.Ar 134.32.10.10:42069 ,
+.Ar [2001:456:8ee4:4::1]:42069 ,
+.Ar [2001:456:8ee4:4::2]:42069 ,
+with :
+.Bd -literal
+    $ purrito -d https://bsd.ac/ -l -n bsd.ac \\
+        -c /etc/ssl/bsd.ac.crt -k /etc/ssl/private/bsd.ac.key \\
+        -i "10.7.0.1"            -p 9876  \\
+        -i "192.168.1.2"         -p 9999  \\
+        -i "134.32.10.10"        -p 42069 \\
+        -i "2001:456:8ee4:4::1"           \\
+        -i "2001:456:8ee4:4::2"
 .Ed
 .Sh DIAGNOSTICS
 .Nm
