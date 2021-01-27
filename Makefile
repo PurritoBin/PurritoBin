@@ -9,7 +9,9 @@ DATADIR ?=	${PREFIX}/share/purritobin
 PKG_CONFIG ?=	pkg-config
 INSTALL ?=	install
 
-SRC =		src/main.cc
+SRCS =		src/main.cc
+HEADERS =	src/purrito.h
+
 MAN =		man/purrito.1
 
 CXXFLAGS +=	-std=c++2a
@@ -22,10 +24,12 @@ LIBS +=		libusockets
 CXXFLAGS +=	`${PKG_CONFIG} --cflags ${LIBS}`
 LDFLAGS +=	`${PKG_CONFIG} --libs ${LIBS}`
 
-all:
-	${CXX} ${CXXFLAGS} -DUWS_NO_ZLIB ${SRC} -o ${TARGET} ${LDFLAGS}
+all: ${TARGET}
 
-install:
+${TARGET}: ${SRCS} ${HEADERS}
+	${CXX} ${CXXFLAGS} -DUWS_NO_ZLIB ${SRCS} -o ${TARGET} ${LDFLAGS}
+
+install: all
 	${INSTALL} -d "${DESTDIR}${BINDIR}" "${DESTDIR}${DATADIR}" "${DESTDIR}${MANDIR}/man1"
 	${INSTALL} -m 0755 ${TARGET} "${DESTDIR}${BINDIR}"
 	${INSTALL} -m 0644 ${MAN} "${DESTDIR}${MANDIR}/man1"
