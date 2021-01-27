@@ -1,15 +1,14 @@
 TESTS =		test_single_paste.sh
-TESTS_OUTPUT =	${TESTS:.sh=.o}
-TESTS_SUCCESS =	${TESTS:.sh=.sh.success}
+TESTS_OUTPUT =	${TESTS:.sh=.sh.o}
 
-test: ${TESTS_SUCCESS} common.sh
+test: ${TESTS}
 
-${TESTS_SUCCESS}: ${TESTS_OUTPUT}
+${TESTS}: FORCE
+	sh "$@" | tee "$@".o
 
-${TESTS_OUTPUT}: ${TESTS}
-	sh $< | tee $@
+FORCE:
 
 clean:
-	rm -f ${TESTS_OUTPUT} ${TESTS_SUCCESS}
+	rm -f ${TESTS_OUTPUT}
 
-.PHONY: clean test
+.PHONY: clean FORCE test
