@@ -19,5 +19,4 @@ P_PASTE=$(printf %s\\n "${P_DATA}" | purr)
 printf %s\\n "${P_DATA}" | diff "${P_PASTE}" -
 
 set +e +x
-touch "${0}.success"
 pinfo "${0}: succeeded test"
