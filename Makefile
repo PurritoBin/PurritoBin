@@ -35,7 +35,13 @@ install: all
 	${INSTALL} -m 0644 ${MAN} "${DESTDIR}${MANDIR}/man1"
 	${INSTALL} -m 0644 frontend/paste.html clients/POSIX_shell_client.sh "${DESTDIR}${DATADIR}"
 
+check: test
+
+test: all
+	${MAKE} -C tests test
+
 clean:
+	${MAKE} -C tests clean
 	rm -f ${TARGET}
 
-.PHONY: all install clean
+.PHONY: all install check test clean
