@@ -1,4 +1,4 @@
-TESTS =		test_single_paste.sh
+TESTS =		test_single_paste.sh test_concurrent_pastes.sh
 TESTS_OUTPUT =	${TESTS:.sh=.sh.o}
 
 test: ${TESTS}

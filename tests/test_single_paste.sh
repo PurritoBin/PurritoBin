@@ -12,6 +12,9 @@ P_RACING=1
 P_ID=$!
 P_RACING=
 
+# should be enough
+sleep 2
+
 P_DATA="SOME_RANDOM_TEST_DATA"
 
 P_PASTE=$(printf %s\\n "${P_DATA}" | purr)
@@ -19,4 +22,4 @@ P_PASTE=$(printf %s\\n "${P_DATA}" | purr)
 printf %s\\n "${P_DATA}" | diff "${P_PASTE}" -
 
 set +e +x
-pinfo "${0}: succeeded test"
+pinfo "${0}: success"
