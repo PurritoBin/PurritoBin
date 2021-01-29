@@ -21,7 +21,6 @@
 #include <algorithm>
 #include <chrono>
 #include <filesystem>
-#include <fstream>
 #include <functional>
 #include <map>
 #include <memory>
@@ -31,7 +30,6 @@
 
 #include <err.h>
 #include <errno.h>
-#include <pthread.h>
 #include <stdint.h>
 #include <stdio.h>
 #include <stdlib.h>
@@ -39,6 +37,8 @@
 #include <unistd.h>
 
 #include <uWebSockets/App.h>
+#include <cstdlib>
+#include <cstdio>
 
 class purrito_settings {
 public:
@@ -140,7 +140,7 @@ std::string save_buffer(const char *, const uint32_t, const purrito_settings &);
  * read data in a registered call back function
  */
 template <bool SSL>
-void read_paste(const purrito_settings &, uWS::HttpResponse<SSL> *);
+void read_paste(const purrito_settings &, uWS::HttpResponse<SSL> *, std::string);
 
 /******************************************************************************/
 template <bool SSL>
@@ -160,7 +160,7 @@ uWS::TemplatedApp<SSL> purr(const purrito_settings &settings) {
 
                  /* register the callback, which will cork the request properly
                   */
-                 res->cork([=]() { read_paste<SSL>(settings, res); });
+                 res->cork([=]() { read_paste<SSL>(settings, res, paste_ip); });
 
                  /*
                   * attach a standard abort handler, in case something goes
@@ -189,7 +189,7 @@ uWS::TemplatedApp<SSL> purr(const purrito_settings &settings) {
  * process the request
  */
 template <bool SSL>
-void read_paste(const purrito_settings &settings, uWS::HttpResponse<SSL> *res) {
+void read_paste(const purrito_settings &settings, uWS::HttpResponse<SSL> *res, std::string paste_ip) {
   /* calculate the correct number of characters allowed in the paste */
   uint32_t max_chars = settings.max_paste_size / sizeof(char);
 
@@ -218,8 +218,8 @@ void read_paste(const purrito_settings &settings, uWS::HttpResponse<SSL> *res) {
       *read_count = copy_size + *read_count;
 
       if (!is_last && *read_count == max_chars) {
-        syslog(LOG_WARNING, "Warning: paste was too large, "
-                            "forced to close the request");
+        syslog(LOG_WARNING, "[%s] Warning: paste was too large, "
+               "forced to close the request", paste_ip.c_str());
         delete read_count;
         free(buffer);
         res->close();
@@ -231,7 +231,7 @@ void read_paste(const purrito_settings &settings, uWS::HttpResponse<SSL> *res) {
         buffer[*read_count] = '\0';
 
         /* Log that we finished reading the paste */
-        syslog(LOG_INFO, "Finished reading a paste of size %u", *read_count);
+        syslog(LOG_INFO, "[%s] Finished reading a paste of size %u", paste_ip.c_str(), *read_count);
 
         /* get the paste_url after saving */
         std::string paste_url = save_buffer(buffer, *read_count, settings);
@@ -254,7 +254,7 @@ void read_paste(const purrito_settings &settings, uWS::HttpResponse<SSL> *res) {
  * save the buffer to a file and return the paste url
  */
 std::string save_buffer(const char *buffer, const uint32_t buffer_size,
-                        const purrito_settings &settings) {
+                        const std::string paste_ip, const purrito_settings &settings) {
   /* generate the slug */
   std::string slug = random_slug(settings.slug_size);
 
@@ -270,11 +270,11 @@ std::string save_buffer(const char *buffer, const uint32_t buffer_size,
   fclose(output_file);
 
   if (write_count < 0) {
-    syslog(LOG_WARNING, "Warning: error (%d) while writing to file",
-           write_count);
+    syslog(LOG_WARNING, "[%s] Warning: error (%d) while writing to file",
+           paste_ip.c_str(), write_count);
     return "";
   }
-  syslog(LOG_INFO, "Saved paste to file %s", slug.c_str());
+  syslog(LOG_INFO, "[%s] Saved paste to file %s", paste_ip.c_str(), slug.c_str());
 
   return settings.domain + slug + "\n";
 }
