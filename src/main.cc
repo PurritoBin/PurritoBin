@@ -16,6 +16,7 @@
  */
 
 #include <filesystem>
+#include <fstream>
 #include <string>
 
 #include <err.h>
@@ -26,11 +27,6 @@
 #include <unistd.h>
 
 #include "purrito.h"
-#include <vector>
-#include <map>
-#include <cstdlib>
-#include <cstring>
-#include <cstdio>
 
 #ifndef PURRITO_PORT
 #define PURRITO_PORT 42069
