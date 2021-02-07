@@ -16,18 +16,15 @@ P_RACING=
 sleep 2
 
 P_DATA_FILE="$(mktemp -p ${P_TMPDIR} )"
-dd if=/dev/random of="${P_DATA_FILE}" bs=4M count=70
+dd if=/dev/random of="${P_DATA_FILE}" bs=4M count=80
 
+set +e
 P_PASTE=$(purr "${P_DATA_FILE}")
+set -e
 
-# P_PASTE is not set or empty
-# OR
-# P_PASTE is not a file
-if [ -z "${P_PASTE}" ] || [ ! -f "${P_PASTE}" ]; then
+if [ ! -z "${P_PASTE}" ]; then
     exit 1
 fi
-
-diff -u "${P_PASTE}" "${P_DATA_FILE}"
 
 set +e
 pinfo "${0}: success"
