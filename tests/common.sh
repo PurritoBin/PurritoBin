@@ -18,4 +18,5 @@ trap_exit() {
 
 trap trap_exit EXIT INT TERM
 
-SHUF=${SHUF:-shuf}
+: ${SHUF=shuf}
+: ${SEQ=seq}
