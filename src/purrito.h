@@ -85,6 +85,12 @@ public:
 
   /*
    * DEFAULT: {}
+   * response headers
+   */
+  const map<string, string> headers;
+
+  /*
+   * DEFAULT: {}
    * ssl options for https listener
    * - cert
    * - key
@@ -92,12 +98,6 @@ public:
    * - passphrase
    */
   const uWS::SocketContextOptions ssl_options;
-
-  /*
-   * DEFAULT: {}
-   * response headers
-   */
-  const map<string, string> headers;
 
   purrito_settings(const string &domain, const string &storage_directory,
                    const vector<string> &bind_ip,
