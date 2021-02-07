@@ -22,8 +22,8 @@
 #include <chrono>
 #include <cinttypes>
 #include <cstdlib>
+#include <cstdio>
 #include <filesystem>
-#include <fstream>
 #include <map>
 #include <memory>
 #include <random>
