@@ -1,6 +1,6 @@
 if [ -n "${TERM}" ] && [ "${TERM}" != "dumb" ]; then
     export __bold="$(tput bold)" \
-    __green="$(tput setaf 2)" \
+    __green="$(tput setaf 2 0 0)" \
     __reset="$(tput sgr0)"
 fi
 
