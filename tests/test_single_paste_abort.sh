@@ -5,7 +5,7 @@
 set -e
 
 P_TMPDIR="$(mktemp -d -t)"
-P_PORT="$(shuf -i 1500-65536 -n 1)"
+P_PORT="$(${SHUF} -i 1500-65536 -n 1)"
 
 P_RACING=1
 ../purrito -d "${P_TMPDIR}/" -s "${P_TMPDIR}" -i 127.0.0.1 -p "${P_PORT}" -m 10 &

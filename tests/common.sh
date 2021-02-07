@@ -17,3 +17,5 @@ trap_exit() {
 }
 
 trap trap_exit EXIT INT TERM
+
+SHUF=${SHUF:-shuf}
