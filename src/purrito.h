@@ -268,6 +268,12 @@ string save_buffer(const char *buffer, const uint_fast64_t buffer_size,
   /* get the file descriptor */
   FILE *output_file = fopen(ofile.c_str(), "w");
 
+  if (output_file == NULL) {
+    syslog(LOG_WARNING, "(%" PRIuFAST64 ") WARNING: error while opening file",
+           session_id);
+    return "";
+  }
+
   int write_count = fwrite(buffer, sizeof(char), buffer_size, output_file);
 
   fclose(output_file);
