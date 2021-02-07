@@ -7,7 +7,7 @@ fi
 pinfo()  { printf %s\\n "${__green}${__bold}LOG${__reset}: $*"; }
 
 purr() {
-        curl --max-time 10 --silent --data-binary "@${1:-/dev/stdin}" "127.0.0.1:${P_PORT}"
+    curl --max-time "${P_MAXTIME:-10}" --silent --data-binary "@${1:-/dev/stdin}" "127.0.0.1:${P_PORT}"
 }
 
 trap_exit() {

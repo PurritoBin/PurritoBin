@@ -6,9 +6,10 @@ set -e
 
 P_TMPDIR="$(mktemp -d -t)"
 P_PORT="$(${SHUF} -i 1500-65536 -n 1)"
+: ${P_MAXSIZE=100}
 
 P_RACING=1
-../purrito -d "${P_TMPDIR}/" -s "${P_TMPDIR}" -i 127.0.0.1 -p "${P_PORT}" -m 300000000 &
+../purrito -d "${P_TMPDIR}/" -s "${P_TMPDIR}" -i 127.0.0.1 -p "${P_PORT}" -m $((${P_MAXSIZE} * 1024 * 1024)) &
 P_ID=$!
 P_RACING=
 
@@ -16,7 +17,7 @@ P_RACING=
 sleep 2
 
 P_DATA_FILE="$(mktemp -p ${P_TMPDIR} )"
-dd if=/dev/random of="${P_DATA_FILE}" bs=4M count=80
+dd if=/dev/random of="${P_DATA_FILE}" bs=1M count=$((${P_MAXSIZE} + 1))
 
 set +e
 P_PASTE=$(purr "${P_DATA_FILE}")
