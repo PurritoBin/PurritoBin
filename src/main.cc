@@ -15,14 +15,14 @@
  *
  */
 
+#include <cstdio>
+#include <cstdlib>
 #include <filesystem>
 #include <fstream>
 #include <string>
 
 #include <err.h>
 #include <errno.h>
-#include <stdint.h>
-#include <stdio.h>
 #include <syslog.h>
 #include <unistd.h>
 
@@ -31,6 +31,9 @@
 #ifndef PURRITO_PORT
 #define PURRITO_PORT 42069
 #endif
+
+// this isn't a library
+using namespace std;
 
 /*
  * function for printing the help of the code
@@ -49,13 +52,13 @@ void print_help() {
  */
 int main(int argc, char **argv) {
   int opt;
-  std::string domain, storage_directory;
-  std::vector<std::string> bind_ip;
-  std::vector<uint16_t> bind_port;
-  std::map<std::string, std::string> headers;
-  std::vector<std::string> header_names, header_values;
-  uint8_t slug_size;
-  uint32_t max_paste_size;
+  string domain, storage_directory;
+  vector<string> bind_ip;
+  vector<uint_fast16_t> bind_port;
+  map<string, string> headers;
+  vector<string> header_names, header_values;
+  uint_fast8_t slug_size;
+  uint_fast64_t max_paste_size;
 
   /* open syslog with purritobin identity */
   openlog("purritobin", LOG_PERROR | LOG_PID, LOG_DAEMON);
@@ -70,7 +73,7 @@ int main(int argc, char **argv) {
 
   bool ssl_server = false;
   uWS::SocketContextOptions ssl_options = {};
-  std::string server_name;
+  string server_name;
 
   while ((opt = getopt(argc, argv, "hd:s:i:p:m:g:ln:c:k:e:w:x:v:")) != EOF)
     switch (opt) {
@@ -88,13 +91,13 @@ int main(int argc, char **argv) {
       bind_ip.push_back(optarg);
       break;
     case 'p':
-      bind_port.push_back(std::stoi(optarg));
+      bind_port.push_back(stoi(optarg));
       break;
     case 'm':
-      max_paste_size = std::stoi(optarg);
+      max_paste_size = stoull(optarg);
       break;
     case 'g':
-      slug_size = std::stoi(optarg);
+      slug_size = stoi(optarg);
       break;
     case 'l':
       ssl_server = true;
@@ -160,9 +163,9 @@ int main(int argc, char **argv) {
    * make a init file and write to it and then we delete it
    */
   {
-    std::filesystem::path fpath = storage_directory;
+    filesystem::path fpath = storage_directory;
     fpath /= "__init__";
-    std::ofstream output(fpath.string());
+    ofstream output(fpath.string());
     (void)remove(fpath.c_str());
   }
 
@@ -226,9 +229,8 @@ int main(int argc, char **argv) {
          "{ "
          "domain: %s, "
          "storage_directory: %s, "
-         "max_paste_size: %d, "
-         "slug_size: %d "
-         "}",
+         "max_paste_size: %" PRIuFAST64 ", "
+         "slug_size: %" PRIuFAST8 " }",
          domain.c_str(), storage_directory.c_str(), max_paste_size, slug_size);
 
   /* initialize the settings to be passed to the server */

@@ -8,16 +8,17 @@ P_TMPDIR="$(mktemp -d -t)"
 P_PORT="$(shuf -i 1500-65536 -n 1)"
 
 P_RACING=1
-../purrito -d "${P_TMPDIR}/" -s "${P_TMPDIR}" -i 127.0.0.1 -p "${P_PORT}" &
+../purrito -d "${P_TMPDIR}/" -s "${P_TMPDIR}" -i 127.0.0.1 -p "${P_PORT}" -m 3000000000 &
 P_ID=$!
 P_RACING=
 
 # should be enough
 sleep 2
 
-P_DATA="SOME_RANDOM_TEST_DATA"
+P_DATA_FILE="$(mktemp -p ${P_TMPDIR} )"
+dd if=/dev/random of="${P_DATA_FILE}" bs=4M count=70
 
-P_PASTE=$(printf %s\\n "${P_DATA}" | purr)
+P_PASTE=$(purr "${P_DATA_FILE}")
 
 # P_PASTE is not set or empty
 # OR
@@ -26,7 +27,7 @@ if [ -z "${P_PASTE}" ] || [ ! -f "${P_PASTE}" ]; then
     exit 1
 fi
 
-printf %s\\n "${P_DATA}" | diff "${P_PASTE}" -
+diff -u "${P_PASTE}" "${P_DATA_FILE}"
 
 set +e
 pinfo "${0}: success"

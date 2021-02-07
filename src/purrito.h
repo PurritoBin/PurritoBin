@@ -20,25 +20,22 @@
 
 #include <algorithm>
 #include <chrono>
+#include <cinttypes>
+#include <cstdlib>
 #include <filesystem>
 #include <fstream>
-#include <functional>
 #include <map>
 #include <memory>
 #include <random>
 #include <string>
 #include <vector>
 
-#include <err.h>
-#include <errno.h>
-#include <pthread.h>
-#include <stdint.h>
-#include <stdio.h>
-#include <stdlib.h>
 #include <syslog.h>
-#include <unistd.h>
 
 #include <uWebSockets/App.h>
+
+// this isn't a library
+using namespace std;
 
 class purrito_settings {
 public:
@@ -48,7 +45,7 @@ public:
    * NOTE: should be the full name, including trailing /
    *   e.g. https://bsd.ac/
    */
-  const std::string domain;
+  const string domain;
 
   /*
    * REQUIRED
@@ -56,14 +53,14 @@ public:
    * NOTE: should exist prior to creation and should be
    *       writable by the user running purrito
    */
-  const std::string storage_directory;
+  const string storage_directory;
 
   /*
    * DEFAULT: 0.0.0.0
    * IP on which to listen for incoming connections
    * NOTE: defaults to all
    */
-  const std::vector<std::string> bind_ip;
+  const vector<string> bind_ip;
 
   /*
    * DEFAULT: 42069 // dank af
@@ -72,19 +69,19 @@ public:
    *       are not going to be abused, look at something
    *       such as fail2ban
    */
-  const std::vector<uint16_t> bind_port;
+  const vector<uint_fast16_t> bind_port;
 
   /*
    * DEFAULT: 65536 // 64KB
    * size in bytes of the largest possible paste
    */
-  const uint32_t max_paste_size;
+  const uint_fast64_t max_paste_size;
 
   /*
    * DEFAULT: 7
    * size of the random slug for the paste
    */
-  const uint8_t slug_size;
+  const uint_fast8_t slug_size;
 
   /*
    * DEFAULT: {}
@@ -100,14 +97,14 @@ public:
    * DEFAULT: {}
    * response headers
    */
-  const std::map<std::string, std::string> headers;
+  const map<string, string> headers;
 
-  purrito_settings(const std::string &domain,
-                   const std::string &storage_directory,
-                   const std::vector<std::string> &bind_ip,
-                   const std::vector<uint16_t> &bind_port,
-                   const uint32_t &max_paste_size, const uint8_t &slug_size,
-                   const std::map<std::string, std::string> &headers,
+  purrito_settings(const string &domain, const string &storage_directory,
+                   const vector<string> &bind_ip,
+                   const vector<uint_fast16_t> &bind_port,
+                   const uint_fast64_t &max_paste_size,
+                   const uint_fast8_t &slug_size,
+                   const map<string, string> &headers,
                    const uWS::SocketContextOptions ssl_options)
       : domain(domain), storage_directory(storage_directory), bind_ip(bind_ip),
         bind_port(bind_port), max_paste_size(max_paste_size),
@@ -126,15 +123,16 @@ template <bool SSL> uWS::TemplatedApp<SSL> purr(const purrito_settings &);
  * see: https://codeforces.com/blog/entry/61587
  * it is also thread safe, so useful for async
  */
-std::mt19937 rng(std::chrono::steady_clock::now().time_since_epoch().count());
+mt19937_64 rng(chrono::steady_clock::now().time_since_epoch().count());
 
 /* generate a random slug of required length */
-std::string random_slug(const int &);
+string random_slug(const int &);
 
 /*
  * try and save a buffer to file
  */
-std::string save_buffer(const char *, const uint32_t, const purrito_settings &);
+string save_buffer(const char *, const uint_fast64_t, const uint_fast64_t,
+                   const purrito_settings &);
 
 /*
  * read data in a registered call back function
@@ -148,34 +146,39 @@ uWS::TemplatedApp<SSL> purr(const purrito_settings &settings) {
 
   /* create a standard non tls app to listen for requests */
   auto purrito = uWS::TemplatedApp<SSL>();
-  purrito.post("/",
-               /* specifically ignoring the request parameter, as c++ is dumb */
-               [&](auto *res, auto *) {
-                 /* Log that we are getting a connection */
-                 auto paste_ip = std::string(res->getRemoteAddressAsText());
-                 syslog(LOG_INFO, "(%s) Got a connection...", paste_ip.c_str());
+  purrito.post(
+      "/",
+      /* specifically ignoring the request parameter, as c++ is dumb */
+      [&](auto *res, auto *) {
+        /* Log that we are getting a connection */
+        auto paste_ip = string(res->getRemoteAddressAsText());
+        uint_fast64_t session_id = rng();
+        syslog(LOG_INFO, "(%s) Got a connection - session id (%" PRIuFAST64 ")",
+               paste_ip.c_str(), session_id);
 
-                 for (auto it: settings.headers)
-                   res->writeHeader(it.first, it.second);
+        for (auto it : settings.headers)
+          res->writeHeader(it.first, it.second);
 
-                 /* register the callback, which will cork the request properly
-                  */
-                 res->cork([=]() { read_paste<SSL>(settings, res); });
+        /* register the callback, which will cork the request properly
+         */
+        res->cork([=]() { read_paste<SSL>(settings, session_id, res); });
 
-                 /*
-                  * attach a standard abort handler, in case something goes
-                  * wrong
-                  */
-                 res->onAborted([=]() {
-                   syslog(LOG_WARNING,
-                          "Warning: Request was prematurely aborted");
-                 });
-               });
+        /*
+         * attach a standard abort handler, in case something goes
+         * wrong
+         */
+        res->onAborted([=]() {
+          syslog(LOG_WARNING,
+                 "(%" PRIuFAST64 ") Warning: Request was prematurely aborted",
+                 session_id);
+        });
+      });
   for (size_t i = 0; i < settings.bind_ip.size(); i++) {
     purrito.listen(
         settings.bind_ip[i], settings.bind_port[i], [&](auto *listenSocket) {
           if (listenSocket) {
-            syslog(LOG_INFO, "Listening for connections on %s:%d...",
+            syslog(LOG_INFO,
+                   "Listening for connections on %s:%" PRIuFAST16 "...",
                    settings.bind_ip[i].c_str(), settings.bind_port[i]);
           }
         });
@@ -189,77 +192,77 @@ uWS::TemplatedApp<SSL> purr(const purrito_settings &settings) {
  * process the request
  */
 template <bool SSL>
-void read_paste(const purrito_settings &settings, uWS::HttpResponse<SSL> *res) {
+void read_paste(const purrito_settings &settings,
+                const uint_fast64_t session_id, uWS::HttpResponse<SSL> *res) {
   /* calculate the correct number of characters allowed in the paste */
-  uint32_t max_chars = settings.max_paste_size / sizeof(char);
+  uint_fast64_t max_chars = settings.max_paste_size / sizeof(char);
 
   /* now create the buffer, remember to free */
   char *buffer;
   buffer = (char *)malloc(max_chars + 1);
 
   /* keep a counter on how much was already read */
-  uint32_t *read_count = new uint32_t;
+  uint_fast64_t *read_count = new uint_fast64_t;
   *read_count = 0;
 
   /* Log that we are starting to read the paste */
-  syslog(LOG_INFO, "Starting to read the paste");
+  syslog(LOG_INFO, "(%" PRIuFAST64 ") Starting to read the paste", session_id);
 
-  /* uWebSockets doesn't cork something already corked so we cork */
-  res->cork([=]() {
-    res->onData([=](std::string_view chunk, bool is_last) {
-      /* calculate how much to copy over */
-      uint32_t copy_size = std::max<int>(
-          0, std::min<int>(max_chars - *read_count, chunk.size()));
+  res->onData([=](string_view chunk, bool is_last) {
+    if (chunk.size() > max_chars - *read_count) {
+      syslog(LOG_WARNING,
+             "(%" PRIuFAST64 ") Warning: paste was too large, "
+             "forced to close the request",
+             session_id);
+      delete read_count;
+      free(buffer);
+      res->close();
+      return;
+    }
 
-      /* actually do copy it over */
-      chunk.copy(buffer + *read_count, copy_size);
+    uint_fast64_t copy_size = chunk.size();
 
-      /* remember to increment the read count */
-      *read_count = copy_size + *read_count;
+    chunk.copy(buffer + *read_count, copy_size);
 
-      if (!is_last && *read_count == max_chars) {
-        syslog(LOG_WARNING, "Warning: paste was too large, "
-                            "forced to close the request");
-        delete read_count;
-        free(buffer);
-        res->close();
-      }
-      /* there are two condition when we stop and save */
-      else if (is_last) {
+    /* remember to increment the read count */
+    *read_count = copy_size + *read_count;
 
-        /* set the last element correctly */
-        buffer[*read_count] = '\0';
+    if (is_last) {
+      /* set the last element correctly */
+      buffer[*read_count] = '\0';
 
-        /* Log that we finished reading the paste */
-        syslog(LOG_INFO, "Finished reading a paste of size %u", *read_count);
+      /* Log that we finished reading the paste */
+      syslog(LOG_INFO,
+             "(%" PRIuFAST64 ") Finished reading a paste of size %" PRIuFAST64,
+             session_id, *read_count);
 
-        /* get the paste_url after saving */
-        std::string paste_url = save_buffer(buffer, *read_count, settings);
+      /* get the paste_url after saving */
+      string paste_url = save_buffer(buffer, *read_count, session_id, settings);
 
-        /* print out the separator */
-        syslog(LOG_INFO, "Sent paste url back");
+      /* print out the separator */
+      syslog(LOG_INFO, "(%" PRIuFAST64 ") Sent paste url back", session_id);
 
-        /* free the proper variables */
-        delete read_count;
-        free(buffer);
+      /* free the proper variables */
+      delete read_count;
+      free(buffer);
 
-        /* and return it to the user */
-        res->end(paste_url.c_str());
-      }
-    });
+      /* and return it to the user */
+      res->end(paste_url.c_str());
+    }
   });
 }
 
 /*
  * save the buffer to a file and return the paste url
  */
-std::string save_buffer(const char *buffer, const uint32_t buffer_size,
-                        const purrito_settings &settings) {
+string save_buffer(const char *buffer, const uint_fast64_t buffer_size,
+                   const uint_fast64_t session_id,
+                   const purrito_settings &settings) {
   /* generate the slug */
-  std::string slug = random_slug(settings.slug_size);
+  string slug = random_slug(settings.slug_size);
 
   /* get the filename to open */
-  std::filesystem::path ofile = settings.storage_directory;
+  filesystem::path ofile = settings.storage_directory;
   ofile /= slug;
 
   /* get the file descriptor */
@@ -270,11 +273,13 @@ std::string save_buffer(const char *buffer, const uint32_t buffer_size,
   fclose(output_file);
 
   if (write_count < 0) {
-    syslog(LOG_WARNING, "Warning: error (%d) while writing to file",
-           write_count);
+    syslog(LOG_WARNING,
+           "(%" PRIuFAST64 ") Warning: error (%d) while writing to file",
+           session_id, write_count);
     return "";
   }
-  syslog(LOG_INFO, "Saved paste to file %s", slug.c_str());
+  syslog(LOG_INFO, "(%" PRIuFAST64 ") Saved paste to file %s", session_id,
+         slug.c_str());
 
   return settings.domain + slug + "\n";
 }
@@ -282,9 +287,9 @@ std::string save_buffer(const char *buffer, const uint32_t buffer_size,
 /*
  * linear time generation of random slug
  */
-std::string random_slug(const int &slug_size) {
+string random_slug(const int &slug_size) {
   /* we generate only alpha-num slugs */
-  std::string alphanum = "0123456789abcdefghijklmnopqrstuvwxyz";
+  string alphanum = "0123456789abcdefghijklmnopqrstuvwxyz";
 
   /* get the size, cuz 10+26 is too hard */
   size_t len = alphanum.size();
@@ -299,7 +304,7 @@ std::string random_slug(const int &slug_size) {
 
   /* add the final character for converting back to string */
   rslug[slug_size] = '\0';
-  std::string new_slug(rslug);
+  string new_slug(rslug);
 
   /* definitely learning some weird paradigms in c++ */
   delete[] rslug;

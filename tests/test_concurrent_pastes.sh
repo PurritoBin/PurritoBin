@@ -8,7 +8,7 @@ P_TMPDIR=$(mktemp -d -t)
 P_PORT="$(shuf -i 1500-65536 -n 1)"
 
 P_RACING=1
-../purrito -d "${P_TMPDIR}/" -s "${P_TMPDIR}" -i 127.0.0.1 -p "${P_PORT}" &
+../purrito -d "${P_TMPDIR}/" -s "${P_TMPDIR}" -i 127.0.0.1 -p "${P_PORT}" -m 11 &
 P_ID=$!
 P_RACING=
 
@@ -18,7 +18,10 @@ sleep 2
 test_single_paste() {
     P_DATA="SOME_RANDOM_TEST_DATA"
     P_PASTE=$(printf %s\\n "${P_DATA}" | purr)
-    printf %s\\n "${P_DATA}" | diff "${P_PASTE}" -
+    if [ -z "${P_PASTE}" || ! -f "${P_PASTE}" ]; then
+        return 1
+    fi
+    printf %s\\n "${P_DATA}" | diff -u "${P_PASTE}" -
 }
 
 P_CONCUR=${P_CONCUR:-100}
