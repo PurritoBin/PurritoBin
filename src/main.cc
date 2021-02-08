@@ -121,7 +121,7 @@ int main(int argc, char **argv) {
       break;
     default:
       print_help();
-      err(1, "Error: incorrect parameters");
+      err(1, "ERROR: incorrect parameters");
       break;
     }
 
@@ -133,7 +133,7 @@ int main(int argc, char **argv) {
    */
   if (domain == "") {
     print_help();
-    err(1, "Error: empty domain name");
+    err(1, "ERROR: empty domain name");
   }
 
   if (ssl_server && ((ssl_options.cert_file_name != NULL &&
@@ -141,7 +141,7 @@ int main(int argc, char **argv) {
                      (ssl_options.key_file_name != NULL &&
                       strlen(ssl_options.key_file_name) == 0))) {
     print_help();
-    err(1, "Error: public certificate or private key not specified");
+    err(1, "ERROR: public certificate or private key not specified");
   }
 
   /*
@@ -150,7 +150,7 @@ int main(int argc, char **argv) {
    */
   if (access(storage_directory.c_str(), W_OK) != 0) {
     print_help();
-    err(1, "Error: storage directory is invalid or is not writable");
+    err(1, "ERROR: storage directory is invalid or is not writable");
   }
 
   /*
@@ -164,7 +164,7 @@ int main(int argc, char **argv) {
     std::ofstream output(fpath.string());
     int removed = std::remove(fpath.c_str());
     if (removed != 0)
-      err(removed, "Error: could not remove __init__ test file");
+      err(removed, "ERROR: could not remove __init__ test file");
   }
 
   /* based and lit method to make sure that nothing goes wrong */
@@ -172,24 +172,24 @@ int main(int argc, char **argv) {
   /* the only directory we need access to is the storage directory */
   int unveil_err = unveil(storage_directory.c_str(), "rwc");
   if (unveil_err != 0) {
-    err(unveil_err, "Error: could not unveil storage folder: %s",
+    err(unveil_err, "ERROR: could not unveil storage folder: %s",
         storage_directory.c_str());
   }
 
   if (ssl_server) {
     unveil_err = unveil(ssl_options.cert_file_name, "r");
     if (unveil_err != 0)
-      err(unveil_err, "Error: could not unveil public certificate file: %s",
+      err(unveil_err, "ERROR: could not unveil public certificate file: %s",
           ssl_options.cert_file_name);
     unveil_err = unveil(ssl_options.key_file_name, "r");
     if (unveil_err != 0)
-      err(unveil_err, "Error: could not unveil private key file: %s",
+      err(unveil_err, "ERROR: could not unveil private key file: %s",
           ssl_options.key_file_name);
     if (ssl_options.dh_params_file_name != NULL &&
         strlen(ssl_options.dh_params_file_name) != 0) {
       unveil_err = unveil(ssl_options.dh_params_file_name, "r");
       if (unveil_err != 0)
-        err(unveil_err, "Error: could not unveil dhparams file: %s",
+        err(unveil_err, "ERROR: could not unveil dhparams file: %s",
             ssl_options.dh_params_file_name);
     }
   }
@@ -213,11 +213,11 @@ int main(int argc, char **argv) {
   }
 
   if (bind_port.size() != bind_ip.size()) {
-    err(1, "Error: Could not normalize and sanitize ips and ports.");
+    err(1, "ERROR: Could not normalize and sanitize ips and ports.");
   }
 
   if (header_names.size() != header_values.size()) {
-    err(1, "Error: header names and values can't be matched");
+    err(1, "ERROR: header names and values can't be matched");
   }
   for (std::map<std::string, std::string>::size_type i = 0;
        i < header_names.size(); i++)
