@@ -178,7 +178,7 @@ uWS::TemplatedApp<SSL> purr(const purrito_settings &settings) {
          */
         res->onAborted([=]() {
           syslog(LOG_WARNING,
-                 "(%" PRIuFAST64 ") Warning: Request was prematurely aborted",
+                 "(%" PRIuFAST64 ") WARNING: Request was prematurely aborted",
                  session_id);
         });
       });
@@ -222,7 +222,7 @@ void read_paste(const purrito_settings &settings,
   res->onData([=](std::string_view chunk, bool is_last) {
     if (chunk.size() > max_chars - *read_count) {
       syslog(LOG_WARNING,
-             "(%" PRIuFAST64 ") Warning: paste was too large, "
+             "(%" PRIuFAST64 ") WARNING: paste was too large, "
              "forced to close the request",
              session_id);
       delete read_count;
@@ -293,7 +293,7 @@ std::string save_buffer(const char *buffer,
 
   if (write_count < 0) {
     syslog(LOG_WARNING,
-           "(%" PRIuFAST64 ") Warning: error (%d) while writing to file",
+           "(%" PRIuFAST64 ") WARNING: error (%d) while writing to file",
            session_id, write_count);
     return "";
   }
