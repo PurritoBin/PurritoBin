@@ -54,7 +54,7 @@ int main(int argc, char **argv) {
   std::map<std::string, std::string> headers;
   std::vector<std::string> header_names, header_values;
   std::uint_fast8_t slug_size;
-  std::uint_fast64_t max_paste_size;
+  std::string::size_type max_paste_size;
 
   /* open syslog with purritobin identity */
   openlog("purritobin", LOG_PERROR | LOG_PID, LOG_DAEMON);
@@ -162,7 +162,9 @@ int main(int argc, char **argv) {
     std::filesystem::path fpath = storage_directory;
     fpath /= "__init__";
     std::ofstream output(fpath.string());
-    (void)remove(fpath.c_str());
+    int removed = std::remove(fpath.c_str());
+    if (removed != 0)
+      err(removed, "Error: could not remove __init__ test file");
   }
 
   /* based and lit method to make sure that nothing goes wrong */

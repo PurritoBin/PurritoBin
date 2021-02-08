@@ -124,6 +124,16 @@ template <bool SSL> uWS::TemplatedApp<SSL> purr(const purrito_settings &);
 std::mt19937_64
     rng(std::chrono::steady_clock::now().time_since_epoch().count());
 
+#ifndef P_ALPHANUM
+#define P_ALPHANUM "0123456789abcdefghijklmnopqrstuvwxyz"
+#endif
+
+/* we generate only alpha-num slugs */
+const std::string alphanum = P_ALPHANUM;
+
+/* get the size, cuz 10+26 is too hard */
+const auto anlength = alphanum.size();
+
 /* generate a random slug of required length */
 std::string random_slug(const int &);
 
@@ -297,26 +307,16 @@ std::string save_buffer(const char *buffer,
  * linear time generation of random slug
  */
 std::string random_slug(const int &slug_size) {
-  /* we generate only alpha-num slugs */
-  std::string alphanum = "0123456789abcdefghijklmnopqrstuvwxyz";
-
-  /* get the size, cuz 10+26 is too hard */
-  auto len = alphanum.size();
-
-  /* work around variable length array iso dumbass */
-  char *rslug = new char[slug_size + 1];
+  auto rslug = std::unique_ptr<char[]>(new char[slug_size + 1]);
 
   /* finally generate the random string by sampling */
   for (std::uint_fast8_t i = 0; i < slug_size; i++) {
-    rslug[i] = alphanum[rng() % len];
+    rslug[i] = alphanum[rng() % anlength];
   }
 
   /* add the final character for converting back to string */
   rslug[slug_size] = '\0';
-  std::string new_slug(rslug);
-
-  /* definitely learning some weird paradigms in c++ */
-  delete[] rslug;
+  std::string new_slug(rslug.get());
 
   return new_slug;
 }
