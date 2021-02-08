@@ -34,9 +34,6 @@
 
 #include <uWebSockets/App.h>
 
-// this isn't a library
-using namespace std;
-
 class purrito_settings {
 public:
   /*
@@ -45,7 +42,7 @@ public:
    * NOTE: should be the full name, including trailing /
    *   e.g. https://bsd.ac/
    */
-  const string domain;
+  const std::string domain;
 
   /*
    * REQUIRED
@@ -53,14 +50,14 @@ public:
    * NOTE: should exist prior to creation and should be
    *       writable by the user running purrito
    */
-  const string storage_directory;
+  const std::string storage_directory;
 
   /*
    * DEFAULT: 0.0.0.0
    * IP on which to listen for incoming connections
    * NOTE: defaults to all
    */
-  const vector<string> bind_ip;
+  const std::vector<std::string> bind_ip;
 
   /*
    * DEFAULT: 42069 // dank af
@@ -69,25 +66,25 @@ public:
    *       are not going to be abused, look at something
    *       such as fail2ban
    */
-  const vector<uint_fast16_t> bind_port;
+  const std::vector<std::uint_fast16_t> bind_port;
 
   /*
    * DEFAULT: 65536 // 64KB
    * size in bytes of the largest possible paste
    */
-  const uint_fast64_t max_paste_size;
+  const std::uint_fast64_t max_paste_size;
 
   /*
    * DEFAULT: 7
    * size of the random slug for the paste
    */
-  const uint_fast8_t slug_size;
+  const std::uint_fast8_t slug_size;
 
   /*
    * DEFAULT: {}
    * response headers
    */
-  const map<string, string> headers;
+  const std::map<std::string, std::string> headers;
 
   /*
    * DEFAULT: {}
@@ -99,12 +96,13 @@ public:
    */
   const uWS::SocketContextOptions ssl_options;
 
-  purrito_settings(const string &domain, const string &storage_directory,
-                   const vector<string> &bind_ip,
-                   const vector<uint_fast16_t> &bind_port,
-                   const uint_fast64_t &max_paste_size,
-                   const uint_fast8_t &slug_size,
-                   const map<string, string> &headers,
+  purrito_settings(const std::string &domain,
+                   const std::string &storage_directory,
+                   const std::vector<std::string> &bind_ip,
+                   const std::vector<std::uint_fast16_t> &bind_port,
+                   const std::uint_fast64_t &max_paste_size,
+                   const std::uint_fast8_t &slug_size,
+                   const std::map<std::string, std::string> &headers,
                    const uWS::SocketContextOptions ssl_options)
       : domain(domain), storage_directory(storage_directory), bind_ip(bind_ip),
         bind_port(bind_port), max_paste_size(max_paste_size),
@@ -123,16 +121,17 @@ template <bool SSL> uWS::TemplatedApp<SSL> purr(const purrito_settings &);
  * see: https://codeforces.com/blog/entry/61587
  * it is also thread safe, so useful for async
  */
-mt19937_64 rng(chrono::steady_clock::now().time_since_epoch().count());
+std::mt19937_64
+    rng(std::chrono::steady_clock::now().time_since_epoch().count());
 
 /* generate a random slug of required length */
-string random_slug(const int &);
+std::string random_slug(const int &);
 
 /*
  * try and save a buffer to file
  */
-string save_buffer(const char *, const uint_fast64_t, const uint_fast64_t,
-                   const purrito_settings &);
+std::string save_buffer(const char *, const std::uint_fast64_t,
+                        const std::uint_fast64_t, const purrito_settings &);
 
 /*
  * read data in a registered call back function
@@ -151,8 +150,8 @@ uWS::TemplatedApp<SSL> purr(const purrito_settings &settings) {
       /* specifically ignoring the request parameter, as c++ is dumb */
       [&](auto *res, auto *) {
         /* Log that we are getting a connection */
-        auto paste_ip = string(res->getRemoteAddressAsText());
-        uint_fast64_t session_id = rng();
+        auto paste_ip = std::string(res->getRemoteAddressAsText());
+        std::uint_fast64_t session_id = rng();
         syslog(LOG_INFO, "(%s) Got a connection - session id (%" PRIuFAST64 ")",
                paste_ip.c_str(), session_id);
 
@@ -173,7 +172,8 @@ uWS::TemplatedApp<SSL> purr(const purrito_settings &settings) {
                  session_id);
         });
       });
-  for (size_t i = 0; i < settings.bind_ip.size(); i++) {
+  for (std::vector<std::uint_fast16_t>::size_type i = 0;
+       i < settings.bind_ip.size(); i++) {
     purrito.listen(
         settings.bind_ip[i], settings.bind_port[i], [&](auto *listenSocket) {
           if (listenSocket) {
@@ -193,22 +193,23 @@ uWS::TemplatedApp<SSL> purr(const purrito_settings &settings) {
  */
 template <bool SSL>
 void read_paste(const purrito_settings &settings,
-                const uint_fast64_t session_id, uWS::HttpResponse<SSL> *res) {
+                const std::uint_fast64_t session_id,
+                uWS::HttpResponse<SSL> *res) {
   /* calculate the correct number of characters allowed in the paste */
-  uint_fast64_t max_chars = settings.max_paste_size / sizeof(char);
+  uint_fast64_t max_chars = settings.max_paste_size;
 
   /* now create the buffer, remember to free */
   char *buffer;
   buffer = (char *)malloc(max_chars + 1);
 
   /* keep a counter on how much was already read */
-  uint_fast64_t *read_count = new uint_fast64_t;
+  std::uint_fast64_t *read_count = new std::uint_fast64_t;
   *read_count = 0;
 
   /* Log that we are starting to read the paste */
   syslog(LOG_INFO, "(%" PRIuFAST64 ") Starting to read the paste", session_id);
 
-  res->onData([=](string_view chunk, bool is_last) {
+  res->onData([=](std::string_view chunk, bool is_last) {
     if (chunk.size() > max_chars - *read_count) {
       syslog(LOG_WARNING,
              "(%" PRIuFAST64 ") Warning: paste was too large, "
@@ -220,7 +221,7 @@ void read_paste(const purrito_settings &settings,
       return;
     }
 
-    uint_fast64_t copy_size = chunk.size();
+    std::uint_fast64_t copy_size = chunk.size();
 
     chunk.copy(buffer + *read_count, copy_size);
 
@@ -237,7 +238,8 @@ void read_paste(const purrito_settings &settings,
              session_id, *read_count);
 
       /* get the paste_url after saving */
-      string paste_url = save_buffer(buffer, *read_count, session_id, settings);
+      std::string paste_url =
+          save_buffer(buffer, *read_count, session_id, settings);
 
       /* print out the separator */
       syslog(LOG_INFO, "(%" PRIuFAST64 ") Sent paste url back", session_id);
@@ -255,14 +257,15 @@ void read_paste(const purrito_settings &settings,
 /*
  * save the buffer to a file and return the paste url
  */
-string save_buffer(const char *buffer, const uint_fast64_t buffer_size,
-                   const uint_fast64_t session_id,
-                   const purrito_settings &settings) {
+std::string save_buffer(const char *buffer,
+                        const std::uint_fast64_t buffer_size,
+                        const std::uint_fast64_t session_id,
+                        const purrito_settings &settings) {
   /* generate the slug */
-  string slug = random_slug(settings.slug_size);
+  std::string slug = random_slug(settings.slug_size);
 
   /* get the filename to open */
-  filesystem::path ofile = settings.storage_directory;
+  std::filesystem::path ofile = settings.storage_directory;
   ofile /= slug;
 
   /* get the file descriptor */
@@ -293,24 +296,24 @@ string save_buffer(const char *buffer, const uint_fast64_t buffer_size,
 /*
  * linear time generation of random slug
  */
-string random_slug(const int &slug_size) {
+std::string random_slug(const int &slug_size) {
   /* we generate only alpha-num slugs */
-  string alphanum = "0123456789abcdefghijklmnopqrstuvwxyz";
+  std::string alphanum = "0123456789abcdefghijklmnopqrstuvwxyz";
 
   /* get the size, cuz 10+26 is too hard */
-  size_t len = alphanum.size();
+  auto len = alphanum.size();
 
   /* work around variable length array iso dumbass */
   char *rslug = new char[slug_size + 1];
 
   /* finally generate the random string by sampling */
-  for (int i = 0; i < slug_size; i++) {
+  for (std::uint_fast8_t i = 0; i < slug_size; i++) {
     rslug[i] = alphanum[rng() % len];
   }
 
   /* add the final character for converting back to string */
   rslug[slug_size] = '\0';
-  string new_slug(rslug);
+  std::string new_slug(rslug);
 
   /* definitely learning some weird paradigms in c++ */
   delete[] rslug;

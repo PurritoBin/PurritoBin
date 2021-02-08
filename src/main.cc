@@ -31,14 +31,11 @@
 #define PURRITO_PORT 42069
 #endif
 
-// this isn't a library
-using namespace std;
-
 /*
  * function for printing the help of the code
  */
 void print_help() {
-  printf(
+  std::printf(
       "usage: purrito [-cdeghiklmnpsvwx] -d domain [-c public_cert_file]\n"
       "               [-e dhparams_file] [-g slug_size] [-h] [-i bind_ip]\n"
       "               [-k private_key_file] [-l] [-m max_paste_size] [-n server name]\n"
@@ -51,13 +48,13 @@ void print_help() {
  */
 int main(int argc, char **argv) {
   int opt;
-  string domain, storage_directory;
-  vector<string> bind_ip;
-  vector<uint_fast16_t> bind_port;
-  map<string, string> headers;
-  vector<string> header_names, header_values;
-  uint_fast8_t slug_size;
-  uint_fast64_t max_paste_size;
+  std::string domain, storage_directory;
+  std::vector<std::string> bind_ip;
+  std::vector<std::uint_fast16_t> bind_port;
+  std::map<std::string, std::string> headers;
+  std::vector<std::string> header_names, header_values;
+  std::uint_fast8_t slug_size;
+  std::uint_fast64_t max_paste_size;
 
   /* open syslog with purritobin identity */
   openlog("purritobin", LOG_PERROR | LOG_PID, LOG_DAEMON);
@@ -72,7 +69,7 @@ int main(int argc, char **argv) {
 
   bool ssl_server = false;
   uWS::SocketContextOptions ssl_options = {};
-  string server_name;
+  std::string server_name;
 
   while ((opt = getopt(argc, argv, "hd:s:i:p:m:g:ln:c:k:e:w:x:v:")) != EOF)
     switch (opt) {
@@ -90,13 +87,13 @@ int main(int argc, char **argv) {
       bind_ip.push_back(optarg);
       break;
     case 'p':
-      bind_port.push_back(stoi(optarg));
+      bind_port.push_back(std::stoi(optarg));
       break;
     case 'm':
-      max_paste_size = stoull(optarg);
+      max_paste_size = std::stoull(optarg);
       break;
     case 'g':
-      slug_size = stoi(optarg);
+      slug_size = std::stoi(optarg);
       break;
     case 'l':
       ssl_server = true;
@@ -162,9 +159,9 @@ int main(int argc, char **argv) {
    * make a init file and write to it and then we delete it
    */
   {
-    filesystem::path fpath = storage_directory;
+    std::filesystem::path fpath = storage_directory;
     fpath /= "__init__";
-    ofstream output(fpath.string());
+    std::ofstream output(fpath.string());
     (void)remove(fpath.c_str());
   }
 
@@ -220,7 +217,8 @@ int main(int argc, char **argv) {
   if (header_names.size() != header_values.size()) {
     err(1, "Error: header names and values can't be matched");
   }
-  for (size_t i = 0; i < header_names.size(); i++)
+  for (std::map<std::string, std::string>::size_type i = 0;
+       i < header_names.size(); i++)
     headers[header_names[i]] = header_values[i];
 
   syslog(LOG_INFO,
