@@ -22,6 +22,7 @@ jobs:
         wget https://raw.githubusercontent.com/gentoo/guru/master/net-libs/usockets/files/usockets-0.6.0-Makefile.patch
         cd uSockets
         git apply < ../usockets-0.6.0-Makefile.patch
+        make
         sudo make WITH_OPENSSL=1 install
     - name: Install uWebSockets
       run: |
