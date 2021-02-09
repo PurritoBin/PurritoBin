@@ -42,5 +42,6 @@ test: all
 
 clean:
 	rm -f ${TARGET}
+	${MAKE} -C tests clean
 
 .PHONY: all install check test clean

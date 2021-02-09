@@ -1,6 +1,7 @@
 # output of make
 purrito
-*.success
+PB.key
+PB.crt
 
 # coredumps
 *.core
