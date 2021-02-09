@@ -210,7 +210,7 @@ void read_paste(const purrito_settings &settings,
   uint_fast64_t max_chars = settings.max_paste_size;
 
   /* now create the buffer, remember to free */
-  auto buffer = std::make_shared<std::vector<char>>(max_chars, '\0');
+  auto buffer = std::make_shared<std::vector<char>>(max_chars);
 
   /* keep a counter on how much was already read */
   auto read_count = std::make_shared<std::uint_fast64_t>(0);
