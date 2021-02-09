@@ -140,8 +140,9 @@ std::string random_slug(const int &);
 /*
  * try and save a buffer to file
  */
-std::string save_buffer(const char *, const std::uint_fast64_t,
-                        const std::uint_fast64_t, const purrito_settings &);
+std::string save_buffer(const std::shared_ptr<std::vector<char>>,
+                        const std::uint_fast64_t, const std::uint_fast64_t,
+                        const purrito_settings &);
 
 /*
  * read data in a registered call back function
@@ -209,8 +210,7 @@ void read_paste(const purrito_settings &settings,
   uint_fast64_t max_chars = settings.max_paste_size;
 
   /* now create the buffer, remember to free */
-  char *buffer;
-  buffer = (char *)malloc(max_chars + 1);
+  auto buffer = std::make_shared<std::vector<char>>(max_chars, '\0');
 
   /* keep a counter on how much was already read */
   auto read_count = std::make_shared<std::uint_fast64_t>(0);
@@ -224,22 +224,18 @@ void read_paste(const purrito_settings &settings,
              "(%" PRIuFAST64 ") WARNING: paste was too large, "
              "forced to close the request",
              session_id);
-      free(buffer);
       res->close();
       return;
     }
 
     std::uint_fast64_t copy_size = chunk.size();
 
-    chunk.copy(buffer + *read_count, copy_size);
+    std::copy(chunk.begin(), chunk.end(), buffer->begin() + *read_count);
 
     /* remember to increment the read count */
     *read_count = copy_size + *read_count;
 
     if (is_last) {
-      /* set the last element correctly */
-      buffer[*read_count] = '\0';
-
       /* Log that we finished reading the paste */
       syslog(LOG_INFO,
              "(%" PRIuFAST64 ") Finished reading a paste of size %" PRIuFAST64,
@@ -252,9 +248,6 @@ void read_paste(const purrito_settings &settings,
       /* print out the separator */
       syslog(LOG_INFO, "(%" PRIuFAST64 ") Sent paste url back", session_id);
 
-      /* free the proper variables */
-      free(buffer);
-
       /* and return it to the user */
       res->end(paste_url.c_str());
     }
@@ -264,7 +257,7 @@ void read_paste(const purrito_settings &settings,
 /*
  * save the buffer to a file and return the paste url
  */
-std::string save_buffer(const char *buffer,
+std::string save_buffer(const std::shared_ptr<std::vector<char>> buffer,
                         const std::uint_fast64_t buffer_size,
                         const std::uint_fast64_t session_id,
                         const purrito_settings &settings) {
@@ -284,7 +277,8 @@ std::string save_buffer(const char *buffer,
     return "";
   }
 
-  int write_count = fwrite(buffer, sizeof(char), buffer_size, output_file);
+  int write_count =
+      fwrite(&(*buffer)[0], sizeof(char), buffer_size, output_file);
 
   fclose(output_file);
 
