@@ -278,7 +278,7 @@ std::string save_buffer(const std::shared_ptr<std::vector<char>> buffer,
   }
 
   int write_count =
-      fwrite((*buffer).data(), sizeof(char), buffer_size, output_file);
+      fwrite(buffer->data(), sizeof(char), buffer_size, output_file);
 
   fclose(output_file);
 
