@@ -6,7 +6,8 @@ TESTS =		test_single_paste.sh \
 		test_concurrent_pastes.sh \
 		test_concurrent_pastes_really_large_no_abort.sh \
 		test_single_paste_ssl.sh \
-		test_concurrent_pastes_ssl.sh
+		test_concurrent_pastes_ssl.sh \
+		test_concurrent_pastes_really_large_no_abort_ssl.sh
 
 check: test
 
