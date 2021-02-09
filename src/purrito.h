@@ -271,7 +271,7 @@ std::string save_buffer(const std::unique_ptr<std::vector<char>> &buffer,
   ofile /= slug;
 
   /* get the file descriptor */
-  FILE *output_file = fopen(ofile.c_str(), "w");
+  FILE *output_file = fopen(ofile.c_str(), "wx");
 
   if (output_file == NULL) {
     syslog(LOG_WARNING, "(%" PRIuFAST64 ") WARNING: error while opening file",
