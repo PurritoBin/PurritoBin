@@ -3,6 +3,7 @@
 set -e
 
 . ./common.sh
+. ./common_functions.sh
 
 P_RACING=1
 ../purrito -d "${P_TMPDIR}/" -s "${P_TMPDIR}" -i 127.0.0.1 -p "${P_PORT}" -n localhost -k "PB.key" -c "PB.crt" -l &

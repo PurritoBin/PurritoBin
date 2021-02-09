@@ -1,4 +1,4 @@
-. ./common.sh
+. ./common_functions.sh
 
 P_PORT=$1
 P_DATA=$2

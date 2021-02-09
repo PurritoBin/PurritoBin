@@ -4,7 +4,9 @@
 : ${SEQ=seq}
 : ${P_PORT=$(${SHUF} -i 1500-65536 -n 1)}
 : ${P_TMPDIR=$(mktemp -d -t)}
+: ${P_DATA=$(mktemp -p ${P_TMPDIR})}
 : ${P_CONCUR=100}
+: ${P_MAXSIZE=100}
 
 
 ##########################
@@ -16,14 +18,6 @@ if [ -n "${TERM}" ] && [ "${TERM}" != "dumb" ]; then
 fi
 
 pinfo()  { printf %s\\n "${__green}${__bold}LOG${__reset}: $*"; }
-
-purr() {
-    curl --max-time "${P_MAXTIME:-30}" --silent --data-binary "@${1:-/dev/stdin}" "localhost:${P_PORT}"
-}
-
-spurr() {
-    curl --max-time "${P_MAXTIME:-30}" --silent --cacert PB.crt --capath "$(pwd)" --data-binary "@${1:-/dev/stdin}" "https://localhost:${P_PORT}"
-}
 
 trap_exit() {
     [ "${P_RACING}" ] && P_ID=$!

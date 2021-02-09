@@ -1,4 +1,5 @@
-# Purrito Bin  (=♡ᆺ♡=)  
+# Purrito Bin  (=♡ᆺ♡=)
+![pipeline](https://github.com/PurritoBin/PurritoBin/workflows/pipeline/badge.svg)
 [![GitHub release (latest SemVer including pre-releases)](https://img.shields.io/github/v/release/PurritoBin/PurritoBin?include_prereleases)](https://github.com/PurritoBin/PurritoBin/releases)
 [![GitHub license](https://img.shields.io/github/license/PurritoBin/PurritoBin.svg)](https://github.com/PurritoBin/PurritoBin/blob/master/LICENSE)
 [![GitHub issues](https://img.shields.io/github/issues-raw/PurritoBin/PurritoBin)](https://github.com/PurritoBin/PurritoBin/issues)
@@ -56,13 +57,13 @@ meowd() {
 ```
 
 #### Client usage
-You can paste the `stdout` from a command, paste a file or paste while taking 
+You can paste the `stdout` from a command, paste a file or paste while taking
 input from a file or from the command line.
 ```
     ~$ purr c00lfile.txt
     https://bsd.ac/purrit0
 
-    ~$ purr < h0tfile.txt 
+    ~$ purr < h0tfile.txt
     https://bsd.ac/purri1o
 
     ~$ echo Hello world. | purr
@@ -77,8 +78,8 @@ input from a file or from the command line.
 
 ### Encrypted Storage Clients  (=｀ᆺ├┬┴┬┴
 
-In a encrypted storage setting, the paste is encrypted before sending it to the server.  
-Now the server will only be used as a storage bin and even in case of a non-https connection, 
+In a encrypted storage setting, the paste is encrypted before sending it to the server.
+Now the server will only be used as a storage bin and even in case of a non-https connection,
 you are guaranteed that no one else will be able to read the data that you have sent.
 
 #### How does it work?
@@ -89,10 +90,10 @@ you are guaranteed that no one else will be able to read the data that you have 
  ```
  https://bsd.ac/paste.html#pasteID_key_iv
  ```
-The standard client is `meow`, a companion to the above `purr`, which is also POSIX compliant and should work in all shells. It has exactly the same usage as `purr`, so please look at those examples to see how to use it.  
+The standard client is `meow`, a companion to the above `purr`, which is also POSIX compliant and should work in all shells. It has exactly the same usage as `purr`, so please look at those examples to see how to use it.
 The only dependency on the client side is the presence of [LibreSSL](https://www.libressl.org/) or [OpenSSL](https://www.openssl.org/), to do the encryption.
 
-There will be other clients in the [clients](clients/) folder, added on demand for other platforms, which will allow you to do all this automatically.  
+There will be other clients in the [clients](clients/) folder, added on demand for other platforms, which will allow you to do all this automatically.
 Pull requests for other clients are highly welcome.
 
 #### Why is this secure?
@@ -117,7 +118,7 @@ Pull requests to harden the code by default in linux and other operating systems
 
 ### What PurritoBin provides
 - Auto slug generation and returning paste url.
-- Efficient limiting of paste size by cutting off requests at threshold, stopping network blockage. 
+- Efficient limiting of paste size by cutting off requests at threshold, stopping network blockage.
 - Submission port for users to submit.
 - You can run it on an internal system so that it is accessible only by the people inside the network.
 
@@ -182,11 +183,10 @@ They need the `purritobin` user and group to exist.
 
 #### Pure C client
 
-[ericonr](https://github.com/ericonr) has made a very nice C client, which also supports encrypted pastes - https://github.com/ericonr/purr-c   
+[ericonr](https://github.com/ericonr) has made a very nice C client, which also supports encrypted pastes - https://github.com/ericonr/purr-c
 It uses [BearSSL](https://www.bearssl.org/) and is very instructive for all who wish to get a small example of using SSL in C together with networking.
 
 ## Credits
 [uNetworking](https://github.com/uNetworking): for their [uWebSockets](https://github.com/uNetworking/uWebSockets) and [uSockets](https://github.com/uNetworking/uSockets)
-[brix](https://github.com/brix/): for their [crypto-js](https://github.com/brix/crypto-js/)  
+[brix](https://github.com/brix/): for their [crypto-js](https://github.com/brix/crypto-js/)
 [solusipse](https://github.com/solusipse): for their [fiche](https://github.com/solusipse/fiche/) pastebin
-

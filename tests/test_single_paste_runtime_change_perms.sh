@@ -1,6 +1,7 @@
 #!/bin/sh
 
 . ./common.sh
+. ./common_functions.sh
 
 set -e
 
