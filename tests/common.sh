@@ -1,3 +1,14 @@
+# test controllables
+
+: ${SHUF=shuf}
+: ${SEQ=seq}
+: ${P_PORT=$(${SHUF} -i 1500-65536 -n 1)}
+: ${P_TMPDIR=$(mktemp -d -t)}
+: ${P_CONCUR=100}
+
+
+##########################
+
 if [ -n "${TERM}" ] && [ "${TERM}" != "dumb" ]; then
     export __bold="$(tput bold)" \
     __green="$(tput setaf 2 0 0)" \
@@ -21,6 +32,3 @@ trap_exit() {
 }
 
 trap trap_exit EXIT INT TERM
-
-: ${SHUF=shuf}
-: ${SEQ=seq}

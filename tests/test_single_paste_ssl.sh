@@ -1,14 +1,8 @@
 #!/bin/sh
 
-P_GENKEY="YES"
-. ./common.sh
-
 set -e
 
-P_TMPDIR="$(mktemp -d -t)"
-P_PORT="$(${SHUF} -i 1500-65536 -n 1)"
-
-ls -lh "${P_TMPDIR}"
+. ./common.sh
 
 P_RACING=1
 ../purrito -d "${P_TMPDIR}/" -s "${P_TMPDIR}" -i 127.0.0.1 -p "${P_PORT}" -n localhost -k "PB.key" -c "PB.crt" -l &
