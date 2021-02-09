@@ -1,1 +1,33 @@
 name: pipeline
+
+on:
+  push:
+    branches: [ master ]
+  pull_request:
+    branches: [ master ]
+  schedule:
+    - cron: '0 0 * * *'
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v2
+    - name: Install deps
+      apt install -y libssl-dev pkg-config
+    - name: Install uSockets
+      run: |
+        git clone https://github.com/uNetworking/uSockets
+        wget https://raw.githubusercontent.com/gentoo/guru/master/net-libs/usockets/files/usockets-0.6.0-Makefile.patch
+        cd uSockets
+        git apply < ../usockets-0.6.0-Makefile.patch
+        sudo make WITH_OPENSSL=1 install
+    - name: Install uWebSockets
+      run: |
+        sudo cp -r src /usr/include/uWebSockets
+    - name: Make
+      run: |
+        make
+    - name: Test
+      run: |
+        make check
