@@ -213,8 +213,7 @@ void read_paste(const purrito_settings &settings,
   buffer = (char *)malloc(max_chars + 1);
 
   /* keep a counter on how much was already read */
-  std::uint_fast64_t *read_count = new std::uint_fast64_t;
-  *read_count = 0;
+  auto read_count = std::make_shared<std::uint_fast64_t>(0);
 
   /* Log that we are starting to read the paste */
   syslog(LOG_INFO, "(%" PRIuFAST64 ") Starting to read the paste", session_id);
@@ -225,7 +224,6 @@ void read_paste(const purrito_settings &settings,
              "(%" PRIuFAST64 ") WARNING: paste was too large, "
              "forced to close the request",
              session_id);
-      delete read_count;
       free(buffer);
       res->close();
       return;
@@ -255,7 +253,6 @@ void read_paste(const purrito_settings &settings,
       syslog(LOG_INFO, "(%" PRIuFAST64 ") Sent paste url back", session_id);
 
       /* free the proper variables */
-      delete read_count;
       free(buffer);
 
       /* and return it to the user */
