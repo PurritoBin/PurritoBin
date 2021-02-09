@@ -140,7 +140,7 @@ std::string random_slug(const int &);
 /*
  * try and save a buffer to file
  */
-std::string save_buffer(const std::shared_ptr<std::vector<char>>,
+std::string save_buffer(const std::unique_ptr<std::vector<char>> &,
                         const std::uint_fast64_t, const std::uint_fast64_t,
                         const purrito_settings &);
 
@@ -210,15 +210,17 @@ void read_paste(const purrito_settings &settings,
   uint_fast64_t max_chars = settings.max_paste_size;
 
   /* now create the buffer, remember to free */
-  auto buffer = std::make_shared<std::vector<char>>(max_chars);
+  auto bufferX = std::make_unique<std::vector<char>>(max_chars);
 
   /* keep a counter on how much was already read */
-  auto read_count = std::make_shared<std::uint_fast64_t>(0);
+  auto read_count = std::make_unique<std::uint_fast64_t>(0);
 
   /* Log that we are starting to read the paste */
   syslog(LOG_INFO, "(%" PRIuFAST64 ") Starting to read the paste", session_id);
 
-  res->onData([=](std::string_view chunk, bool is_last) {
+  res->onData([=, read_count = std::move(read_count),
+               buffer = std::move(bufferX)](std::string_view chunk,
+                                            bool is_last) {
     if (chunk.size() > max_chars - *read_count) {
       syslog(LOG_WARNING,
              "(%" PRIuFAST64 ") WARNING: paste was too large, "
@@ -243,7 +245,7 @@ void read_paste(const purrito_settings &settings,
 
       /* get the paste_url after saving */
       std::string paste_url =
-          save_buffer(buffer, *read_count, session_id, settings);
+          save_buffer(std::move(buffer), *read_count, session_id, settings);
 
       /* print out the separator */
       syslog(LOG_INFO, "(%" PRIuFAST64 ") Sent paste url back", session_id);
@@ -257,7 +259,7 @@ void read_paste(const purrito_settings &settings,
 /*
  * save the buffer to a file and return the paste url
  */
-std::string save_buffer(const std::shared_ptr<std::vector<char>> buffer,
+std::string save_buffer(const std::unique_ptr<std::vector<char>> &buffer,
                         const std::uint_fast64_t buffer_size,
                         const std::uint_fast64_t session_id,
                         const purrito_settings &settings) {
