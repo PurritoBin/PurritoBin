@@ -24,10 +24,14 @@
 #include <cstdio>
 #include <cstdlib>
 #include <filesystem>
+#include <fstream>
+#include <iostream>
+#include <iterator>
 #include <map>
 #include <memory>
 #include <random>
 #include <string>
+#include <sys/syslog.h>
 #include <vector>
 
 #include <syslog.h>
@@ -140,7 +144,7 @@ std::string random_slug(const int &);
 /*
  * try and save a buffer to file
  */
-std::string save_buffer(const char *, const std::uint_fast64_t,
+std::string save_buffer(const std::shared_ptr<std::vector<char>>,
                         const std::uint_fast64_t, const purrito_settings &);
 
 /*
@@ -208,52 +212,33 @@ void read_paste(const purrito_settings &settings,
   /* calculate the correct number of characters allowed in the paste */
   uint_fast64_t max_chars = settings.max_paste_size;
 
-  /* now create the buffer, remember to free */
-  char *buffer;
-  buffer = (char *)malloc(max_chars + 1);
-
-  /* keep a counter on how much was already read */
-  auto read_count = std::make_shared<std::uint_fast64_t>(0);
+  auto buffer = std::make_shared<std::vector<char>>();
 
   /* Log that we are starting to read the paste */
   syslog(LOG_INFO, "(%" PRIuFAST64 ") Starting to read the paste", session_id);
 
   res->onData([=](std::string_view chunk, bool is_last) {
-    if (chunk.size() > max_chars - *read_count) {
+    if (chunk.size() > max_chars - buffer->size()) {
       syslog(LOG_WARNING,
              "(%" PRIuFAST64 ") WARNING: paste was too large, "
              "forced to close the request",
              session_id);
-      free(buffer);
       res->close();
       return;
     }
-
-    std::uint_fast64_t copy_size = chunk.size();
-
-    chunk.copy(buffer + *read_count, copy_size);
-
-    /* remember to increment the read count */
-    *read_count = copy_size + *read_count;
+    std::copy(chunk.begin(), chunk.end(), std::back_inserter(*buffer));
 
     if (is_last) {
-      /* set the last element correctly */
-      buffer[*read_count] = '\0';
-
       /* Log that we finished reading the paste */
       syslog(LOG_INFO,
              "(%" PRIuFAST64 ") Finished reading a paste of size %" PRIuFAST64,
-             session_id, *read_count);
+             session_id, buffer->size());
 
       /* get the paste_url after saving */
-      std::string paste_url =
-          save_buffer(buffer, *read_count, session_id, settings);
+      std::string paste_url = save_buffer(buffer, session_id, settings);
 
       /* print out the separator */
       syslog(LOG_INFO, "(%" PRIuFAST64 ") Sent paste url back", session_id);
-
-      /* free the proper variables */
-      free(buffer);
 
       /* and return it to the user */
       res->end(paste_url.c_str());
@@ -264,8 +249,7 @@ void read_paste(const purrito_settings &settings,
 /*
  * save the buffer to a file and return the paste url
  */
-std::string save_buffer(const char *buffer,
-                        const std::uint_fast64_t buffer_size,
+std::string save_buffer(const std::shared_ptr<std::vector<char>> buffer,
                         const std::uint_fast64_t session_id,
                         const purrito_settings &settings) {
   /* generate the slug */
@@ -276,7 +260,7 @@ std::string save_buffer(const char *buffer,
   ofile /= slug;
 
   /* get the file descriptor */
-  FILE *output_file = fopen(ofile.c_str(), "w");
+  auto output_file = std::fopen(ofile.c_str(), "wx");
 
   if (output_file == NULL) {
     syslog(LOG_WARNING, "(%" PRIuFAST64 ") WARNING: error while opening file",
@@ -284,7 +268,8 @@ std::string save_buffer(const char *buffer,
     return "";
   }
 
-  int write_count = fwrite(buffer, sizeof(char), buffer_size, output_file);
+  int write_count = fwrite(&(*buffer)[0], sizeof(std::vector<char>::value_type),
+                           buffer->size(), output_file);
 
   fclose(output_file);
 
@@ -294,6 +279,7 @@ std::string save_buffer(const char *buffer,
            session_id, write_count);
     return "";
   }
+
   syslog(LOG_INFO, "(%" PRIuFAST64 ") Saved paste to file %s", session_id,
          slug.c_str());
 
