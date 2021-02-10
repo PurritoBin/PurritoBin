@@ -17,7 +17,9 @@ chmod -w "${P_TMPDIR}"
 
 P_DATA="SOME_RANDOM_TEST_DATA"
 
+set +e
 P_PASTE=$(printf %s\\n "${P_DATA}" | purr)
+set -e
 
 if [ ! -z "${P_PASTE}" ]; then
     exit 1

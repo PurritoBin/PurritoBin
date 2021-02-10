@@ -138,13 +138,6 @@ const auto anlength = alphanum.size();
 std::string random_slug(const int &);
 
 /*
- * try and save a buffer to file
- */
-std::string save_buffer(const std::unique_ptr<std::vector<char>> &,
-                        const std::uint_fast64_t, const std::uint_fast64_t,
-                        const purrito_settings &);
-
-/*
  * read data in a registered call back function
  */
 template <bool SSL>
@@ -209,8 +202,24 @@ void read_paste(const purrito_settings &settings,
   /* calculate the correct number of characters allowed in the paste */
   uint_fast64_t max_chars = settings.max_paste_size;
 
-  /* now create the buffer, remember to free */
-  auto bufferX = std::make_unique<std::vector<char>>(max_chars);
+  std::string slug = random_slug(settings.slug_size);
+  auto paste_url = std::make_unique<std::string>(settings.domain + slug + "\n");
+
+  /* get the filename to open */
+  std::filesystem::path ofile = settings.storage_directory;
+  ofile /= slug;
+
+  auto ofile_path = std::make_unique<std::string>(ofile.string());
+
+  /* get the file descriptor */
+  FILE *output_file = fopen(ofile.c_str(), "wx");
+
+  if (output_file == NULL) {
+    syslog(LOG_WARNING, "(%" PRIuFAST64 ") WARNING: error while opening file",
+           session_id);
+    res->close();
+    return;
+  }
 
   /* keep a counter on how much was already read */
   auto read_count = std::make_unique<std::uint_fast64_t>(0);
@@ -219,81 +228,51 @@ void read_paste(const purrito_settings &settings,
   syslog(LOG_INFO, "(%" PRIuFAST64 ") Starting to read the paste", session_id);
 
   res->onData([=, read_count = std::move(read_count),
-               buffer = std::move(bufferX)](std::string_view chunk,
-                                            bool is_last) {
+               paste_url = std::move(paste_url),
+               ofile_path = std::move(ofile_path)](std::string_view chunk,
+                                                   bool is_last) {
     if (chunk.size() > max_chars - *read_count) {
       syslog(LOG_WARNING,
              "(%" PRIuFAST64 ") WARNING: paste was too large, "
              "forced to close the request",
              session_id);
+      std::fclose(output_file);
+      std::remove(ofile_path->c_str());
       res->close();
       return;
     }
 
-    std::uint_fast64_t copy_size = chunk.size();
-
-    std::copy(chunk.begin(), chunk.end(), buffer->begin() + *read_count);
-
     /* remember to increment the read count */
-    *read_count = copy_size + *read_count;
+    *read_count = chunk.size() + *read_count;
+
+    int write_count =
+        fwrite(chunk.data(), sizeof(char), chunk.size(), output_file);
+
+    if (write_count < 0) {
+      syslog(LOG_WARNING,
+             "(%" PRIuFAST64 ") WARNING: error (%d) while writing to file",
+             session_id, write_count);
+      std::fclose(output_file);
+      std::remove(ofile_path->c_str());
+      res->close();
+      return;
+    }
 
     if (is_last) {
+      std::fclose(output_file);
       /* Log that we finished reading the paste */
       syslog(LOG_INFO,
              "(%" PRIuFAST64 ") Finished reading a paste of size %" PRIuFAST64,
              session_id, *read_count);
 
-      /* get the paste_url after saving */
-      std::string paste_url =
-          save_buffer(std::move(buffer), *read_count, session_id, settings);
-
       /* print out the separator */
-      syslog(LOG_INFO, "(%" PRIuFAST64 ") Sent paste url back", session_id);
+      syslog(LOG_INFO, "(%" PRIuFAST64 ") Sent paste url back: %s", session_id,
+             paste_url->c_str());
 
       /* and return it to the user */
-      res->end(paste_url.c_str());
+      res->end(paste_url->c_str());
     }
   });
-}
-
-/*
- * save the buffer to a file and return the paste url
- */
-std::string save_buffer(const std::unique_ptr<std::vector<char>> &buffer,
-                        const std::uint_fast64_t buffer_size,
-                        const std::uint_fast64_t session_id,
-                        const purrito_settings &settings) {
-  /* generate the slug */
-  std::string slug = random_slug(settings.slug_size);
-
-  /* get the filename to open */
-  std::filesystem::path ofile = settings.storage_directory;
-  ofile /= slug;
-
-  /* get the file descriptor */
-  FILE *output_file = fopen(ofile.c_str(), "wx");
-
-  if (output_file == NULL) {
-    syslog(LOG_WARNING, "(%" PRIuFAST64 ") WARNING: error while opening file",
-           session_id);
-    return "";
-  }
-
-  int write_count =
-      fwrite(buffer->data(), sizeof(char), buffer_size, output_file);
-
-  fclose(output_file);
-
-  if (write_count < 0) {
-    syslog(LOG_WARNING,
-           "(%" PRIuFAST64 ") WARNING: error (%d) while writing to file",
-           session_id, write_count);
-    return "";
-  }
-  syslog(LOG_INFO, "(%" PRIuFAST64 ") Saved paste to file %s", session_id,
-         slug.c_str());
-
-  return settings.domain + slug + "\n";
 }
 
 /*
