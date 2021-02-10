@@ -13,11 +13,10 @@ P_RACING=
 # should be enough
 sleep 2
 
-P_DATA_FILE="$(mktemp -p ${P_TMPDIR} )"
-dd if=/dev/random of="${P_DATA_FILE}" bs=1M count=$((${P_MAXSIZE} + 1)) iflag=fullblock
+dd if=/dev/random of="${P_DATA}" bs=1M count=$((${P_MAXSIZE} + 1)) ${P_DD_FLAGS}
 
 set +e
-P_PASTE=$(purr "${P_DATA_FILE}")
+P_PASTE=$(purr "${P_DATA}")
 set -e
 
 if [ ! -z "${P_PASTE}" ]; then

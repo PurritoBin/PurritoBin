@@ -43,4 +43,4 @@ jobs:
         make
     - name: Test
       run: |
-        env P_CONCUR=5 P_MAXSIZE=3 make check
+        env GH_ACTIONS="YES" P_CONCUR=5 P_MAXSIZE=3 make check

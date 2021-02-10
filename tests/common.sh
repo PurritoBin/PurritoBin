@@ -8,6 +8,10 @@
 : ${P_CONCUR=100}
 : ${P_MAXSIZE=100}
 
+### needed for github actions
+if [ ${GH_ACTIONS} = "YES" ]; then
+    P_DD_FLAGS="iflag=fullblock"
+fi
 
 ##########################
 
