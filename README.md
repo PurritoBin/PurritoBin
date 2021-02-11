@@ -1,5 +1,5 @@
 # Purrito Bin  (=♡ᆺ♡=)
-![pipeline](https://github.com/PurritoBin/PurritoBin/workflows/pipeline/badge.svg)
+[![pipeline](https://github.com/PurritoBin/PurritoBin/workflows/pipeline/badge.svg)](https://github.com/PurritoBin/PurritoBin/actions?query=workflow:pipeline)
 [![GitHub release (latest SemVer including pre-releases)](https://img.shields.io/github/v/release/PurritoBin/PurritoBin?include_prereleases)](https://github.com/PurritoBin/PurritoBin/releases)
 [![GitHub license](https://img.shields.io/github/license/PurritoBin/PurritoBin.svg)](https://github.com/PurritoBin/PurritoBin/blob/master/LICENSE)
 [![GitHub issues](https://img.shields.io/github/issues-raw/PurritoBin/PurritoBin)](https://github.com/PurritoBin/PurritoBin/issues)
@@ -28,6 +28,8 @@ ultra fast, minimalistic, encrypted command line paste-bin
 
 - [uSockets](https://github.com/uNetworking/uSockets/)
 - [uWebSockets](https://github.com/uNetworking/uWebSockets/)
+
+If these are not available in your OS repositories, you can manually install them by following the steps in the [GitHub workflow](https://github.com/PurritoBin/PurritoBin/actions?query=workflow:pipeline)
 
 #### Compilation
 
