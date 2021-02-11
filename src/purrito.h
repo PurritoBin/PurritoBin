@@ -23,7 +23,6 @@
 #include <cinttypes>
 #include <cstdio>
 #include <cstdlib>
-#include <filesystem>
 #include <map>
 #include <memory>
 #include <random>
@@ -206,10 +205,9 @@ void read_paste(const purrito_settings &settings,
   auto paste_url = std::make_unique<std::string>(settings.domain + slug + "\n");
 
   /* get the filename to open */
-  std::filesystem::path ofile = settings.storage_directory;
-  ofile /= slug;
+  auto ofile = settings.storage_directory + slug;
 
-  auto ofile_path = std::make_unique<std::string>(ofile.string());
+  auto ofile_path = std::make_unique<std::string>(ofile.begin(), ofile.end());
 
   /* get the file descriptor */
   FILE *output_file = fopen(ofile.c_str(), "wx");

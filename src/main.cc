@@ -16,7 +16,6 @@
  */
 
 #include <cstdlib>
-#include <filesystem>
 #include <fstream>
 #include <string>
 
@@ -64,7 +63,7 @@ int main(int argc, char **argv) {
    */
   slug_size = 7;                             // the magic number
   max_paste_size = 65536;                    // seems reasonable for most
-  storage_directory = "/var/www/purritobin"; // should probably be owned
+  storage_directory = "/var/www/purritobin/"; // should probably be owned
                                              // by user running the program
 
   bool ssl_server = false;
@@ -148,6 +147,9 @@ int main(int argc, char **argv) {
    * lets first check that we can even access it correcty, and afterwards we
    * will do a write test to see if everything worked out a-OK
    */
+  if (storage_directory.back() != '/')
+    storage_directory += "/";
+
   if (access(storage_directory.c_str(), W_OK) != 0) {
     print_help();
     err(1, "ERROR: storage directory is invalid or is not writable");
@@ -159,9 +161,8 @@ int main(int argc, char **argv) {
    * make a init file and write to it and then we delete it
    */
   {
-    std::filesystem::path fpath = storage_directory;
-    fpath /= "__init__";
-    std::ofstream output(fpath.string());
+    auto fpath = storage_directory + "__init__";
+    std::ofstream output(fpath);
     int removed = std::remove(fpath.c_str());
     if (removed != 0)
       err(removed, "ERROR: could not remove __init__ test file");
