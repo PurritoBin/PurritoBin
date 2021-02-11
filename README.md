@@ -9,7 +9,7 @@ ultra fast, minimalistic, encrypted command line paste-bin
 
 [![Packaging status](https://repology.org/badge/vertical-allrepos/purritobin.svg)](https://repology.org/project/purritobin/versions)
 
-## Highlights
+## Features and Highlights
 
 - Listen on multiple address/port combinations, both IPv4 and IPv6
 - Very lightweight - 2-3 MB of RAM on average
@@ -17,6 +17,47 @@ ultra fast, minimalistic, encrypted command line paste-bin
 - Configurable paste size limit
 - Paste storage in plain text, easy to integrate with all web servers (Apache, Nginx, etc.)
 - Well documented, `man purrito`
+
+## Server （ฅ＾・ﻌ・＾）ฅ
+
+### Installation
+
+#### Requirements
+
+- [uSockets](https://github.com/uNetworking/uSockets/)
+- [uWebSockets](https://github.com/uNetworking/uWebSockets/)
+
+#### Compilation
+
+```
+$ make
+$ make install
+```
+
+or to install to a different location, use the `DESTDIR` or `PREFIX` variables.
+
+### Usage
+
+The server is run using the command `purrito`. To quickly view the available options:
+
+```
+$ purrito -h
+usage: purrito [-cdeghiklmnpsvwx] -d domain [-c public_cert_file]
+               [-e dhparams_file] [-g slug_size] [-h] [-i bind_ip]
+               [-k private_key_file] [-l] [-m max_paste_size] [-n server name]
+               [-p bind_port] [-s storage_directory] [-v header_value]
+               [-w passphrase] [-x header]
+```
+
+For an indepth explanation, there is a man page provided.
+
+```
+$ man purrito
+```
+
+### Running the encrypted PurritoBin
+
+Make sure that whatever link is provided to the `-d ` domain option, is also able to serve the `paste.html` from this repository.
 
 ## Client  (=｀ﻌ´=)
 
@@ -105,9 +146,8 @@ Pull requests for other clients are highly welcome.
 
 NOTE: Anyone who has the full link is going to be able to read the decrypted text. Only send the full hash included url to people you trust, through a secure communications channel.
 
-## Server （ฅ＾・ﻌ・＾）ฅ
 
-### Design principles
+## Design principles
 The aim is to follow the [KISS](https://en.wikipedia.org/wiki/KISS_principle) philosophy and only aim to do one thing. There are tools which manage to do the other things better, so make the current one as integrable as possible.
 
 Purrito Bin is very, very easily integrated into any setup. It runs as an unprivileged user in a single directory without access to any other systems resource.
@@ -129,50 +169,6 @@ Pull requests to harden the code by default in linux and other operating systems
   - Use a [cron](https://en.wikipedia.org/wiki/Cron) job to manage this. It is a lot more efficient and also gives you more control.
 - Request throttling
   - Use a firewall, like [pf](https://www.openbsd.org/faq/pf/filter.html), [nftables](https://wiki.nftables.org/wiki-nftables/index.php/Main_Page) or **(god forbid)** [iptables](https://linux.die.net/man/8/iptables), to manage this, they are designed for exactly this kind of feature.
-
-### Requirements
-
-- [uSockets](https://github.com/uNetworking/uSockets/)
-- [uWebSockets](https://github.com/uNetworking/uWebSockets/)
-
-### Installation
-
-```
-$ make
-$ make install
-```
-
-or to install to a different location, use the `DESTDIR` or `PREFIX` variables.
-
-### Usage
-
-The server is run using the command `purrito`. To quickly view the available options:
-
-```
-$ purrito -h
-usage: purrito [-cdeghiklmnpsw] -d domain [-c public_cert_file]
-               [-e dhparams_file] [-g slug_size] [-h] [-i bind_ip]
-               [-k private_key_file] [-l] [-m max_paste_size] [-n server name]
-               [-p bind_port] [-s storage_directory] [-w passphrase]
-```
-
-For an indepth explanation, there is a man page provided.
-
-```
-$ man purrito
-```
-
-### Running the encrypted PurritoBin
-
-Make sure that whatever link is provided to the `-d ` domain option, is also able to serve the `paste.html` from this repository.
-
-## Workarounds for older compilers
-
-When building with older compilers, you also need to provide the `stdc++fs` library which can be done by compiling using
-
-```
-make LDFLAGS=-lstdc++fs
-```
 
 ### Extras
 
