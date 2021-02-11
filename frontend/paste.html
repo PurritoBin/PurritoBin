@@ -32,6 +32,10 @@
         } catch (error) {}
         throw new Error("Could not create HTTP request object.");
     }
+    // get location without
+    var location_full = window.location.href;
+    var location_path = location_full.split("#")[0]
+    location_path = location_path.substring(0, location_path.length - 10);
     // first we get the needed values from the hash
     // this is still secure cuz nothing is sent to the server
     var hash = window
@@ -40,7 +44,7 @@
         .substr(1);
     var hashv = hash.split("_");
     if (hashv.length > 0 && hash != "") {
-        var pasteurl = "https://bsd.ac/" + hashv[0];
+        var pasteurl = location_path + hashv[0];
         var key = "",
             default_iv = "";
         if (hashv.length > 1) {
