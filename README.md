@@ -11,12 +11,14 @@ ultra fast, minimalistic, encrypted command line paste-bin
 
 ## Features and Highlights
 
-- Listen on multiple address/port combinations, both IPv4 and IPv6
-- Very lightweight - 2-3 MB of RAM on average
-- Optional SSL support for secure communication
-- Configurable paste size limit
-- Paste storage in plain text, easy to integrate with all web servers (Apache, Nginx, etc.)
-- Well documented, `man purrito`
+- Very lightweight: 2-3 MB of RAM on average.
+- Listen on multiple address/port combinations, both IPv4 and IPv6.
+- Configurable paste size limit.
+- Paste storage in plain text, easy to integrate with all web servers (Apache, Nginx, etc.).
+- Encrypted pasting similar to [PrivateBin](https://github.com/PrivateBin/PrivateBin).
+- Optional SSL support for secure communication.
+- Tiny code base, less than 1000 lines of code, for very easy auditing.
+- Well documented, `man purrito`.
 
 ## Server （ฅ＾・ﻌ・＾）ฅ
 
@@ -52,7 +54,7 @@ usage: purrito [-cdeghiklmnpsvwx] -d domain [-c public_cert_file]
 For an indepth explanation, there is a man page provided.
 
 ```
-$ man purrito
+$ man 1 purrito
 ```
 
 ### Running the encrypted PurritoBin
