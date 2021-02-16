@@ -77,7 +77,7 @@ public:
    * DEFAULT: 7
    * size of the random slug for the paste
    */
-  const std::uint_fast8_t slug_size;
+  const std::string::size_type slug_size;
 
   /*
    * DEFAULT: {}
@@ -100,7 +100,7 @@ public:
                    const std::vector<std::string> &bind_ip,
                    const std::vector<std::uint_fast16_t> &bind_port,
                    const std::uint_fast64_t &max_paste_size,
-                   const std::uint_fast8_t &slug_size,
+                   const std::string::size_type &slug_size,
                    const std::map<std::string, std::string> &headers,
                    const uWS::SocketContextOptions ssl_options)
       : domain(domain), storage_directory(storage_directory), bind_ip(bind_ip),
@@ -134,7 +134,7 @@ const std::string alphanum = P_ALPHANUM;
 const auto anlength = alphanum.size();
 
 /* generate a random slug of required length */
-std::string random_slug(const int &);
+std::string random_slug(const std::string::size_type &);
 
 /*
  * read data in a registered call back function
@@ -276,11 +276,11 @@ void read_paste(const purrito_settings &settings,
 /*
  * linear time generation of random slug
  */
-std::string random_slug(const int &slug_size) {
+std::string random_slug(const std::string::size_type &slug_size) {
   auto rslug = std::unique_ptr<char[]>(new char[slug_size + 1]);
 
   /* finally generate the random string by sampling */
-  for (std::uint_fast8_t i = 0; i < slug_size; i++) {
+  for (std::string::size_type i = 0; i < slug_size; i++) {
     rslug[i] = alphanum[rng() % anlength];
   }
 

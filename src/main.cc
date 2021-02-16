@@ -229,7 +229,7 @@ int main(int argc, char **argv) {
          "{ "
          "domain: %s, "
          "storage_directory: %s, "
-         "max_paste_size: %" PRIuFAST64 ", "
+         "max_paste_size: %zu, "
          "slug_size: %" PRIuFAST8 " }",
          domain.c_str(), storage_directory.c_str(), max_paste_size, slug_size);
 
