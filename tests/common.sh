@@ -9,6 +9,7 @@
 : ${P_MAXSIZE=5}
 
 ### needed for github actions
+: ${GH_ACTIONS=NO}
 if [ ${GH_ACTIONS} = "YES" ]; then
     P_DD_FLAGS="iflag=fullblock"
 fi
