@@ -35,5 +35,5 @@ meowd() {
 	key=$(printf %s\\n "${vals}" | cut -d'_' -f2)
 	iv=$(printf %s\\n "${vals}" | cut -d'_' -f3)
 	curl --max-time "${P_MAXTIME}" --write-out "\n" --silent "${baseurl}/${paste}" | openssl enc -aes-256-cbc -base64 -d -K ${key} -iv ${iv}
-        unset url baseurl vals paste key iv
+	unset url baseurl vals paste key iv
 }
