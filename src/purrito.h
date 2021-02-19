@@ -80,6 +80,12 @@ public:
   const std::string::size_type slug_size;
 
   /*
+   * DEFAULT: "0123456789abcdefghijklmnopqrstuvwxyz"
+   * characters used for generating the slug
+   */
+  const std::string slug_characters;
+
+  /*
    * DEFAULT: {}
    * response headers
    */
@@ -101,11 +107,13 @@ public:
                    const std::vector<std::uint_fast16_t> &bind_port,
                    const std::uint_fast64_t &max_paste_size,
                    const std::string::size_type &slug_size,
+                   const std::string &slug_characters,
                    const std::map<std::string, std::string> &headers,
                    const uWS::SocketContextOptions ssl_options)
       : domain(domain), storage_directory(storage_directory), bind_ip(bind_ip),
         bind_port(bind_port), max_paste_size(max_paste_size),
-        slug_size(slug_size), headers(headers), ssl_options(ssl_options) {}
+        slug_size(slug_size), slug_characters(slug_characters),
+        headers(headers), ssl_options(ssl_options) {}
 };
 
 /*
@@ -123,18 +131,8 @@ template <bool SSL> uWS::TemplatedApp<SSL> purr(const purrito_settings &);
 std::mt19937_64
     rng(std::chrono::steady_clock::now().time_since_epoch().count());
 
-#ifndef P_ALPHANUM
-#define P_ALPHANUM "0123456789abcdefghijklmnopqrstuvwxyz"
-#endif
-
-/* we generate only alpha-num slugs */
-const std::string alphanum = P_ALPHANUM;
-
-/* get the size, cuz 10+26 is too hard */
-const auto anlength = alphanum.size();
-
 /* generate a random slug of required length */
-std::string random_slug(const std::string::size_type &);
+std::string random_slug(const std::string &, const std::string::size_type &);
 
 /*
  * read data in a registered call back function
@@ -161,13 +159,13 @@ uWS::TemplatedApp<SSL> purr(const purrito_settings &settings) {
         for (auto it : settings.headers)
           res->writeHeader(it.first, it.second);
 
-        /* register the callback, which will cork the request properly
+        /*
+         * register the callback, which will cork the request properly
          */
         res->cork([=]() { read_paste<SSL>(settings, session_id, res); });
 
         /*
-         * attach a standard abort handler, in case something goes
-         * wrong
+         * attach a standard abort handler, in case something goes wrong
          */
         res->onAborted([=]() {
           syslog(LOG_WARNING,
@@ -201,7 +199,7 @@ void read_paste(const purrito_settings &settings,
   /* calculate the correct number of characters allowed in the paste */
   uint_fast64_t max_chars = settings.max_paste_size;
 
-  std::string slug = random_slug(settings.slug_size);
+  std::string slug = random_slug(settings.slug_characters, settings.slug_size);
   auto paste_url = std::make_unique<std::string>(settings.domain + slug + "\n");
 
   /* get the filename to open */
@@ -276,12 +274,13 @@ void read_paste(const purrito_settings &settings,
 /*
  * linear time generation of random slug
  */
-std::string random_slug(const std::string::size_type &slug_size) {
+std::string random_slug(const std::string &slug_characters,
+                        const std::string::size_type &slug_size) {
   auto rslug = std::unique_ptr<char[]>(new char[slug_size + 1]);
 
   /* finally generate the random string by sampling */
   for (std::string::size_type i = 0; i < slug_size; i++) {
-    rslug[i] = alphanum[rng() % anlength];
+    rslug[i] = slug_characters[rng() % slug_characters.length()];
   }
 
   /* add the final character for converting back to string */

@@ -35,11 +35,11 @@
  */
 void print_help() {
   std::printf(
-      "usage: purrito [-cdeghiklmnpsvwx] -d domain [-c public_cert_file]\n"
-      "               [-e dhparams_file] [-g slug_size] [-h] [-i bind_ip]\n"
-      "               [-k private_key_file] [-l] [-m max_paste_size] [-n server name]\n"
-      "               [-p bind_port] [-s storage_directory] [-v header_value]\n"
-      "               [-w passphrase] [-x header]\n");
+      "usage: purrito [-acdeghiklmnpsvwx] -d domain [-a slug_characters]\n"
+      "               [-c public_cert_file] [-e dhparams_file] [-g slug_size] [-h]\n"
+      "               [-i bind_ip] [-k private_key_file] [-l] [-m max_paste_size]\n"
+      "               [-n server name] [-p bind_port] [-s storage_directory]\n"
+      "               [-v header_value] [-w passphrase] [-x header]\n");
 }
 
 /*
@@ -53,6 +53,8 @@ int main(int argc, char **argv) {
   std::map<std::string, std::string> headers;
   std::vector<std::string> header_names, header_values;
   std::uint_fast8_t slug_size;
+  std::string slug_characters;
+
   std::string::size_type max_paste_size;
 
   /* open syslog with purritobin identity */
@@ -61,16 +63,17 @@ int main(int argc, char **argv) {
   /* we should define the default values for variables not
    * considered essential
    */
-  slug_size = 7;                             // the magic number
-  max_paste_size = 65536;                    // seems reasonable for most
+  slug_size = 7; // the magic number
+  slug_characters = "0123456789abcdefghijklmnopqrstuvwxyz";
+  max_paste_size = 65536;                     // seems reasonable for most
   storage_directory = "/var/www/purritobin/"; // should probably be owned
-                                             // by user running the program
+                                              // by user running the program
 
   bool ssl_server = false;
   uWS::SocketContextOptions ssl_options = {};
   std::string server_name;
 
-  while ((opt = getopt(argc, argv, "hd:s:i:p:m:g:ln:c:k:e:w:x:v:")) != EOF)
+  while ((opt = getopt(argc, argv, "a:c:d:e:g:hi:k:lm:n:p:s:v:w:x:")) != EOF)
     switch (opt) {
     case 'h':
       print_help();
@@ -93,6 +96,9 @@ int main(int argc, char **argv) {
       break;
     case 'g':
       slug_size = std::stoi(optarg);
+      break;
+    case 'a':
+      slug_characters = std::stoi(optarg);
       break;
     case 'l':
       ssl_server = true;
@@ -235,7 +241,8 @@ int main(int argc, char **argv) {
 
   /* initialize the settings to be passed to the server */
   purrito_settings settings(domain, storage_directory, bind_ip, bind_port,
-                            max_paste_size, slug_size, headers, ssl_options);
+                            max_paste_size, slug_size, slug_characters, headers,
+                            ssl_options);
 
   /* create the server and start running it */
   if (ssl_server) {

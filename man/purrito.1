@@ -20,8 +20,9 @@
 .Nd PurritoBin pastebin server
 .Sh SYNOPSIS
 .Nm purrito
-.Op Fl cdeghiklmnpsvwx
+.Op Fl acdeghiklmnpsvwx
 .Fl d Ar domain
+.Op Fl a Ar slug_characters
 .Op Fl c Ar public_cert_file
 .Op Fl e Ar dhparams_file
 .Op Fl g Ar slug_size
@@ -56,6 +57,11 @@ that will be used as prefix of returned paste
 should be the full name, including trailing /
 .Pp
 e.g. https://bsd.ac/
+.Pp
+.It Fl a Ar slug_characters
+.Sy DEFAULT : Dq 0123456789abcdefghijklmnopqrstuvwxyz
+.Pp
+Characters used to generate the slug.
 .Pp
 .It Fl c Ar public_cert_file
 .Sy DEFAULT :
