@@ -12,7 +12,7 @@ P_RACING=
 # should be enough
 sleep 2
 
-printf %s\\n `${SEQ} 1 "${P_CONCUR}"` | xargs -n 1 -P "${P_CONCUR}" sh test_concurrent_pastes_helper.sh "${P_PORT}"
+printf %s\\n `${SEQ} 1 "${P_CONCUR}"` | xargs -n 1 -P "${P_CONCUR}" sh "HELPER_${0}" "${P_PORT}"
 
 # should be enough
 sleep 2

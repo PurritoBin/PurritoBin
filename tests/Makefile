@@ -1,13 +1,4 @@
-TESTS =		test_single_paste.sh \
-		test_single_paste_abort.sh \
-		test_single_paste_runtime_change_perms.sh \
-		test_single_paste_really_large_no_abort.sh \
-		test_single_paste_really_large_abort.sh \
-		test_concurrent_pastes.sh \
-		test_concurrent_pastes_really_large_no_abort.sh \
-		test_single_paste_ssl.sh \
-		test_concurrent_pastes_ssl.sh \
-		test_concurrent_pastes_really_large_no_abort_ssl.sh
+TESTS =		test_*
 
 check: test
 

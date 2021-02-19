@@ -14,7 +14,7 @@ sleep 2
 
 dd if=/dev/random of="${P_DATA}" bs=1M count=$((${P_MAXSIZE} - 1)) ${P_DD_FLAGS}
 
-printf %s\\n `${SEQ} 1 "${P_CONCUR}"` | xargs -n 1 -P "${P_CONCUR}" sh test_concurrent_pastes_really_large_no_abort_helper.sh "${P_PORT}" "${P_DATA}"
+printf %s\\n `${SEQ} 1 "${P_CONCUR}"` | xargs -n 1 -P "${P_CONCUR}" sh "HELPER_${0}" "${P_PORT}" "${P_DATA}"
 
 # should be enough
 sleep 2
