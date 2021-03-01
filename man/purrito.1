@@ -20,11 +20,12 @@
 .Nd PurritoBin pastebin server
 .Sh SYNOPSIS
 .Nm purrito
-.Op Fl acdeghiklmnpsvwx
+.Op Fl acdefghiklmnpstvwx
 .Fl d Ar domain
 .Op Fl a Ar slug_characters
 .Op Fl c Ar public_cert_file
 .Op Fl e Ar dhparams_file
+.Op Fl f Ar index_file
 .Op Fl g Ar slug_size
 .Op Fl h
 .Op Fl i Ar bind_ip
@@ -34,6 +35,7 @@
 .Op Fl n Ar server name
 .Op Fl p Ar bind_port
 .Op Fl s Ar storage_directory
+.Op Fl t
 .Op Fl v Ar header_value
 .Op Fl w Ar passphrase
 .Op Fl x Ar header
@@ -73,7 +75,13 @@ Public key certificate to use if using SSL.
 .Sy DEFAULT :
 null
 .Pp
-Diffie-Hellman prime file to use if using SSL.
+.It Fl f Ar index_file
+.Sy DEFAULT : Dq index.html
+.Pp
+Top level index file.
+Only used if the simple HTTP server,
+.Fl t ,
+is enabled.
 .Pp
 .It Fl g Ar slug_size
 .Sy DEFAULT :
@@ -149,6 +157,14 @@ options.
 .It Fl s Ar storage_directory
 .Sy DEFAULT :
 /var/www/purritobin
+.Pp
+.It Fl t
+Enable a simple HTTP server to serve the pastes.
+.Sy WARNING :
+.Nm
+is not optimized for serving pastes.
+It is recommended to use a proper web server
+for serving the files.
 .Pp
 path to the
 .Ar storage_directory

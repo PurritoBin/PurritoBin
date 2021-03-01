@@ -35,11 +35,12 @@
  */
 void print_help() {
   std::printf(
-      "usage: purrito [-acdeghiklmnpsvwx] -d domain [-a slug_characters]\n"
-      "               [-c public_cert_file] [-e dhparams_file] [-g slug_size] [-h]\n"
-      "               [-i bind_ip] [-k private_key_file] [-l] [-m max_paste_size]\n"
-      "               [-n server name] [-p bind_port] [-s storage_directory]\n"
-      "               [-v header_value] [-w passphrase] [-x header]\n");
+      "usage: purrito [-acdefghiklmnpstvwx] -d domain [-a slug_characters]\n"
+      "               [-c public_cert_file] [-e dhparams_file] [-f index_file]\n"
+      "               [-g slug_size] [-h] [-i bind_ip] [-k private_key_file] [-l]\n"
+      "               [-m max_paste_size] [-n server name] [-p bind_port]\n"
+      "               [-s storage_directory] [-t] [-v header_value] [-w passphrase]\n"
+      "               [-x header]\n");
 }
 
 /*
@@ -52,6 +53,7 @@ int main(int argc, char **argv) {
   std::map<std::string, std::string> headers;
   std::vector<std::string> bind_ip, header_names, header_values;
   std::uint_fast8_t slug_size;
+  bool enable_httpserver;
 
   std::string::size_type max_paste_size;
 
@@ -63,6 +65,7 @@ int main(int argc, char **argv) {
    */
   slug_size = 7; // the magic number
   slug_characters = "0123456789abcdefghijklmnopqrstuvwxyz";
+  enable_httpserver = false;
   index_file = "index.html";
   max_paste_size = 65536;                     // seems reasonable for most
   storage_directory = "/var/www/purritobin/"; // should probably be owned
@@ -72,7 +75,7 @@ int main(int argc, char **argv) {
   uWS::SocketContextOptions ssl_options = {};
   std::string server_name;
 
-  while ((opt = getopt(argc, argv, "a:c:d:e:f:g:hi:k:lm:n:p:s:v:w:x:")) != EOF)
+  while ((opt = getopt(argc, argv, "a:c:d:e:f:g:hi:k:lm:n:p:s:tv:w:x:")) != EOF)
     switch (opt) {
     case 'h':
       print_help();
@@ -126,9 +129,12 @@ int main(int argc, char **argv) {
     case 'f':
       index_file = optarg;
       break;
+    case 't':
+      enable_httpserver = true;
+      break;
     default:
       print_help();
-      err(1, "ERROR: incorrect parameters");
+      errx(1, "ERROR: incorrect parameters");
       break;
     }
 
@@ -140,7 +146,7 @@ int main(int argc, char **argv) {
    */
   if (domain == "") {
     print_help();
-    err(1, "ERROR: empty domain name");
+    errx(1, "ERROR: empty domain name");
   }
 
   if (ssl_server && ((ssl_options.cert_file_name != NULL &&
@@ -148,7 +154,7 @@ int main(int argc, char **argv) {
                      (ssl_options.key_file_name != NULL &&
                       strlen(ssl_options.key_file_name) == 0))) {
     print_help();
-    err(1, "ERROR: public certificate or private key not specified");
+    errx(1, "ERROR: public certificate or private key not specified");
   }
 
   /*
@@ -160,7 +166,7 @@ int main(int argc, char **argv) {
 
   if (access(storage_directory.c_str(), W_OK) != 0) {
     print_help();
-    err(1, "ERROR: storage directory is invalid or is not writable");
+    errx(1, "ERROR: storage directory is invalid or is not writable");
   }
 
   /*
@@ -173,7 +179,7 @@ int main(int argc, char **argv) {
     std::ofstream output(fpath);
     int removed = std::remove(fpath.c_str());
     if (removed != 0)
-      err(removed, "ERROR: could not remove __init__ test file");
+      errx(removed, "ERROR: could not remove __init__ test file");
   }
 
   /* based and lit method to make sure that nothing goes wrong */
@@ -181,24 +187,24 @@ int main(int argc, char **argv) {
   /* the only directory we need access to is the storage directory */
   int unveil_err = unveil(storage_directory.c_str(), "rwc");
   if (unveil_err != 0) {
-    err(unveil_err, "ERROR: could not unveil storage folder: %s",
+    errx(unveil_err, "ERROR: could not unveil storage folder: %s",
         storage_directory.c_str());
   }
 
   if (ssl_server) {
     unveil_err = unveil(ssl_options.cert_file_name, "r");
     if (unveil_err != 0)
-      err(unveil_err, "ERROR: could not unveil public certificate file: %s",
+      errx(unveil_err, "ERROR: could not unveil public certificate file: %s",
           ssl_options.cert_file_name);
     unveil_err = unveil(ssl_options.key_file_name, "r");
     if (unveil_err != 0)
-      err(unveil_err, "ERROR: could not unveil private key file: %s",
+      errx(unveil_err, "ERROR: could not unveil private key file: %s",
           ssl_options.key_file_name);
     if (ssl_options.dh_params_file_name != NULL &&
         strlen(ssl_options.dh_params_file_name) != 0) {
       unveil_err = unveil(ssl_options.dh_params_file_name, "r");
       if (unveil_err != 0)
-        err(unveil_err, "ERROR: could not unveil dhparams file: %s",
+        errx(unveil_err, "ERROR: could not unveil dhparams file: %s",
             ssl_options.dh_params_file_name);
     }
   }
@@ -222,11 +228,11 @@ int main(int argc, char **argv) {
   }
 
   if (bind_port.size() != bind_ip.size()) {
-    err(1, "ERROR: Could not normalize and sanitize ips and ports.");
+    errx(1, "ERROR: Could not normalize and sanitize ips and ports.");
   }
 
   if (header_names.size() != header_values.size()) {
-    err(1, "ERROR: header names and values can't be matched");
+    errx(1, "ERROR: header names and values can't be matched");
   }
   for (std::map<std::string, std::string>::size_type i = 0;
        i < header_names.size(); i++)
@@ -244,7 +250,7 @@ int main(int argc, char **argv) {
   /* initialize the settings to be passed to the server */
   purrito_settings settings(domain, storage_directory, bind_ip, bind_port,
                             max_paste_size, slug_size, slug_characters, headers,
-                            ssl_options, index_file);
+                            ssl_options, enable_httpserver, index_file);
 
   /* create the server and start running it */
   if (ssl_server) {
