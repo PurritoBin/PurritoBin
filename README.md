@@ -46,11 +46,12 @@ The server is run using the command `purrito`. To quickly view the available opt
 
 ```
 $ purrito -h
-usage: purrito [-acdeghiklmnpsvwx] -d domain [-a slug_characters]
-               [-c public_cert_file] [-e dhparams_file] [-g slug_size] [-h]
-               [-i bind_ip] [-k private_key_file] [-l] [-m max_paste_size]
-               [-n server name] [-p bind_port] [-s storage_directory]
-               [-v header_value] [-w passphrase] [-x header]
+usage: purrito [-acdefghiklmnpstvwx] -d domain [-a slug_characters]
+               [-c public_cert_file] [-e dhparams_file] [-f index_file]
+               [-g slug_size] [-h] [-i bind_ip] [-k private_key_file] [-l]
+               [-m max_paste_size] [-n server name] [-p bind_port]
+               [-s storage_directory] [-t] [-v header_value] [-w passphrase]
+               [-x header]
 ```
 
 For an indepth explanation, there is a man page provided.
@@ -166,11 +167,10 @@ Pull requests to harden the code by default in linux and other operating systems
 - Auto slug generation and returning paste url.
 - Efficient limiting of paste size by cutting off requests at threshold, stopping network blockage.
 - Submission port for users to submit.
+- Tiny server to browse the pastes. It is optimized for small paste sizes. If accepting really large paste, it is recommended to not use this and instead use a dedicated web server, such as [httpd(8)](https://man.openbsd.org/httpd.8), [apache](https://httpd.apache.org/), [nginx](https://www.nginx.com/) or literally any other web server.
 - You can run it on an internal system so that it is accessible only by the people inside the network.
 
 ### What PurritoBin does NOT provide
-- Server to browse the pastes
-  - The pastes are plain text files, so they can be shown using [httpd(8)](https://man.openbsd.org/httpd.8), [apache](https://httpd.apache.org/), [nginx](https://www.nginx.com/) or literally any other web server. Use them, they are much better at this and can implement a lot of other functionality.
 - Auto cleaning of pastes
   - Use a [cron](https://en.wikipedia.org/wiki/Cron) job to manage this. It is a lot more efficient and also gives you more control.
 - Request throttling
