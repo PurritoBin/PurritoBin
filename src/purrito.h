@@ -23,6 +23,7 @@
 #include <cinttypes>
 #include <cstdio>
 #include <cstdlib>
+#include <fstream>
 #include <map>
 #include <memory>
 #include <random>
@@ -101,6 +102,12 @@ public:
    */
   const uWS::SocketContextOptions ssl_options;
 
+  /*
+   * DEFAULT: index.html
+   * index file for top level directory
+   */
+  const std::string index_file;
+
   purrito_settings(const std::string &domain,
                    const std::string &storage_directory,
                    const std::vector<std::string> &bind_ip,
@@ -109,11 +116,12 @@ public:
                    const std::string::size_type &slug_size,
                    const std::string &slug_characters,
                    const std::map<std::string, std::string> &headers,
-                   const uWS::SocketContextOptions ssl_options)
+                   const uWS::SocketContextOptions ssl_options,
+                   const std::string index_file)
       : domain(domain), storage_directory(storage_directory), bind_ip(bind_ip),
         bind_port(bind_port), max_paste_size(max_paste_size),
         slug_size(slug_size), slug_characters(slug_characters),
-        headers(headers), ssl_options(ssl_options) {}
+        headers(headers), ssl_options(ssl_options), index_file(index_file) {}
 };
 
 /*
@@ -146,24 +154,44 @@ uWS::TemplatedApp<SSL> purr(const purrito_settings &settings) {
 
   /* create a standard non tls app to listen for requests */
   auto purrito = uWS::TemplatedApp<SSL>();
-  purrito.post(
-      "/",
-      /* specifically ignoring the request parameter, as c++ is dumb */
-      [&](auto *res, auto *) {
+  purrito
+      .post("/",
+            /* specifically ignoring the request parameter, as c++ is dumb */
+            [&](auto *res, auto *) {
+              /* Log that we are getting a connection */
+              auto paste_ip = std::string(res->getRemoteAddressAsText());
+              std::uint_fast64_t session_id = rng();
+              syslog(LOG_INFO,
+                     "(%s) Got a POST connection - session id (%" PRIuFAST64
+                     ")",
+                     paste_ip.c_str(), session_id);
+
+              for (auto it : settings.headers)
+                res->writeHeader(it.first, it.second);
+
+              /*
+               * register the callback, which will cork the request properly
+               */
+              res->cork([=]() { read_paste<SSL>(settings, session_id, res); });
+
+              /*
+               * attach a standard abort handler, in case something goes wrong
+               */
+              res->onAborted([=]() {
+                syslog(LOG_WARNING,
+                       "(%" PRIuFAST64
+                       ") WARNING: Request was prematurely aborted",
+                       session_id);
+              });
+            })
+      .get("/*", [&](auto *res, auto *req) {
+        std::string paste_filename(req->getUrl()), paste_data;
         /* Log that we are getting a connection */
         auto paste_ip = std::string(res->getRemoteAddressAsText());
         std::uint_fast64_t session_id = rng();
-        syslog(LOG_INFO, "(%s) Got a connection - session id (%" PRIuFAST64 ")",
-               paste_ip.c_str(), session_id);
-
-        for (auto it : settings.headers)
-          res->writeHeader(it.first, it.second);
-
-        /*
-         * register the callback, which will cork the request properly
-         */
-        res->cork([=]() { read_paste<SSL>(settings, session_id, res); });
-
+        syslog(LOG_INFO,
+               "(%s) Got a GET connection {%s} - session id (%" PRIuFAST64 ")",
+               paste_ip.c_str(), paste_filename.c_str(), session_id);
         /*
          * attach a standard abort handler, in case something goes wrong
          */
@@ -172,6 +200,27 @@ uWS::TemplatedApp<SSL> purr(const purrito_settings &settings) {
                  "(%" PRIuFAST64 ") WARNING: Request was prematurely aborted",
                  session_id);
         });
+
+        if (paste_filename.size() <= 1)
+          paste_filename = "/" + settings.index_file;
+
+        paste_filename = settings.storage_directory + paste_filename.substr(1);
+
+        std::ifstream paste_stream(paste_filename,
+                                   std::ios::in | std::ios::binary);
+        if (!paste_stream) {
+          res->writeStatus("404 Not Found");
+        } else {
+          paste_stream.seekg(0, std::ios::end);
+          paste_data.resize(paste_stream.tellg());
+          paste_stream.seekg(0, std::ios::beg);
+          paste_stream.read(&paste_data[0], paste_data.size());
+          paste_stream.close();
+        }
+        for (auto it : settings.headers)
+          res->writeHeader(it.first, it.second);
+        res->write(paste_data);
+        res->end();
       });
   for (std::vector<std::uint_fast16_t>::size_type i = 0;
        i < settings.bind_ip.size(); i++) {

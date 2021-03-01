@@ -47,13 +47,11 @@ void print_help() {
  */
 int main(int argc, char **argv) {
   int opt;
-  std::string domain, storage_directory;
-  std::vector<std::string> bind_ip;
+  std::string domain, storage_directory, slug_characters, index_file;
   std::vector<std::uint_fast16_t> bind_port;
   std::map<std::string, std::string> headers;
-  std::vector<std::string> header_names, header_values;
+  std::vector<std::string> bind_ip, header_names, header_values;
   std::uint_fast8_t slug_size;
-  std::string slug_characters;
 
   std::string::size_type max_paste_size;
 
@@ -65,6 +63,7 @@ int main(int argc, char **argv) {
    */
   slug_size = 7; // the magic number
   slug_characters = "0123456789abcdefghijklmnopqrstuvwxyz";
+  index_file = "index.html";
   max_paste_size = 65536;                     // seems reasonable for most
   storage_directory = "/var/www/purritobin/"; // should probably be owned
                                               // by user running the program
@@ -73,7 +72,7 @@ int main(int argc, char **argv) {
   uWS::SocketContextOptions ssl_options = {};
   std::string server_name;
 
-  while ((opt = getopt(argc, argv, "a:c:d:e:g:hi:k:lm:n:p:s:v:w:x:")) != EOF)
+  while ((opt = getopt(argc, argv, "a:c:d:e:f:g:hi:k:lm:n:p:s:v:w:x:")) != EOF)
     switch (opt) {
     case 'h':
       print_help();
@@ -123,6 +122,9 @@ int main(int argc, char **argv) {
       break;
     case 'v':
       header_values.push_back(optarg);
+      break;
+    case 'f':
+      index_file = optarg;
       break;
     default:
       print_help();
@@ -242,7 +244,7 @@ int main(int argc, char **argv) {
   /* initialize the settings to be passed to the server */
   purrito_settings settings(domain, storage_directory, bind_ip, bind_port,
                             max_paste_size, slug_size, slug_characters, headers,
-                            ssl_options);
+                            ssl_options, index_file);
 
   /* create the server and start running it */
   if (ssl_server) {
