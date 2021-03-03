@@ -160,22 +160,24 @@ options.
 .Sy DEFAULT :
 /var/www/purritobin
 .Pp
-.It Fl t
-Enable a simple HTTP server to serve the pastes.
-.Sy WARNING :
-.Nm
-is not optimized for serving pastes.
-It is recommended to use a proper web server
-for serving the files.
-.Pp
-path to the
+Path to the
 .Ar storage_directory
-for storing the pastes
+for storing the pastes.
 .Pp
 .Sy NOTE :
 should exist prior to starting the server and should
 be writable by the user running
 .Nm .
+.Pp
+.It Fl t
+Enable a simple HTTP server to serve the pastes.
+.Pp
+.Sy WARNING :
+.Nm
+is only optimized for receiving large paste, not
+for serving them like an HTTP server.
+It is recommended to use a proper web server
+for serving large files.
 .Pp
 .It Fl v Ar header_value
 .Sy DEFAULT :
