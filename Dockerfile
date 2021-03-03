@@ -1,6 +1,16 @@
-FROM alpine:latest
+FROM alpine:3.12
 
-LABEL build_version="PurritoBin v0.4.2dev"
+ARG  US_TAG="5440dbac79bd76444175b76ee95dfcade12a6aac"
+ARG  UWS_TAG="b7202e71eea5195a35260f69efc3278b863a50ba"
+
+ARG  VERSION="0.4.3"
+
+LABEL org.opencontainers.image.authors="Aisha Tammy <purrito@bsd.ac>"
+LABEL org.opencontainers.image.description="fast and minimalistic command line pastebin"
+LABEL org.opencontainers.image.licenses="ISC"
+LABEL org.opencontainers.image.source="https://github.com/PurritoBin/PurritoBin"
+LABEL org.opencontainers.image.title="PurritoBin v${VERSION}"
+LABEL org.opencontainers.image.version="${VERSION}"
 
 ENV CC=gcc
 ENV CXX=g++
