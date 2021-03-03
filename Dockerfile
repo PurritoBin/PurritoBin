@@ -37,7 +37,6 @@ RUN apk update \
  && make PREFIX="/usr" install \
  && install -m755 docker/purritobin_wrapper /usr/bin \
  && mkdir -p /var/www/purritobin /etc/purritobin \
- && cp frontend/paste.html /var/www/purritobin \
  && apk del gcc g++ git make musl-dev openssl-dev \
  && cd / \
  && rm -rf /purritobin
