@@ -7,7 +7,7 @@ ENV CXX=g++
 ENV CFLAGS="-flto -O3"
 ENV CXXFLAGS="-flto -O3"
 
-WORKDIR /purritobin/build
+WORKDIR /purritobin
 
 RUN apk update \
  && apk add libgcc libstdc++ libssl1.1 libcrypto1.1 \
@@ -27,7 +27,9 @@ RUN apk update \
  && cd PurritoBin \
  && make PREFIX="/usr" install \
  && mkdir -p /var/www/purritobin \
+ && cp frontend/paste.html /var/www/purritobin \
  && apk del gcc g++ git make musl-dev openssl-dev \
+ && cd / \
  && rm -rf /purritobin
 
 CMD ["purrito", "-d", "http://localhost/", "-t"]
