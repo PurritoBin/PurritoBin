@@ -7,6 +7,16 @@ ENV CXX=g++
 ENV CFLAGS="-flto -O3"
 ENV CXXFLAGS="-flto -O3"
 
+ENV DOMAIN="http://localhost/"
+ENV MAXPASTESIZE=65536
+ENV ALPHANUM=1234567890abcdefghijklmnopqrstuvwxyz
+ENV SLUGSIZE=7
+
+ENV SSL=NO
+ENV SERVERNAME="http://localhost/"
+ENV PUBLICKEY="/etc/purritobin/public.crt"
+ENV PRIVATEKEY="/etc/purritobin/private.crt"
+
 WORKDIR /purritobin
 
 RUN apk update \
@@ -26,10 +36,11 @@ RUN apk update \
  && git clone https://github.com/PurritoBin/PurritoBin \
  && cd PurritoBin \
  && make PREFIX="/usr" install \
- && mkdir -p /var/www/purritobin \
+ && install -m755 docker/purritobin_wrapper /usr/bin \
+ && mkdir -p /var/www/purritobin /etc/purritobin \
  && cp frontend/paste.html /var/www/purritobin \
  && apk del gcc g++ git make musl-dev openssl-dev \
  && cd / \
  && rm -rf /purritobin
 
-CMD ["purrito", "-d", "http://localhost/", "-t"]
+CMD /usr/bin/purritobin_wrapper
