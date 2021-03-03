@@ -149,6 +149,11 @@ int main(int argc, char **argv) {
     errx(1, "ERROR: empty domain name");
   }
 
+  if (slug_characters == "") {
+    print_help();
+    errx(1, "ERROR: slug character set is empty");
+  }
+
   if (ssl_server && ((ssl_options.cert_file_name != NULL &&
                       strlen(ssl_options.cert_file_name) == 0) ||
                      (ssl_options.key_file_name != NULL &&

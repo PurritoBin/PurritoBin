@@ -1,9 +1,8 @@
 #!/bin/sh
 
 : ${DOMAIN="http://localhost/"}
-: ${MAXPASTESIZE=65536}
-: ${ALPHANUM=1234567890abcdefghijklmnopqrstuvwxyz}
-: ${SLUGSIZE=7}
+: ${MAXPASTESIZE="65536"}
+: ${SLUGSIZE="7"}
 
 : ${SSL=NO}
 : ${SERVERNAME="http://localhost/"}
@@ -12,9 +11,9 @@
 
 if [ "${SSL}" = "NO" ]; then
   purrito -d "${DOMAIN}" -m "${MAXPASTESIZE}" \
-          -a "${ALPHANUM}" -g "${SLUGSIZE}"
+          -g "${SLUGSIZE}" -t
 else
   purrito -d "${DOMAIN}" -m "${MAXPASTESIZE}" \
-          -a "${ALPHANUM}" -g "${SLUGSIZE}" \
+          -g "${SLUGSIZE}" -t \
           -l -n "${SERVERNAME}" -c "${PUBLICKEY}" -k "${PRIVATEKEY}"
 fi
