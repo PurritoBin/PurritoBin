@@ -30,4 +30,4 @@ RUN apk update \
  && apk del gcc g++ git make musl-dev openssl-dev \
  && rm -rf /purritobin
 
-CMD ["purrito", "-d", "http://localhost/"]
+CMD ["purrito", "-d", "http://localhost/", "-t"]
