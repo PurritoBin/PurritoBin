@@ -16,5 +16,5 @@ if [ "${SSL}" = "NO" ]; then
 else
   purrito -d "${DOMAIN}" -m "${MAXPASTESIZE}" \
           -a "${ALPHANUM}" -g "${SLUGSIZE}" \
-          -l -n "${SERVERNAME} -c "${PUBLICKEY}" -k "${PRIVATEKEY}"
+          -l -n "${SERVERNAME}" -c "${PUBLICKEY}" -k "${PRIVATEKEY}"
 fi
