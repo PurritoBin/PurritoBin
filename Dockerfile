@@ -23,7 +23,7 @@ ENV DOMAIN="http://localhost:42069/"
 ENV MAXPASTESIZE="65536"
 ENV SLUGSIZE="7"
 
-ENV SSL=NO
+ENV TLS=NO
 ENV SERVERNAME="http://localhost/"
 ENV PUBLICKEY="/etc/purritobin/public.crt"
 ENV PRIVATEKEY="/etc/purritobin/private.crt"

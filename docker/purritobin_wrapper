@@ -4,14 +4,14 @@
 : ${MAXPASTESIZE="65536"}
 : ${SLUGSIZE="7"}
 
-: ${SSL=NO}
+: ${TLS=NO}
 : ${SERVERNAME="localhost"}
 : ${PUBLICKEY="/etc/purritobin/public.crt"}
 : ${PRIVATEKEY="/etc/purritobin/private.crt"}
 
 cp /usr/share/purritobin/paste.html /var/www/purritobin
 
-if [ "${SSL}" = "NO" ]; then
+if [ "${TLS}" = "NO" ]; then
   purrito -d "${DOMAIN}" -m "${MAXPASTESIZE}" \
           -g "${SLUGSIZE}" -t
 else
