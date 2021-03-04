@@ -19,7 +19,7 @@ ENV CXX=g++
 ENV CFLAGS="-flto -O3"
 ENV CXXFLAGS="-flto -O3"
 
-ENV DOMAIN="http://localhost/"
+ENV DOMAIN="http://localhost:42069/"
 ENV MAXPASTESIZE="65536"
 ENV SLUGSIZE="7"
 

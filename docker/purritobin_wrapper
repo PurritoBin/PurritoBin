@@ -1,6 +1,6 @@
 #!/bin/sh
 
-: ${DOMAIN="http://localhost/"}
+: ${DOMAIN="http://localhost:42069/"}
 : ${MAXPASTESIZE="65536"}
 : ${SLUGSIZE="7"}
 
