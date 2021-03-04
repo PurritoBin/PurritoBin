@@ -16,31 +16,97 @@ ultra fast, minimalistic, encrypted command line paste-bin
 
 ## Features and Highlights
 
-- Very lightweight: 2-3 MB of RAM on average.
+- *Very* lightweight: 2-3 MB of RAM on average.
 - Listen on multiple address/port combinations, both IPv4 and IPv6.
 - Configurable paste size limit.
 - Paste storage in plain text, easy to integrate with all web servers (Apache, Nginx, etc.).
 - Encrypted pasting similar to [PrivateBin](https://github.com/PrivateBin/PrivateBin).
-- Optional SSL support for secure communication.
-- Tiny code base, less than 600 lines of code, for very easy auditing.
+- Optional **`https`** support for secure communication.
+- Tiny code base, less than 700 lines of code, for very easy auditing.
 - Well documented, `man purrito`.
 
-## Server （ฅ＾・ﻌ・＾）ฅ
+## docker （ฅ＾・ﻌ・＾）ฅ
 
-### docker
+### Parameters
 
-A tiny, optimized docker image is [available](https://hub.docker.com/r/purritobin/purritobin) with instructions for a fast setup.
+The docker image allows passing the following variables to configure PurritoBin:
 
-### Manual installation
+| Variable | Default | Description |
+|--------- | ------- | ----------- |
+| DOMAIN | `http://localhost:42069/` | **domain** used as prefix of returned paste |
+| MAXPASTESIZE  | `65536` | **maximum paste size** allowed, in *BYTES* |
+| SLUGSIZE | `7` | **length** of the *randomly generated string id* for the paste |
+| TLS | `NO` | enable listening via **`https`** |
+| SERVERNAME | `localhost` | **server name indication** used for *TLS* handshakes, must be valid for the given certificates |
+| PUBLICKEY | `/etc/purritobin/public.crt` | *TLS* public certificate |
+| PRIVATEKEY | `/etc/purritobin/private.crt` | *TLS* private certificate|
 
-#### Requirements
+### Examples
+
+For all examples below, remember to substitute the value of `DOMAIN` from `localhost` to the actual domain/IP of the machine.
+
+PurritoBin listens on port 42069 by default.
+
+#### docker cli
+
+##### HTTP
+
+A simple example:
+- Run the server while listening for pastes on port `8080`
+  - Map host port `8080` to container port `42069`
+- Create a persistent store of pastes in host folder `/data/apps/purritobin`
+  - Make a shared volume by mounting `/data/apps/purritobin` to `/var/www/purritobin` inside the container
+
+```
+docker run -d \
+  --name=purritobin \
+  -p 8080:42069 \
+  -v /data/apps/purritobin:/var/www/purritobin \
+  --restart unless-stopped \
+  purritobin/purritobin
+```
+
+To do a test paste to the above server
+```
+  $ echo "cool paste" | curl --silent --data-binary "@${1:-/dev/stdin}" "http://localhost:42069/"
+  http://localhost:42069/purr1t0
+  $ curl --silent http://localhost:42069/purr1t0
+  cool paste
+```
+
+##### HTTPS
+
+To run with `https`, the public and private keys need to be provided to the container and mounted at `/etc/purritobin`.   
+By default, it is assumed that the public and private keys are stored at `/etc/purritobin/public.crt` and `/etc/purritobin/private.crt`, respectively.   
+For example, assuming that the certificates, for the domain `localhost`, are stored on the host machine at `/data/apps/certificates/{public,private}.crt`, PurritoBin can be started in **`https`** mode with:
+
+```
+docker run -d \
+  --name=purritobin \
+  -e DOMAIN="https://localhost:42069/" \
+  -e MAXPASTESIZE=65536 \
+  -e SLUGSIZE="7" \
+  -e TLS="YES" \
+  -e PUBLICKEY="/etc/purritobin/public.crt" \
+  -e PRIVATEKEY="/etc/purritobin/private.crt \
+  -e SERVERNAME="localhost" \
+  -p 8080:42069 \
+  -v /data/apps/purritobin/:/var/www/purritobin \
+  -v /data/apps/certificates:/etc/purritobin \
+  --restart unless-stopped \
+  purritobin/purritobin
+```
+
+## Manual setup （ฅ＾・ﻌ・＾）ฅ
+
+### Requirements
 
 - [uSockets](https://github.com/uNetworking/uSockets/)
 - [uWebSockets](https://github.com/uNetworking/uWebSockets/)
 
 If these are not available in your OS repositories, you can manually install them by following the steps in the [GitHub workflow](https://github.com/PurritoBin/PurritoBin/actions?query=workflow:pipeline)
 
-#### Compilation
+### Compilation
 
 ```
 $ make
