@@ -1,0 +1,21 @@
+#!/bin/sh
+
+: ${DOMAIN="http://localhost/"}
+: ${MAXPASTESIZE="65536"}
+: ${SLUGSIZE="7"}
+
+: ${SSL=NO}
+: ${SERVERNAME="localhost"}
+: ${PUBLICKEY="/etc/purritobin/public.crt"}
+: ${PRIVATEKEY="/etc/purritobin/private.crt"}
+
+cp /usr/share/purritobin/paste.html /var/www/purritobin
+
+if [ "${SSL}" = "NO" ]; then
+  purrito -d "${DOMAIN}" -m "${MAXPASTESIZE}" \
+          -g "${SLUGSIZE}" -t
+else
+  purrito -d "${DOMAIN}" -m "${MAXPASTESIZE}" \
+          -g "${SLUGSIZE}" -t \
+          -l -n "${SERVERNAME}" -c "${PUBLICKEY}" -k "${PRIVATEKEY}"
+fi
