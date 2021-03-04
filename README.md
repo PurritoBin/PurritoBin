@@ -5,6 +5,11 @@
 [![GitHub issues](https://img.shields.io/github/issues-raw/PurritoBin/PurritoBin)](https://github.com/PurritoBin/PurritoBin/issues)
 [![contributions welcome](https://img.shields.io/badge/contributions-welcome-brightgreen.svg?style=flat)](https://github.com/PurritoBin/PurritoBin/issues)
 
+[![Docker Cloud Build Status](https://img.shields.io/docker/cloud/build/purritobin/purritobin)](https://hub.docker.com/r/purritobin/purritobin)
+[![Docker Pulls](https://img.shields.io/docker/pulls/purritobin/purritobin)](https://hub.docker.com/r/purritobin/purritobin)
+[![Docker Image Size](https://img.shields.io/docker/image-size/purritobin/purritobin/latest)](https://hub.docker.com/r/purritobin/purritobin)
+
+
 ultra fast, minimalistic, encrypted command line paste-bin
 
 [![Packaging status](https://repology.org/badge/vertical-allrepos/purritobin.svg)](https://repology.org/project/purritobin/versions)
@@ -17,12 +22,16 @@ ultra fast, minimalistic, encrypted command line paste-bin
 - Paste storage in plain text, easy to integrate with all web servers (Apache, Nginx, etc.).
 - Encrypted pasting similar to [PrivateBin](https://github.com/PrivateBin/PrivateBin).
 - Optional SSL support for secure communication.
-- Tiny code base, less than 1000 lines of code, for very easy auditing.
+- Tiny code base, less than 600 lines of code, for very easy auditing.
 - Well documented, `man purrito`.
 
 ## Server （ฅ＾・ﻌ・＾）ฅ
 
-### Installation
+### docker
+
+A tiny, optimized docker image is [available](https://hub.docker.com/r/purritobin/purritobin) with instructions for a fast setup.
+
+### Manual installation
 
 #### Requirements
 
@@ -170,9 +179,9 @@ Pull requests to harden the code by default in linux and other operating systems
 - Tiny server to browse the pastes. It is optimized for small paste sizes. If accepting really large paste, it is recommended to not use this and instead use a dedicated web server, such as [httpd(8)](https://man.openbsd.org/httpd.8), [apache](https://httpd.apache.org/), [nginx](https://www.nginx.com/) or literally any other web server.
 - You can run it on an internal system so that it is accessible only by the people inside the network.
 
-### What PurritoBin does NOT provide
+### What PurritoBin does NOT provide (yet)
 - Auto cleaning of pastes
-  - Use a [cron](https://en.wikipedia.org/wiki/Cron) job to manage this. It is a lot more efficient and also gives you more control.
+  - It is possible to use a [cron](https://en.wikipedia.org/wiki/Cron) job to manage this.
 - Request throttling
   - Use a firewall, like [pf](https://www.openbsd.org/faq/pf/filter.html), [nftables](https://wiki.nftables.org/wiki-nftables/index.php/Main_Page) or **(god forbid)** [iptables](https://linux.die.net/man/8/iptables), to manage this, they are designed for exactly this kind of feature.
 
