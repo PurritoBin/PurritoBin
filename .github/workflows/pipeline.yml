@@ -15,17 +15,16 @@ env:
   CXX: g++-10
 
 jobs:
-  build:
+  pipeline:
     runs-on: ubuntu-latest
     steps:
     - uses: actions/checkout@v2
-    - name: Install deps
+    - name: Install dependencies
       run: |
         sudo apt update
-        sudo apt-get install -y libssl-dev pkg-config gcc-10 g++-10
+        sudo apt-get install -y libssl-dev pkg-config gcc-10 g++-10 mandoc
     - name: Install uSockets
       run: |
-        echo $(pwd)
         git clone https://github.com/uNetworking/uSockets
         wget https://raw.githubusercontent.com/gentoo/guru/dev/net-libs/usockets/files/usockets-0.7.1-Makefile.patch
         cd uSockets
@@ -34,7 +33,6 @@ jobs:
         sudo make install
     - name: Install uWebSockets
       run: |
-        echo $(pwd)
         git clone https://github.com/uNetworking/uWebSockets
         cd uWebSockets
         sudo cp -r src /usr/include/uWebSockets
@@ -44,3 +42,6 @@ jobs:
     - name: Test
       run: |
         env GH_ACTIONS="YES" P_CONCUR=5 P_MAXSIZE=3 make check
+    - name: Check man pages
+      run: |
+        mandoc -T lint -W warning man/purrito.1
