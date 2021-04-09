@@ -22,7 +22,7 @@ jobs:
     - name: Install dependencies
       run: |
         sudo apt update
-        sudo apt-get install -y libssl-dev pkg-config gcc-10 g++-10 mandoc valgrind
+        sudo apt-get install -y libssl-dev pkg-config gcc-10 g++-10 mandoc valgrind llvm
     - name: Install uSockets
       run: |
         git clone https://github.com/uNetworking/uSockets
@@ -38,7 +38,7 @@ jobs:
         sudo cp -r src /usr/include/uWebSockets
     - name: Make
       run: |
-        make
+        scan-build make
     - name: Test
       run: |
         env GH_ACTIONS="YES" P_CONCUR=5 P_MAXSIZE=3 PURRITO="valgrind --leak-check=full --show-leak-kinds=all --verbose ../purrito" --error-exitcode=1 make check
