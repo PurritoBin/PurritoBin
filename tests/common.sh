@@ -7,7 +7,7 @@
 : ${P_DATA=$(mktemp -p ${P_TMPDIR})}
 : ${P_CONCUR=10}
 : ${P_MAXSIZE=5}
-
+: ${PURRITO=../purrito}
 ### needed for github actions
 : ${GH_ACTIONS=NO}
 if [ ${GH_ACTIONS} = "YES" ]; then

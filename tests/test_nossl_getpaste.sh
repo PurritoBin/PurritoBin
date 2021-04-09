@@ -5,7 +5,7 @@ set -e
 . ./common.sh
 
 P_RACING=1
-../purrito -d "${P_TMPDIR}/" -s "${P_TMPDIR}" -i 127.0.0.1 -p "${P_PORT}" -t &
+${PURRITO} -d "${P_TMPDIR}/" -s "${P_TMPDIR}" -i 127.0.0.1 -p "${P_PORT}" -t &
 P_ID=$!
 P_RACING=
 

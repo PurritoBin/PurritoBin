@@ -22,7 +22,7 @@ jobs:
     - name: Install dependencies
       run: |
         sudo apt update
-        sudo apt-get install -y libssl-dev pkg-config gcc-10 g++-10 mandoc
+        sudo apt-get install -y libssl-dev pkg-config gcc-10 g++-10 mandoc valgrind
     - name: Install uSockets
       run: |
         git clone https://github.com/uNetworking/uSockets
@@ -41,7 +41,7 @@ jobs:
         make
     - name: Test
       run: |
-        env GH_ACTIONS="YES" P_CONCUR=5 P_MAXSIZE=3 make check
+        env GH_ACTIONS="YES" P_CONCUR=5 P_MAXSIZE=3 PURRITO="valgrind --leak-check=full --show-leak-kinds=all --verbose ../purrito" make check
     - name: Check man pages
       run: |
         mandoc -T lint -W warning man/purrito.1
