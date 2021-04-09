@@ -73,7 +73,6 @@ int main(int argc, char **argv) {
 	storage_directory = "/var/www/purritobin/"; // should probably be owned
 	                                            // by user running the program
 	ssl_server = false;
-	enable_httpserver = false;
 
 	while ((opt = getopt(argc, argv, "a:c:d:e:f:g:hi:k:lm:n:p:r:s:tv:w:x:")) != EOF)
 		switch (opt) {
