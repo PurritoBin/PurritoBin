@@ -22,7 +22,7 @@ jobs:
     - name: Install dependencies
       run: |
         sudo apt update
-        sudo apt-get install -y libssl-dev pkg-config gcc-10 g++-10 mandoc valgrind llvm
+        sudo apt-get install -y libssl-dev pkg-config gcc-10 g++-10 mandoc valgrind clang-tools
     - name: Install uSockets
       run: |
         git clone https://github.com/uNetworking/uSockets
