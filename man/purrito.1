@@ -20,7 +20,7 @@
 .Nd PurritoBin pastebin server
 .Sh SYNOPSIS
 .Nm purrito
-.Op Fl acdefghiklmnpstvwx
+.Op Fl acdefghiklmnprstvwx
 .Fl d Ar domain
 .Op Fl a Ar slug_characters
 .Op Fl c Ar public_cert_file
@@ -34,6 +34,7 @@
 .Op Fl m Ar max_paste_size
 .Op Fl n Ar server name
 .Op Fl p Ar bind_port
+.Op Fl r Ar max_retries
 .Op Fl s Ar storage_directory
 .Op Fl t
 .Op Fl v Ar header_value
@@ -155,6 +156,13 @@ options are specified, then the last
 is used for all remaining
 .Ar bind_port
 options.
+.Pp
+.It Fl r Ar max_retries
+.Sy DEFAULT :
+5
+.Pp
+Maximum number of retries to generate a random,
+in case of a pastebin with large number of pastes.
 .Pp
 .It Fl s Ar storage_directory
 .Sy DEFAULT :
