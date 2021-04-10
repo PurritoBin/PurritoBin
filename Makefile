@@ -22,12 +22,12 @@ LIBS +=		libusockets
 # uwebsockets: https://github.com/uNetworking/uWebSockets
 # uSockets   : https://github.com/uNetworking/uSockets
 CXXFLAGS +=	`${PKG_CONFIG} --cflags ${LIBS}`
-LDFLAGS +=	`${PKG_CONFIG} --libs ${LIBS}`
+LDFLAGS +=	`${PKG_CONFIG} --libs ${LIBS}` -lpthread
 
 all: ${TARGET}
 
 ${TARGET}: ${SRCS} ${HEADERS}
-	${CXX} ${CXXFLAGS} -DUWS_NO_ZLIB ${SRCS} -o ${TARGET} ${LDFLAGS} -lpthread
+	${CXX} ${CXXFLAGS} -DUWS_NO_ZLIB ${SRCS} -o ${TARGET} ${LDFLAGS}
 
 install: all
 	${INSTALL} -d "${DESTDIR}${BINDIR}" "${DESTDIR}${DATADIR}" "${DESTDIR}${MANDIR}/man1"
