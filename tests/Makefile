@@ -4,10 +4,10 @@ check: test
 
 test: ${TESTS}
 
-${TESTS}: FORCE PB.key
+${TESTS}: keygen
 	sh "$@"
 
-PB.key:
+keygen: clean FORCE
 	openssl req -x509 -out PB.crt -keyout PB.key -newkey rsa:2048 -nodes -sha256 -subj '/CN=localhost' -extensions EXT -config PB.conf
 
 FORCE:

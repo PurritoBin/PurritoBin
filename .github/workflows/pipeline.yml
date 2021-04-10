@@ -41,7 +41,7 @@ jobs:
         scan-build --status-bugs make
     - name: Test
       run: |
-        env GH_ACTIONS="YES" P_CONCUR=5 P_MAXSIZE=3 PURRITO="valgrind --leak-check=full --show-leak-kinds=all --verbose ../purrito" --error-exitcode=1 make check
+        env P_DD_FLAGS="iflag=fullblock" P_CONCUR=5 P_MAXSIZE=3 PURRITO="valgrind --leak-check=full --show-leak-kinds=all --verbose ../purrito" --error-exitcode=1 make check
     - name: Check man pages
       run: |
         mandoc -T lint -W warning man/purrito.1
