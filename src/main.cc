@@ -259,16 +259,23 @@ int main(int argc, char **argv) {
 	                          ssl_options, enable_httpserver, index_file, max_retries);
 
 	/* create the server and start running it */
+	std::thread purrito_thread;
 	if (ssl_server) {
 		syslog(LOG_INFO, "Listening with SSL");
-		auto purrito = purr<true>(settings);
-		purrito.addServerName(server_name, ssl_options);
-		purrito.run();
+		purrito_thread = std::thread([&](){
+			auto purrito = purr<true>(settings);
+			purrito.addServerName(server_name, ssl_options);
+			purrito.run();
+		});
 	} else {
 		syslog(LOG_INFO, "Listening without SSL");
-		auto purrito = purr<false>(settings);
-		purrito.run();
+		purrito_thread = std::thread([&](){
+			auto purrito = purr<false>(settings);
+			purrito.run();
+		});
 	}
+
+	purrito_thread.join();
 
 	/* it should not be possible to reach here */
 	return 0;

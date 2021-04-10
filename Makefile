@@ -27,7 +27,7 @@ LDFLAGS +=	`${PKG_CONFIG} --libs ${LIBS}`
 all: ${TARGET}
 
 ${TARGET}: ${SRCS} ${HEADERS}
-	${CXX} ${CXXFLAGS} -DUWS_NO_ZLIB ${SRCS} -o ${TARGET} ${LDFLAGS}
+	${CXX} ${CXXFLAGS} -DUWS_NO_ZLIB ${SRCS} -o ${TARGET} ${LDFLAGS} -lpthread
 
 install: all
 	${INSTALL} -d "${DESTDIR}${BINDIR}" "${DESTDIR}${DATADIR}" "${DESTDIR}${MANDIR}/man1"
