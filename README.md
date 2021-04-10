@@ -121,12 +121,12 @@ The server is run using the command `purrito`. To quickly view the available opt
 
 ```
 $ purrito -h
-usage: purrito [-acdefghiklmnpstvwx] -d domain [-a slug_characters]
+usage: purrito [-acdefghiklmnprstvwx] -d domain [-a slug_characters]
                [-c public_cert_file] [-e dhparams_file] [-f index_file]
                [-g slug_size] [-h] [-i bind_ip] [-k private_key_file] [-l]
                [-m max_paste_size] [-n server name] [-p bind_port]
-               [-s storage_directory] [-t] [-v header_value] [-w passphrase]
-               [-x header]
+               [-r max_retries] [-s storage_directory] [-t] [-v header_value]
+               [-w passphrase] [-x header]
 ```
 
 For an indepth explanation, there is a man page provided.
