@@ -10,7 +10,7 @@ Type=simple
 User=purritobin
 Group=purritobin
 WorkingDirectory=/var/www/purritobin
-ExecStart=/usr/bin/purrito
+ExecStart=/usr/bin/purrito -d http://localhost:42069/ -t
 TimeoutStopSec=30
 
 [Install]

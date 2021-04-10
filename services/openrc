@@ -5,7 +5,7 @@ description="ultra fast, minimalistic command line paste-bin"
 
 command="/usr/bin/purrito"
 command_background=true
-command_args="${command_args:- -d /var/www/purritobin/}"
+command_args="${command_args:- -d http://localhost:42069/ -t}"
 pidfile="/run/${RC_SVCNAME}.pid"
 command_user="purritobin:purritobin"
 
