@@ -194,17 +194,19 @@ class purrito_paste_file {
 		for (; retries < settings.max_retries;
 		     retries++,
 		     slug = random_slug(settings.slug_characters,
-		                        settings.slug_size),
-		     file_path = settings.storage_directory + slug) {
-			int temp_fd =
+		                        settings.slug_size)) {
+			file_path = settings.storage_directory + slug;
+			syslog(LOG_INFO, "file: %s", file_path.c_str());
+			fd =
 			    open(file_path.c_str(), O_WRONLY | O_CREAT,
 			         S_IRUSR | S_IWUSR | S_IRGRP);
-			if (temp_fd == -1) continue;
-			int locked = flock(temp_fd, LOCK_EX | LOCK_NB);
-			if (locked == -1)
+			if (fd == -1) continue;
+			int locked = flock(fd, LOCK_EX | LOCK_NB);
+			if (locked == -1){
+				close(fd);
 				continue;
+			}
 			else {
-				fd = temp_fd;
 				file = std::fopen(file_path.c_str(), "w");
 				if (!file) {
 					flock(fd, LOCK_UN);
@@ -212,7 +214,6 @@ class purrito_paste_file {
 					std::remove(file_path.c_str());
 					continue;
 				}
-				file_path = settings.storage_directory + slug;
 				break;
 			}
 		}
