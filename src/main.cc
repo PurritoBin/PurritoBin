@@ -224,7 +224,7 @@ int main(int argc, char **argv) {
 		}
 	}
 	/* also we only need small amounts of net and socket access */
-	(void)pledge("stdio rpath wpath cpath inet unix", NULL);
+	(void)pledge("stdio rpath wpath cpath inet unix flock", NULL);
 #endif
 
 	/* sanitize the settings for ports and ips */
