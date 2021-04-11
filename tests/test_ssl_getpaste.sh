@@ -5,7 +5,7 @@ set -e
 . ./common.sh
 
 P_RACING=1
-${PURRITO} -d "${P_TMPDIR}/" -s "${P_TMPDIR}" -i 127.0.0.1 -p "${P_PORT}" -t -n localhost -k "PB.key" -c "PB.crt" -l &
+${PURRITO} -d "${P_TMPDIR}/" -s "${P_TMPDIR}" -z "${P_TMPDIR}" -i 127.0.0.1 -p "${P_PORT}" -t -n localhost -k "PB.key" -c "PB.crt" -l &
 P_ID=$!
 P_RACING=
 

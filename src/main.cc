@@ -46,8 +46,8 @@ void print_help() {
  */
 int main(int argc, char **argv) {
 	int opt;
-	std::string domain, storage_directory, slug_characters, index_file,
-	    server_name;
+	std::string domain, storage_directory, database_directory,
+	    slug_characters, index_file, server_name;
 	std::vector<std::uint_fast16_t> bind_port;
 	std::map<std::string, std::string> headers;
 	std::vector<std::string> bind_ip, header_names, header_values;
@@ -56,6 +56,7 @@ int main(int argc, char **argv) {
 	bool enable_httpserver, ssl_server;
 	uWS::SocketContextOptions ssl_options;
 	std::string::size_type max_paste_size;
+	std::uint_fast64_t max_database_size;
 
 	/* open syslog with purritobin identity */
 	openlog("purritobin", LOG_PERROR | LOG_PID, LOG_DAEMON);
@@ -69,13 +70,13 @@ int main(int argc, char **argv) {
 	index_file = "index.html";
 	max_paste_size = 65536;  // seems reasonable for most
 	max_retries = 5;
-	storage_directory =
-	    "/var/www/purritobin/";  // should probably be owned
-	                             // by user running the program
+	storage_directory = "/var/www/purritobin/";
+	database_directory = "/var/db/purritobin.mdb/";
+	max_database_size = 524288000;
 	ssl_server = false;
 
 	while ((opt = getopt(argc, argv,
-	                     "a:c:d:e:f:g:hi:k:lm:n:p:r:s:tv:w:x:")) != EOF)
+	                     "a:b:c:d:e:f:g:hi:k:lm:n:p:r:s:tv:w:x:z:")) != EOF)
 		switch (opt) {
 			case 'h':
 				print_help();
@@ -135,6 +136,12 @@ int main(int argc, char **argv) {
 			case 'r':
 				max_retries = std::stoi(optarg);
 				break;
+			case 'b':
+				max_database_size = std::stoi(optarg);
+				break;
+			case 'z':
+				database_directory = optarg;
+				break;
 			default:
 				print_help();
 				errx(1, "ERROR: incorrect parameters");
@@ -171,11 +178,17 @@ int main(int argc, char **argv) {
 	 * we will do a write test to see if everything worked out a-OK
 	 */
 	if (storage_directory.back() != '/') storage_directory += "/";
+	if (database_directory.back() != '/') database_directory += "/";
 
 	if (access(storage_directory.c_str(), W_OK) != 0) {
 		print_help();
 		errx(1,
 		     "ERROR: storage directory is invalid or is not writable");
+	}
+	if (access(database_directory.c_str(), W_OK) != 0) {
+		print_help();
+		errx(1,
+		     "ERROR: database directory is invalid or is not writable");
 	}
 
 	/*
@@ -191,6 +204,14 @@ int main(int argc, char **argv) {
 			errx(removed,
 			     "ERROR: could not remove __init__ test file");
 	}
+	{
+		auto fpath = database_directory + "__init__";
+		std::ofstream output(fpath);
+		int removed = std::remove(fpath.c_str());
+		if (removed != 0)
+			errx(removed,
+			     "ERROR: could not remove __init__ test file");
+	}
 
 #if defined(__OpenBSD__)
 	/* the only directory we need access to is the storage directory */
@@ -198,6 +219,11 @@ int main(int argc, char **argv) {
 	if (unveil_err != 0) {
 		errx(unveil_err, "ERROR: could not unveil storage folder: %s",
 		     storage_directory.c_str());
+	}
+	unveil_err = unveil(database_directory.c_str(), "rwc");
+	if (unveil_err != 0) {
+		errx(unveil_err, "ERROR: could not unveil storage folder: %s",
+		     database_directory.c_str());
 	}
 
 	if (ssl_server) {
@@ -259,16 +285,17 @@ int main(int argc, char **argv) {
 	       "{ "
 	       "domain: %s, "
 	       "storage_directory: %s, "
+	       "database_directory: %s, "
 	       "max_paste_size: %zu, "
 	       "slug_size: %" PRIuFAST8 " }",
-	       domain.c_str(), storage_directory.c_str(), max_paste_size,
-	       slug_size);
+	       domain.c_str(), storage_directory.c_str(),
+	       database_directory.c_str(), max_paste_size, slug_size);
 
 	/* initialize the settings to be passed to the server */
-	purrito_settings settings(domain, storage_directory, bind_ip, bind_port,
-	                          max_paste_size, slug_size, slug_characters,
-	                          headers, ssl_options, enable_httpserver,
-	                          index_file, max_retries);
+	purrito_settings settings(
+	    domain, storage_directory, database_directory, bind_ip, bind_port,
+	    max_paste_size, max_database_size, slug_size, slug_characters,
+	    headers, ssl_options, enable_httpserver, index_file, max_retries);
 
 	/* create the server and start running it */
 	std::thread purrito_thread;

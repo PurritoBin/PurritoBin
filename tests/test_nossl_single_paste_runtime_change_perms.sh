@@ -6,7 +6,7 @@
 set -e
 
 P_RACING=1
-${PURRITO} -d "${P_TMPDIR}/" -s "${P_TMPDIR}" -i 127.0.0.1 -p "${P_PORT}" &
+${PURRITO} -d "${P_TMPDIR}/" -s "${P_TMPDIR}" -z "${P_TMPDIR}" -i 127.0.0.1 -p "${P_PORT}" &
 P_ID=$!
 P_RACING=
 

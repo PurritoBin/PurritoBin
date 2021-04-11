@@ -29,6 +29,7 @@
 #include <errno.h>
 #include <fcntl.h>
 #include <syslog.h>
+#include <uWebSockets/App.h>
 
 #include <algorithm>
 #include <chrono>
@@ -44,9 +45,6 @@
 #include <system_error>
 #include <vector>
 
-
-#include <uWebSockets/App.h>
-
 class purrito_settings {
        public:
 	/*
@@ -59,11 +57,21 @@ class purrito_settings {
 
 	/*
 	 * REQUIRED
+	 * DEFAULT: /var/www/purritobin/
 	 * path to the storage directory for storing the paste
 	 * NOTE: should exist prior to creation and should be
 	 *       writable by the user running purrito
 	 */
 	const std::string storage_directory;
+
+	/*
+	 * REQUIRED
+	 * DEFAULT: /var/db/purritobin.mdb/
+	 * path to the database directory for storing the .mdb database
+	 * NOTE: should exist prior to creation and should be
+	 *       writable by the user running purrito
+	 */
+	const std::string database_directory;
 
 	/*
 	 * DEFAULT: 0.0.0.0
@@ -83,9 +91,16 @@ class purrito_settings {
 
 	/*
 	 * DEFAULT: 65536 // 64KB
-	 * size in bytes of the largest possible paste
+	 * size in BYTES of the largest possible paste
 	 */
 	const std::uint_fast64_t max_paste_size;
+
+	/*
+	 * REQUIRED
+	 * DEFAULT: 524288000
+	 * maximum size of the LMDB database allowed, in BYTES
+	 */
+	const std::uint_fast64_t max_database_size;
 
 	/*
 	 * DEFAULT: 7
@@ -135,9 +150,11 @@ class purrito_settings {
 
 	purrito_settings(const std::string &domain,
 	                 const std::string &storage_directory,
+	                 const std::string &database_directory,
 	                 const std::vector<std::string> &bind_ip,
 	                 const std::vector<std::uint_fast16_t> &bind_port,
 	                 const std::uint_fast64_t &max_paste_size,
+	                 const std::uint_fast64_t &max_database_size,
 	                 const std::string::size_type &slug_size,
 	                 const std::string &slug_characters,
 	                 const std::map<std::string, std::string> &headers,
@@ -147,9 +164,11 @@ class purrito_settings {
 	                 const std::uint_fast32_t max_retries)
 	    : domain(domain),
 	      storage_directory(storage_directory),
+	      database_directory(database_directory),
 	      bind_ip(bind_ip),
 	      bind_port(bind_port),
 	      max_paste_size(max_paste_size),
+	      max_database_size(max_database_size),
 	      slug_size(slug_size),
 	      slug_characters(slug_characters),
 	      headers(headers),
