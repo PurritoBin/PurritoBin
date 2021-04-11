@@ -18,7 +18,15 @@
 #ifndef _PURRITO
 #define _PURRITO
 
-#include <error.h>
+#if __has_include(<sys/file.h>)
+#include <sys/file.h>
+#endif
+
+#if __has_include(<sys/stat.h>)
+#include <sys/stat.h>
+#endif
+
+#include <errno.h>
 #include <fcntl.h>
 #include <syslog.h>
 
@@ -36,9 +44,6 @@
 #include <system_error>
 #include <vector>
 
-#if __has_include(<sys/file.h>)
-#include <sys/file.h>
-#endif
 
 #include <uWebSockets/App.h>
 
