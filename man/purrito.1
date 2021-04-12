@@ -20,9 +20,10 @@
 .Nd PurritoBin pastebin server
 .Sh SYNOPSIS
 .Nm purrito
-.Op Fl acdefghiklmnprstvwx
+.Op Fl abcdefghiklmnprstvwxz
 .Fl d Ar domain
 .Op Fl a Ar slug_characters
+.Op Fl b Ar max_database_size
 .Op Fl c Ar public_cert_file
 .Op Fl e Ar dhparams_file
 .Op Fl f Ar index_file
@@ -40,6 +41,7 @@
 .Op Fl v Ar header_value
 .Op Fl w Ar passphrase
 .Op Fl x Ar header
+.Op Fl z Ar database_directory
 .Sh DESCRIPTION
 The
 .Nm
@@ -62,24 +64,29 @@ should be the full name, including trailing /
 e.g. https://bsd.ac/
 .Pp
 .It Fl a Ar slug_characters
-.Sy DEFAULT : Dq 0123456789abcdefghijklmnopqrstuvwxyz
+.Sy DEFAULT : 0123456789abcdefghijklmnopqrstuvwxyz
 .Pp
 Characters used to generate the slug.
 .Pp
+.It Fl b Ar max_database_size
+.Sy DEFAULT : 524288000
+.Pp
+Maximum size of database allowed when running
+.Nm ,
+in BYTES.
+.Pp
 .It Fl c Ar public_cert_file
-.Sy DEFAULT :
-null
+.Sy DEFAULT : null
 .Pp
 Public key certificate to use if using SSL.
 .Pp
 .It Fl e Ar dhparams_file
-.Sy DEFAULT :
-null
+.Sy DEFAULT : null
 .Pp
 Diffie-Hellman prime file to use if using SSL.
 .Pp
 .It Fl f Ar index_file
-.Sy DEFAULT : Dq index.html
+.Sy DEFAULT : index.html
 .Pp
 Top level index file.
 Only used if the simple HTTP server,
@@ -87,8 +94,7 @@ Only used if the simple HTTP server,
 is enabled.
 .Pp
 .It Fl g Ar slug_size
-.Sy DEFAULT :
-7
+.Sy DEFAULT : 7
 .Pp
 Length of the randomly generated alpha-numeric slug
 for the paste.
@@ -97,8 +103,7 @@ for the paste.
 show help and exit
 .Pp
 .It Fl i Ar bind_ip
-.Sy DEFAULT :
-0.0.0.0, ::
+.Sy DEFAULT : 0.0.0.0, ::
 .Pp
 IP on which to listen for incoming connections.
 Can be specified multiple times for multiple ips.
@@ -113,8 +118,7 @@ option is used for all remaining
 options.
 .Pp
 .It Fl k Ar private_key_file
-.Sy DEFAULT :
-null
+.Sy DEFAULT : null
 .Pp
 Private key certificate to use if using SSL.
 .Pp
@@ -129,21 +133,18 @@ options should also be specified,
 is optional.
 .Pp
 .It Fl m Ar max_paste_size
-.Sy DEFAULT :
-65536 (64KB)
+.Sy DEFAULT : 65536 (64KB)
 .Pp
 Maximum paste size to accept, in BYTES.
 .Pp
 .It Fl n Ar server_name
-.Sy DEFAULT :
-null
+.Sy DEFAULT : null
 .Pp
 .Ar server_name
 to be used if using SSL.
 .Pp
 .It Fl p Ar bind_port
-.Sy DEFAULT :
-42069
+.Sy DEFAULT : 42069
 .Pp
 Port on which to listen for connections.
 Can be specified multiple times for multiple ports.
@@ -158,15 +159,13 @@ is used for all remaining
 options.
 .Pp
 .It Fl r Ar max_retries
-.Sy DEFAULT :
-5
+.Sy DEFAULT : 5
 .Pp
 Maximum number of retries to generate an available unlocked slug,
 in case of a pastebin with large number of pastes.
 .Pp
 .It Fl s Ar storage_directory
-.Sy DEFAULT :
-/var/www/purritobin
+.Sy DEFAULT : /var/www/purritobin
 .Pp
 Path to the
 .Ar storage_directory
@@ -188,8 +187,7 @@ It is recommended to use a proper web server
 for serving large files.
 .Pp
 .It Fl v Ar header_value
-.Sy DEFAULT :
-null
+.Sy DEFAULT : null
 .Pp
 .Ar header_values
 for corresponding
@@ -200,8 +198,7 @@ matching the first
 .Ar header_value .
 .Pp
 .It Fl w Ar passphrase
-.Sy DEFAULT :
-null
+.Sy DEFAULT : null
 .Pp
 .Ar passphrase
 for unlocking the
@@ -209,8 +206,7 @@ for unlocking the
 file if it is locked.
 .Pp
 .It Fl x Ar header
-.Sy DEFAULT :
-null
+.Sy DEFAULT : null
 .Pp
 .Ar headers
 for corresponding
@@ -219,6 +215,14 @@ The values are read in order, with the first
 .Ar header_value
 matching the first
 .Ar header .
+.Pp
+.It Fl z Ar database_directory
+.Sy DEFAULT : /var/db/purritobin.mdb
+.Pp
+Path to the
+.Ar database_directory
+for storing the LMDB database of paste timestamps,
+used for auto-cleaning the pastes.
 .El
 .Sh EXAMPLES
 Run the

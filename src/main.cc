@@ -32,12 +32,13 @@
 
 // clang-format off
 void print_help() {
-  std::printf("usage: purrito [-acdefghiklmnprstvwx] -d domain [-a slug_characters]\n"
-	      "               [-c public_cert_file] [-e dhparams_file] [-f index_file]\n"
-	      "               [-g slug_size] [-h] [-i bind_ip] [-k private_key_file] [-l]\n"
-	      "               [-m max_paste_size] [-n server name] [-p bind_port]\n"
-	      "               [-r max_retries] [-s storage_directory] [-t] [-v header_value]\n"
-	      "               [-w passphrase] [-x header]\n");
+  std::printf("usage: purrito [-abcdefghiklmnprstvwxz] -d domain [-a slug_characters]\n"
+              "               [-b max_database_size] [-c public_cert_file] [-e dhparams_file]\n"
+              "               [-f index_file] [-g slug_size] [-h] [-i bind_ip]\n"
+              "               [-k private_key_file] [-l] [-m max_paste_size] [-n server name]\n"
+              "               [-p bind_port] [-r max_retries] [-s storage_directory] [-t]\n"
+              "               [-v header_value] [-w passphrase] [-x header]\n"
+              "               [-z database_directory]\n");
 }
 // clang-format on
 
