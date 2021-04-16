@@ -1,10 +1,10 @@
 FROM alpine:3.12
 
 ARG  US_TAG="5440dbac79bd76444175b76ee95dfcade12a6aac"
-ARG  UWS_TAG="b7202e71eea5195a35260f69efc3278b863a50ba"
-ARG  P_TAG="0.5.0"
+ARG  UWS_TAG="2fb38d5de92795998f9137ae30193aa65128b68b"
+ARG  P_TAG="master"
 
-ARG  VERSION="0.5.0"
+ARG  VERSION="latest"
 
 LABEL org.opencontainers.image.authors="Aisha Tammy <purrito@bsd.ac>"
 LABEL org.opencontainers.image.description="ultra fast, minimalistic, encrypted command line paste-bin"
@@ -50,7 +50,7 @@ RUN apk update \
  && make PREFIX="/usr" install \
  && install -m755 docker/purritobin_wrapper /usr/bin \
  && cd .. \
- && mkdir -p /var/www/purritobin /etc/purritobin \
+ && mkdir -p /var/www/purritobin /etc/purritobin /var/db/purritobin.mdb \
  && apk del gcc g++ git make musl-dev openssl-dev \
  && cd / \
  && rm -rf /purritobin
