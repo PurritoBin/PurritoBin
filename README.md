@@ -60,6 +60,7 @@ A simple example:
 ```
 docker run -d \
   --name=purritobin \
+  -e DOMAIN="http://localhost:8080/" \
   -p 8080:42069 \
   -v /data/apps/purritobin:/var/www/purritobin \
   --restart unless-stopped \
@@ -68,9 +69,9 @@ docker run -d \
 
 To do a test paste to the above server
 ```
-  $ echo "cool paste" | curl --silent --data-binary "@${1:-/dev/stdin}" "http://localhost:42069/"
-  http://localhost:42069/purr1t0
-  $ curl --silent http://localhost:42069/purr1t0
+  $ echo "cool paste" | curl --silent --data-binary "@${1:-/dev/stdin}" "http://localhost:8080/"
+  http://localhost:8080/purr1t0
+  $ curl --silent http://localhost:8080/purr1t0
   cool paste
 ```
 
