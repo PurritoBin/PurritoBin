@@ -386,7 +386,7 @@ void read_paste(const purrito_settings &settings,
 
 	/* get the paste_url */
 	std::unique_ptr<std::string> paste_url =
-	    std::make_unique<std::string>(settings.domain + pfile->slug);
+	    std::make_unique<std::string>(settings.domain + pfile->slug + "\n");
 
 	/* Log that we are starting to read the paste */
 	syslog(LOG_INFO, "(%" PRIuFAST64 ") Starting to read the paste",
