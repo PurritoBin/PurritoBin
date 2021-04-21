@@ -21,7 +21,7 @@ LIBS +=		libusockets
 # requirements
 # uwebsockets: https://github.com/uNetworking/uWebSockets
 # uSockets   : https://github.com/uNetworking/uSockets
-CXXFLAGS +=	`${PKG_CONFIG} --cflags ${LIBS}`
+CXXFLAGS +=	`${PKG_CONFIG} --cflags ${LIBS}` -DUWS_NO_ZLIB
 LDFLAGS +=	`${PKG_CONFIG} --libs ${LIBS}` -lpthread
 
 all: ${TARGET}
