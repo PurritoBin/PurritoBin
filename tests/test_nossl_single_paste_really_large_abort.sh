@@ -13,7 +13,7 @@ P_RACING=
 # should be enough
 sleep 2
 
-dd if=/dev/random of="${P_DATA}" bs=1M count=$((${P_MAXSIZE} + 1)) ${P_DD_FLAGS}
+dd if=/dev/urandom of="${P_DATA}" bs=1M count=$((${P_MAXSIZE} + 1)) ${P_DD_FLAGS}
 
 set +e
 P_PASTE=$(purr "${P_DATA}")
