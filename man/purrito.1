@@ -20,7 +20,7 @@
 .Nd PurritoBin pastebin server
 .Sh SYNOPSIS
 .Nm purrito
-.Op Fl abcdefghiklmnprstvwxz
+.Op Fl abcdefghiklmnpqrstvwxz
 .Fl d Ar domain
 .Op Fl a Ar slug_characters
 .Op Fl b Ar max_database_size
@@ -35,6 +35,7 @@
 .Op Fl m Ar max_paste_size
 .Op Fl n Ar server name
 .Op Fl p Ar bind_port
+.Op Fl q Ar default_time_limit
 .Op Fl r Ar max_retries
 .Op Fl s Ar storage_directory
 .Op Fl t
@@ -97,8 +98,7 @@ is enabled.
 .It Fl g Ar slug_size
 .Sy DEFAULT : 7
 .Pp
-Length of the randomly generated alpha-numeric slug
-for the paste.
+Length of the randomly generated slug for the paste.
 .Pp
 .It Fl h
 show help and exit
@@ -158,6 +158,11 @@ options are specified, then the last
 is used for all remaining
 .Ar bind_port
 options.
+.Pp
+.It Fl q Ar default_time_limit
+.Sy DEFAULT : 604800000000000 (1 week)
+.Pp
+The default expiration time of a paste, in nanoseconds.
 .Pp
 .It Fl r Ar max_retries
 .Sy DEFAULT : 5
