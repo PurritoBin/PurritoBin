@@ -61,7 +61,8 @@ that will be used as prefix of returned paste
 .Sy NOTE :
 should be the full name, including trailing /
 .Pp
-e.g. https://bsd.ac/
+e.g.
+.Dq Lk https://bsd.ac/
 .Pp
 .It Fl a Ar slug_characters
 .Sy DEFAULT : 0123456789abcdefghijklmnopqrstuvwxyz
@@ -234,13 +235,13 @@ server with the domain name set to
 and enable the internal http server, while also
 enabling UTF-8 encoding for pastes :
 .Bd -literal -offset width
-$ purrito -d https://bsd.ac/ \\
+$ purrito -d "https://bsd.ac/" \\
           -t -x "Content-Type" -v "text/plain; charset=UTF-8"
 .Ed
 .Pp
 Run the previous server with SSL server with the proper SNI :
 .Bd -literal -offset width
-$ purrito -d https://bsd.ac/ -l -n bsd.ac \\
+$ purrito -d "https://bsd.ac/" -l -n bsd.ac \\
           -c /etc/ssl/bsd.ac.crt -k /etc/ssl/private/bsd.ac.key \\
           -t -x "Content-Type" -v "text/plain; charset=UTF-8"
 .Ed
@@ -253,7 +254,7 @@ Run the previous SSL server, while listening on
 .Ar [2001:456:8ee4:4::2]:42069 ,
 and also setting very lenient CORS attributes with :
 .Bd -literal -offset width
-$ purrito -d https://bsd.ac/ -l -n bsd.ac \\
+$ purrito -d "https://bsd.ac/" -l -n bsd.ac \\
           -c /etc/ssl/bsd.ac.crt -k /etc/ssl/private/bsd.ac.key \\
           -i "10.7.0.1"            -p 9876  \\
           -i "192.168.1.2"         -p 9999  \\
