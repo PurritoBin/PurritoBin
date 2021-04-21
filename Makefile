@@ -14,7 +14,7 @@ HEADERS =	src/purrito.h
 
 MAN =		man/purrito.1
 
-CXXFLAGS +=	-std=c++2a -Wall -Wextra -Wpedantic
+CXXFLAGS +=	-std=c++17 -Wall -Wextra -Wpedantic
 
 LIBS +=		libusockets
 
