@@ -44,6 +44,16 @@ The docker image allows passing the following variables to configure PurritoBin:
 | PUBLICKEY | `/etc/purritobin/public.crt` | *TLS* public certificate |
 | PRIVATEKEY | `/etc/purritobin/private.crt` | *TLS* private certificate|
 
+### Volumes
+
+It is recommended to mount at least the first two volumes for persistent storage
+
+| Volume | Description |
+|------- | ----------- |
+| /var/www/purritobin | default location for storing pastes |
+| /var/db/purritobin | default location for storing timestamp database |
+| /etc/purritobin | default location for loading certificates **if** enabling TLS |
+
 ### Examples
 
 For all examples below, remember to substitute the value of `DOMAIN` from `localhost` to the actual domain/IP of the machine.
@@ -58,14 +68,16 @@ A simple example:
 - Run the server while listening for pastes on port `8080`
   - Map host port `8080` to container port `42069`
 - Create a persistent store of pastes in host folder `/data/apps/purritobin`
-  - Make a shared volume by mounting `/data/apps/purritobin` to `/var/www/purritobin` inside the container
+  - Make a shared volume by mounting `/data/apps/purritobin/pastes` to `/var/www/purritobin` inside the container
+  - Make another shared volume by mounting `/data/apps/purritobin/database` to `/var/db/purritobin`
 
 ```
 docker run -d \
   --name=purritobin \
   -e DOMAIN="http://localhost:8080/" \
   -p 8080:42069 \
-  -v /data/apps/purritobin:/var/www/purritobin \
+  -v /data/apps/purritobin/pastes:/var/www/purritobin \
+  -v /data/apps/purritobin/database:/var/db/purritobin \
   --restart unless-stopped \
   purritobin/purritobin
 ```
@@ -96,6 +108,7 @@ docker run -d \
   -e SERVERNAME="localhost" \
   -p 8080:42069 \
   -v /data/apps/purritobin/:/var/www/purritobin \
+  -v /data/apps/purritobin/database:/var/db/purritobin \
   -v /data/apps/certificates:/etc/purritobin \
   --restart unless-stopped \
   purritobin/purritobin
@@ -272,6 +285,6 @@ They need the `purritobin` user and group to exist.
 It uses [BearSSL](https://www.bearssl.org/) and is very instructive for all who wish to get a small example of using SSL in C together with networking.
 
 ## Credits
-[uNetworking](https://github.com/uNetworking): for their [uWebSockets](https://github.com/uNetworking/uWebSockets) and [uSockets](https://github.com/uNetworking/uSockets)
-[brix](https://github.com/brix/): for their [crypto-js](https://github.com/brix/crypto-js/)
-[solusipse](https://github.com/solusipse): for their [fiche](https://github.com/solusipse/fiche/) pastebin
+[uNetworking](https://github.com/uNetworking): for their [uWebSockets](https://github.com/uNetworking/uWebSockets) and [uSockets](https://github.com/uNetworking/uSockets)<br/>
+[brix](https://github.com/brix/): for their [crypto-js](https://github.com/brix/crypto-js/)<br/>
+[solusipse](https://github.com/solusipse): for their [fiche](https://github.com/solusipse/fiche/) pastebin<br/>

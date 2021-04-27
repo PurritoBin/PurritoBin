@@ -71,7 +71,7 @@ int main(int argc, char **argv) {
 	max_paste_size = 65536;  // seems reasonable for most
 	max_retries = 5;
 	storage_directory = "/var/www/purritobin/";
-	database_directory = "/var/db/purritobin.mdb/";
+	database_directory = "/var/db/purritobin/";
 	max_database_size = 524288000;
 	ssl_server = false;
 	default_time_limit = 604800;  // 1 week in seconds \o/
