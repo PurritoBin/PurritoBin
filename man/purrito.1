@@ -169,6 +169,13 @@ options.
 .Sy DEFAULT : 604800 (1 week)
 .Pp
 The default expiration time of a paste, in seconds.
+A paste can configure its lifetime by submitting to
+.Sy domain.tld/{day,week,month}
+or to set its lifetime to the appropriate duration
+.Sy domain.tld/<time-in-mins>
+to set its lifetime to a precise number of minutes.
+The server will only clean pastes at its regular
+.Ar autoclean_interval .
 .Pp
 .It Fl r Ar max_retries
 .Sy DEFAULT : 5

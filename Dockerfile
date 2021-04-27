@@ -44,6 +44,12 @@ RUN apk update \
  && cd uWebSockets \
  && cp -r src /usr/include/uWebSockets \
  && cd .. \
+ && wget https://raw.githubusercontent.com/hoytech/lmdbxx/1.0.0/lmdb%2B%2B.h -O /usr/include/lmdb++.h \
+ && wget https://git.openldap.org/openldap/openldap/-/archive/LMDB_0.9.29/openldap-LMDB_0.9.29.tar.gz \
+ && tar xzf openldap-LMDB_0.9.29.tar.gz \
+ && cd openldap-LMDB_0.9.29/libraries/liblmdb \
+ && make cc=${CC} \
+ && make prefix="/usr" install \
  && git clone https://github.com/PurritoBin/PurritoBin \
  && cd PurritoBin \
  && git checkout "${P_TAG}" \

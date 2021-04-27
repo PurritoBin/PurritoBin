@@ -7,11 +7,12 @@
 
 : ${P_SERVER=bsd.ac}
 : ${P_PORT=42069}
+: ${P_TIME=week}
 : ${P_MAXTIME=30}
 
 # POSIX shell client to upload standard message
 purr() {
-	curl --silent --max-time "${P_MAXTIME}" --data-binary "@${1:-/dev/stdin}" "${P_SERVER}:${P_PORT}"
+	curl --silent --max-time "${P_MAXTIME}" --data-binary "@${1:-/dev/stdin}" "${P_SERVER}:${P_PORT}/${P_TIME}"
 }
 
 # POSIX shell client to upload encrypted message

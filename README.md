@@ -19,10 +19,13 @@ ultra fast, minimalistic, encrypted command line paste-bin
 - *Very* lightweight: 2-3 MB of RAM on average.
 - Listen on multiple address/port combinations, both IPv4 and IPv6.
 - Configurable paste size limit.
+- Auto-cleaning of pastes, with configurable paste lifetime at submission time.
+   - `domain.tld/{day,week,month}`
+   - `domain.tld/<time-in-minutes>`
 - Paste storage in plain text, easy to integrate with all web servers (Apache, Nginx, etc.).
 - Encrypted pasting similar to [PrivateBin](https://github.com/PrivateBin/PrivateBin).
 - Optional **`https`** support for secure communication.
-- Tiny code base, less than 700 lines of code, for very easy auditing.
+- Tiny code base, less than 1000 lines of code, for very easy auditing.
 - Well documented, `man purrito`.
 
 ## docker （ฅ＾・ﻌ・＾）ฅ
@@ -77,8 +80,8 @@ To do a test paste to the above server
 
 ##### HTTPS
 
-To run with `https`, the public and private keys need to be provided to the container and mounted at `/etc/purritobin`.   
-By default, it is assumed that the public and private keys are stored at `/etc/purritobin/public.crt` and `/etc/purritobin/private.crt`, respectively.   
+To run with `https`, the public and private keys need to be provided to the container and mounted at `/etc/purritobin`.
+By default, it is assumed that the public and private keys are stored at `/etc/purritobin/public.crt` and `/etc/purritobin/private.crt`, respectively.
 For example, assuming that the certificates, for the domain `localhost`, are stored on the host machine at `/data/apps/certificates/{public,private}.crt`, PurritoBin can be started in **`https`** mode with:
 
 ```
@@ -104,6 +107,7 @@ docker run -d \
 
 - [uSockets](https://github.com/uNetworking/uSockets/)
 - [uWebSockets](https://github.com/uNetworking/uWebSockets/)
+- [lmdbxx](https://github.com/hoytech/lmdbxx)
 
 If these are not available in your OS repositories, you can manually install them by following the steps in the [GitHub workflow](https://github.com/PurritoBin/PurritoBin/actions?query=workflow:pipeline)
 
@@ -122,12 +126,14 @@ The server is run using the command `purrito`. To quickly view the available opt
 
 ```
 $ purrito -h
-usage: purrito [-acdefghiklmnprstvwx] -d domain [-a slug_characters]
-               [-c public_cert_file] [-e dhparams_file] [-f index_file]
-               [-g slug_size] [-h] [-i bind_ip] [-k private_key_file] [-l]
+usage: purrito [-abcdefghijklmnpqrstvwxz] -d domain [-a slug_characters]
+               [-b max_database_size] [-c public_cert_file] [-e dhparams_file]
+               [-f index_file] [-g slug_size] [-h] [-i bind_ip]
+               [-j autoclean_interval] [-k private_key_file] [-l]
                [-m max_paste_size] [-n server name] [-p bind_port]
-               [-r max_retries] [-s storage_directory] [-t] [-v header_value]
-               [-w passphrase] [-x header]
+               [-q default_time_limit] [-r max_retries] [-s storage_directory]
+               [-t] [-v header_value] [-w passphrase] [-x header]
+               [-z database_directory]
 ```
 
 For an indepth explanation, there is a man page provided.
@@ -242,13 +248,14 @@ Pull requests to harden the code by default in linux and other operating systems
 ### What PurritoBin provides
 - Auto slug generation and returning paste url.
 - Efficient limiting of paste size by cutting off requests at threshold, stopping network blockage.
+- Auto cleaning of pastes, depending on submission URL.
+  - Submit to domain.tld/{day,week,month}
+  - or submit to domain.tld/300 - for paste life of 300 minutes
 - Submission port for users to submit.
 - Tiny server to browse the pastes. It is optimized for small paste sizes. If accepting really large paste, it is recommended to not use this and instead use a dedicated web server, such as [httpd(8)](https://man.openbsd.org/httpd.8), [apache](https://httpd.apache.org/), [nginx](https://www.nginx.com/) or literally any other web server.
 - You can run it on an internal system so that it is accessible only by the people inside the network.
 
-### What PurritoBin does NOT provide (yet)
-- Auto cleaning of pastes
-  - It is possible to use a [cron](https://en.wikipedia.org/wiki/Cron) job to manage this.
+### What PurritoBin does NOT provide
 - Request throttling
   - Use a firewall, like [pf](https://www.openbsd.org/faq/pf/filter.html), [nftables](https://wiki.nftables.org/wiki-nftables/index.php/Main_Page) or **(god forbid)** [iptables](https://linux.die.net/man/8/iptables), to manage this, they are designed for exactly this kind of feature.
 
