@@ -22,20 +22,28 @@ jobs:
     - name: Install dependencies
       run: |
         sudo apt update
-        sudo apt-get install -y libssl-dev pkg-config gcc-10 g++-10 mandoc valgrind clang-tools liblmdbxx-dev
+        sudo apt-get install -y libssl-dev pkg-config gcc-10 g++-10 curl mandoc valgrind clang-tools
     - name: Install uSockets
       run: |
         git clone https://github.com/uNetworking/uSockets
-        wget https://raw.githubusercontent.com/gentoo/guru/dev/net-libs/usockets/files/usockets-0.7.1-Makefile.patch
         cd uSockets
-        git apply < ../usockets-0.7.1-Makefile.patch
+        curl https://raw.githubusercontent.com/gentoo/guru/dev/net-libs/usockets/files/usockets-0.7.1-Makefile.patch | git apply
         make WITH_OPENSSL=1
         sudo make install
     - name: Install uWebSockets
       run: |
         git clone https://github.com/uNetworking/uWebSockets
-        cd uWebSockets
-        sudo cp -r src /usr/include/uWebSockets
+        sudo cp -r uWebSockets/src /usr/include/uWebSockets
+    - name: Install lmdb
+      run: |
+        wget https://git.openldap.org/openldap/openldap/-/archive/LMDB_0.9.29/openldap-LMDB_0.9.29.tar.gz
+        tar xzf openldap-LMDB_0.9.29.tar.gz
+        cd openldap-LMDB_0.9.29/libraries/liblmdb
+        make cc=${CC}
+        sudo make prefix="/usr" install
+    - name: Install lmdbxx
+      run: |
+        sudo wget https://raw.githubusercontent.com/hoytech/lmdbxx/1.0.0/lmdb%2B%2B.h -O /usr/include/lmdb++.h
     - name: Make
       run: |
         scan-build --status-bugs make
