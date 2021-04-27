@@ -39,7 +39,7 @@ jobs:
         wget https://git.openldap.org/openldap/openldap/-/archive/LMDB_0.9.29/openldap-LMDB_0.9.29.tar.gz
         tar xzf openldap-LMDB_0.9.29.tar.gz
         cd openldap-LMDB_0.9.29/libraries/liblmdb
-        make cc=${CC}
+        make CC=${CC}
         sudo make prefix="/usr" install
     - name: Install lmdbxx
       run: |
