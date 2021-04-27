@@ -16,13 +16,13 @@ MAN =		man/purrito.1
 
 CXXFLAGS +=	-std=c++17 -Wall -Wextra -Wpedantic
 
-LIBS +=		libusockets
+LIBS +=		libusockets lmdb
 
 # requirements
 # uwebsockets: https://github.com/uNetworking/uWebSockets
 # uSockets   : https://github.com/uNetworking/uSockets
-CXXFLAGS +=	`${PKG_CONFIG} --cflags ${LIBS}` -DUWS_NO_ZLIB
-LDFLAGS +=	`${PKG_CONFIG} --libs ${LIBS}` -lpthread
+CXXFLAGS +=	-pthread `${PKG_CONFIG} --cflags ${LIBS}` -DUWS_NO_ZLIB
+LDFLAGS +=	`${PKG_CONFIG} --libs ${LIBS}`
 
 all: ${TARGET}
 
