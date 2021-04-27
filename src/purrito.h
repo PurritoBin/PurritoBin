@@ -18,7 +18,6 @@
 #ifndef _PURRITO
 #define _PURRITO
 
-#include <sys/syslog.h>
 #if __has_include(<sys/file.h>)
 #include <sys/file.h>
 #endif
