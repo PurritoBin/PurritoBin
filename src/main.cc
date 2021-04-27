@@ -32,19 +32,17 @@
 
 // clang-format off
 void print_help() {
-  std::printf("usage: purrito [-abcdefghiklmnprstvwxz] -d domain [-a slug_characters]\n"
+  std::printf("usage: purrito [-abcdefghijklmnpqrstvwxz] -d domain [-a slug_characters]\n"
               "               [-b max_database_size] [-c public_cert_file] [-e dhparams_file]\n"
               "               [-f index_file] [-g slug_size] [-h] [-i bind_ip]\n"
-              "               [-k private_key_file] [-l] [-m max_paste_size] [-n server name]\n"
-              "               [-p bind_port] [-r max_retries] [-s storage_directory] [-t]\n"
-              "               [-v header_value] [-w passphrase] [-x header]\n"
+              "               [-j autoclean_interval] [-k private_key_file] [-l]\n"
+              "               [-m max_paste_size] [-n server name] [-p bind_port]\n"
+              "               [-q default_time_limit] [-r max_retries] [-s storage_directory]\n"
+              "               [-t] [-v header_value] [-w passphrase] [-x header]\n"
               "               [-z database_directory]\n");
 }
 // clang-format on
 
-/*
- * main code for running the server
- */
 int main(int argc, char **argv) {
 	int opt;
 	std::string domain, storage_directory, database_directory,
@@ -57,7 +55,8 @@ int main(int argc, char **argv) {
 	bool enable_httpserver, ssl_server;
 	uWS::SocketContextOptions ssl_options;
 	std::string::size_type max_paste_size;
-	std::uint_fast64_t max_database_size;
+	std::uint_fast64_t max_database_size, default_time_limit,
+	    autoclean_interval;
 
 	/* open syslog with purritobin identity */
 	openlog("purritobin", LOG_PERROR | LOG_PID, LOG_DAEMON);
@@ -75,9 +74,12 @@ int main(int argc, char **argv) {
 	database_directory = "/var/db/purritobin.mdb/";
 	max_database_size = 524288000;
 	ssl_server = false;
+	default_time_limit = 604800;  // 1 week in seconds \o/
+	autoclean_interval = 300;     // 5 mins in seconds
 
 	while ((opt = getopt(argc, argv,
-	                     "a:b:c:d:e:f:g:hi:k:lm:n:p:r:s:tv:w:x:z:")) != EOF)
+	                     "a:b:c:d:e:f:g:hi:j:k:lm:n:p:q:r:s:tv:w:x:z:")) !=
+	       EOF)
 		switch (opt) {
 			case 'h':
 				print_help();
@@ -93,13 +95,13 @@ int main(int argc, char **argv) {
 				bind_ip.push_back(optarg);
 				break;
 			case 'p':
-				bind_port.push_back(std::stoi(optarg));
+				bind_port.push_back(std::stoul(optarg));
 				break;
 			case 'm':
 				max_paste_size = std::stoull(optarg);
 				break;
 			case 'g':
-				slug_size = std::stoi(optarg);
+				slug_size = std::stoul(optarg);
 				break;
 			case 'a':
 				slug_characters = optarg;
@@ -135,13 +137,20 @@ int main(int argc, char **argv) {
 				enable_httpserver = true;
 				break;
 			case 'r':
-				max_retries = std::stoi(optarg);
+				max_retries = std::stoul(optarg);
 				break;
 			case 'b':
-				max_database_size = std::stoi(optarg);
+				max_database_size = std::stoull(optarg);
 				break;
 			case 'z':
 				database_directory = optarg;
+				break;
+			case 'q':
+				default_time_limit = std::stoull(optarg);
+				default_time_limit *= (unsigned long long)1e9;
+				break;
+			case 'j':
+				autoclean_interval = std::stoull(optarg);
 				break;
 			default:
 				print_help();
@@ -277,26 +286,36 @@ int main(int argc, char **argv) {
 	if (header_names.size() != header_values.size()) {
 		errx(1, "ERROR: header names and values can't be matched");
 	}
-	for (std::map<std::string, std::string>::size_type i = 0;
-	     i < header_names.size(); i++)
-		headers[header_names[i]] = header_values[i];
+	if (header_names.size() != 0)
+		for (std::map<std::string, std::string>::size_type i = 0;
+		     i < header_names.size(); i++)
+			headers[header_names[i]] = header_values[i];
+	else {
+		headers["Content-Type"] = "text/plain; charset=UTF-8";
+	}
 
 	syslog(LOG_INFO,
 	       "Starting PurritoBin with settings - "
 	       "{ "
 	       "domain: %s, "
-	       "storage_directory: %s, "
-	       "database_directory: %s, "
-	       "max_paste_size: %zu, "
-	       "slug_size: %" PRIuFAST8 " }",
-	       domain.c_str(), storage_directory.c_str(),
-	       database_directory.c_str(), max_paste_size, slug_size);
+	       "slug_size: %" PRIuFAST8
+	       ", storage_directory: %s"
+	       ", database_directory: %s"
+	       ", max_paste_size: %" PRIuFAST64
+	       ", max_database_size: %" PRIuFAST64
+	       ", autoclean_interval: %" PRIuFAST64
+	       ", default_time_limit: %" PRIuFAST64
+	       ", max_retries: %" PRIuFAST32 " }",
+	       domain.c_str(), slug_size, storage_directory.c_str(),
+	       database_directory.c_str(), max_paste_size, max_database_size,
+	       autoclean_interval, default_time_limit, max_retries);
 
 	/* initialize the settings to be passed to the server */
-	purrito_settings settings(
-	    domain, storage_directory, database_directory, bind_ip, bind_port,
-	    max_paste_size, max_database_size, slug_size, slug_characters,
-	    headers, ssl_options, enable_httpserver, index_file, max_retries);
+	purrito_settings settings(domain, storage_directory, database_directory,
+	                          bind_ip, bind_port, max_paste_size,
+	                          max_database_size, slug_size, slug_characters,
+	                          default_time_limit, headers, ssl_options,
+	                          enable_httpserver, index_file, max_retries);
 
 	/* create the server and start running it */
 	std::thread purrito_thread;
@@ -314,7 +333,88 @@ int main(int argc, char **argv) {
 			purrito.run();
 		});
 	}
+	auto cleaner = std::thread([&]() {
+		lmdb::dbi dbi;
+		while (1) {
+			syslog(LOG_INFO, "(cleaner) Starting a new run...");
+			auto current_time = time_since_epoch();
+			std::vector<std::string> files_to_clean, timestamps;
+			try {
+				{
+					auto rtxn = lmdb::txn::begin(
+					    settings.env, nullptr, MDB_RDONLY);
+					dbi = lmdb::dbi::open(rtxn, nullptr);
+					std::string_view timestamp, slug;
+					auto cursor =
+					    lmdb::cursor::open(rtxn, dbi);
+					if (cursor.get(timestamp, slug,
+					               MDB_FIRST)) {
+						do {
+							if (timestamp <
+							    current_time) {
+								timestamps
+								    .emplace_back(
+								        timestamp);
+								files_to_clean
+								    .emplace_back(
+								        slug);
+							} else
+								continue;
+						} while (cursor.get(
+						    timestamp, slug, MDB_NEXT));
+					}
+				}
+			} catch (lmdb::error &ex) {
+				syslog(LOG_WARNING,
+				       "(cleaner) Caught an error while "
+				       "cursoring - { %d, %s )",
+				       ex.code(), ex.what());
+			} catch (...) {
+			}
+			syslog(LOG_INFO,
+			       "(cleaner) Number of pastes to clean = %zu",
+			       files_to_clean.size());
+			for (std::string &paste : files_to_clean)
+				syslog(LOG_INFO, "(cleaner) - %s",
+				       paste.c_str());
+			try {
+				auto wtxn = lmdb::txn::begin(settings.env);
+				dbi = lmdb::dbi::open(wtxn, nullptr);
 
+				for (std::size_t i = 0; i < timestamps.size();
+				     i++) {
+					std::string file_path =
+					    settings.storage_directory +
+					    files_to_clean[i];
+					int fd =
+					    open(file_path.c_str(), O_WRONLY);
+					if (fd != -1) {
+						int locked = flock(
+						    fd, LOCK_EX | LOCK_NB);
+						if (locked == -1) {
+							continue;
+						} else {
+							flock(fd, LOCK_UN);
+						}
+						close(fd);
+						std::remove(file_path.c_str());
+					}
+					dbi.del(wtxn, timestamps[i]);
+				}
+				wtxn.commit();
+			} catch (lmdb::error &ex) {
+				syslog(LOG_WARNING,
+				       "(cleaner) Caught an error while "
+				       "cleaning - { %d, %s )",
+				       ex.code(), ex.what());
+			} catch (...) {
+			}
+			syslog(LOG_INFO, "(cleaner) Sleeping...");
+			std::this_thread::sleep_for(
+			    std::chrono::seconds(autoclean_interval));
+		}
+	});
+	cleaner.join();
 	purrito_thread.join();
 
 	/* it should not be possible to reach here */
