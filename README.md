@@ -19,7 +19,7 @@ ultra fast, minimalistic, encrypted command line paste-bin
 - *Very* lightweight: 2-3 MB of RAM on average.
 - Listen on multiple address/port combinations, both IPv4 and IPv6.
 - Configurable paste size limit.
-- Auto-cleaning of pastes, with configurable paste lifetime at submission time.
+- Auto-cleaning of pastes, with configurable paste lifetime at submission time:
    - `domain.tld/{day,week,month}`
    - `domain.tld/<time-in-minutes>`
 - Paste storage in plain text, easy to integrate with all web servers (Apache, Nginx, etc.).
@@ -262,8 +262,8 @@ Pull requests to harden the code by default in linux and other operating systems
 - Auto slug generation and returning paste url.
 - Efficient limiting of paste size by cutting off requests at threshold, stopping network blockage.
 - Auto cleaning of pastes, depending on submission URL.
-  - Submit to domain.tld/{day,week,month}
-  - or submit to domain.tld/300 - for paste life of 300 minutes
+  - Submit to `domain.tld/{day,week,month}`
+  - or submit to `domain.tld/<time-in-minutes>` - for paste lifetime specified in minutes, e.g. `domain.tld/300` for 300 minutes
 - Submission port for users to submit.
 - Tiny server to browse the pastes. It is optimized for small paste sizes. If accepting really large paste, it is recommended to not use this and instead use a dedicated web server, such as [httpd(8)](https://man.openbsd.org/httpd.8), [apache](https://httpd.apache.org/), [nginx](https://www.nginx.com/) or literally any other web server.
 - You can run it on an internal system so that it is accessible only by the people inside the network.
