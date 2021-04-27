@@ -248,12 +248,12 @@ Run the
 .Nm
 server with the domain name set to
 .Lk https://bsd.ac/
-with :
+with:
 .Bd -literal -offset width
 $ purrito -d "https://bsd.ac/" -t;
 .Ed
 .Pp
-Run the previous server with TLS with the proper SNI :
+Run the previous server with TLS with the proper SNI:
 .Bd -literal -offset width
 $ purrito -d "https://bsd.ac/" -t -l -n bsd.ac \\
           -c /etc/ssl/bsd.ac.crt -k /etc/ssl/private/bsd.ac.key
@@ -266,7 +266,7 @@ Run the previous TLS server, while listening on
 .Ar [2001:456:8ee4:4::1]:42069 ,
 .Ar [2001:456:8ee4:4::2]:42069 ,
 and manually specifying headers, which override the defaults,
-such as setting very lenient CORS attributes with :
+such as setting very lenient CORS attributes with:
 .Bd -literal -offset width
 $ purrito -d "https://bsd.ac/" -t -l -n bsd.ac \\
           -c /etc/ssl/bsd.ac.crt -k /etc/ssl/private/bsd.ac.key \\
