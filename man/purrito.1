@@ -20,7 +20,7 @@
 .Nd PurritoBin pastebin server
 .Sh SYNOPSIS
 .Nm purrito
-.Op Fl abcdefghiklmnpqrstvwxz
+.Op Fl abcdefghijklmnpqrstvwxz
 .Fl d Ar domain
 .Op Fl a Ar slug_characters
 .Op Fl b Ar max_database_size
@@ -30,6 +30,7 @@
 .Op Fl g Ar slug_size
 .Op Fl h
 .Op Fl i Ar bind_ip
+.Op Fl j Ar autoclean_interval
 .Op Fl k Ar private_key_file
 .Op Fl l
 .Op Fl m Ar max_paste_size
@@ -118,6 +119,11 @@ option is used for all remaining
 .Ar bind_ip
 options.
 .Pp
+.It Fl j Ar autoclean_interval
+.Sy DEFAULT : 300 (5 mins)
+.Pp
+Intervals at which to clean out old pastes, in seconds.
+.Pp
 .It Fl k Ar private_key_file
 .Sy DEFAULT : null
 .Pp
@@ -193,7 +199,7 @@ It is recommended to use a proper web server
 for serving large files.
 .Pp
 .It Fl v Ar header_value
-.Sy DEFAULT : null
+.Sy DEFAULT : Dq text/plain; charset=UTF-8
 .Pp
 .Ar header_values
 for corresponding
@@ -212,7 +218,7 @@ for unlocking the
 file if it is locked.
 .Pp
 .It Fl x Ar header
-.Sy DEFAULT : null
+.Sy DEFAULT : Dq Content-Type
 .Pp
 .Ar headers
 for corresponding
@@ -221,8 +227,6 @@ The values are read in order, with the first
 .Ar header_value
 matching the first
 .Ar header .
-It is recommended to use this for setting the default
-encoding of the pastes to 
 .Pp
 .It Fl z Ar database_directory
 .Sy DEFAULT : /var/db/purritobin.mdb
@@ -237,18 +241,15 @@ Run the
 .Nm
 server with the domain name set to
 .Lk https://bsd.ac/
-and enable the internal http server, while also
-enabling UTF-8 encoding for pastes :
+with :
 .Bd -literal -offset width
-$ purrito -d "https://bsd.ac/" \\
-          -t -x "Content-Type" -v "text/plain; charset=UTF-8"
+$ purrito -d "https://bsd.ac/" -t;
 .Ed
 .Pp
 Run the previous server with TLS with the proper SNI :
 .Bd -literal -offset width
-$ purrito -d "https://bsd.ac/" -l -n bsd.ac \\
-          -c /etc/ssl/bsd.ac.crt -k /etc/ssl/private/bsd.ac.key \\
-          -t -x "Content-Type" -v "text/plain; charset=UTF-8"
+$ purrito -d "https://bsd.ac/" -t -l -n bsd.ac \\
+          -c /etc/ssl/bsd.ac.crt -k /etc/ssl/private/bsd.ac.key
 .Ed
 .Pp
 Run the previous TLS server, while listening on
@@ -257,17 +258,18 @@ Run the previous TLS server, while listening on
 .Ar 134.32.10.10:42069 ,
 .Ar [2001:456:8ee4:4::1]:42069 ,
 .Ar [2001:456:8ee4:4::2]:42069 ,
-and also setting very lenient CORS attributes with :
+and manually specifying headers, which override the defaults,
+such as setting very lenient CORS attributes with :
 .Bd -literal -offset width
-$ purrito -d "https://bsd.ac/" -l -n bsd.ac \\
+$ purrito -d "https://bsd.ac/" -t -l -n bsd.ac \\
           -c /etc/ssl/bsd.ac.crt -k /etc/ssl/private/bsd.ac.key \\
           -i "10.7.0.1"            -p 9876  \\
           -i "192.168.1.2"         -p 9999  \\
           -i "134.32.10.10"        -p 42069 \\
           -i "2001:456:8ee4:4::1"           \\
           -i "2001:456:8ee4:4::2"           \\
-	  -t -x "Content-Type" -v "text/plain; charset=UTF-8" \\
-          -x "Access-Control-Allow-Origin" -v "*"
+	  -x "Content-Type" -v "text/plain; charset=UTF-8" \\
+	  -x "Access-Control-Allow-Origin" -v "*"
 .Ed
 .Sh DIAGNOSTICS
 .Nm
