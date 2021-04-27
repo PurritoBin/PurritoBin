@@ -392,11 +392,12 @@ int main(int argc, char **argv) {
 						int locked = flock(
 						    fd, LOCK_EX | LOCK_NB);
 						if (locked == -1) {
+							close(fd);
 							continue;
 						} else {
+							close(fd);
 							flock(fd, LOCK_UN);
 						}
-						close(fd);
 						std::remove(file_path.c_str());
 					}
 					dbi.del(wtxn, timestamps[i]);
