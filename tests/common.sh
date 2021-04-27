@@ -3,8 +3,8 @@
 : ${SHUF=shuf}
 : ${SEQ=seq}
 : ${P_PORT=$(${SHUF} -i 1500-65536 -n 1)}
-: ${P_TMPDIR=$(mktemp -d --tmpdir)}
-: ${P_TMPDBDIR=$(mktemp -d --tmpdir)}
+: ${P_TMPDIR=$(mktemp -d -t)}
+: ${P_TMPDBDIR=$(mktemp -d -t)}
 : ${P_DATA=$(mktemp -p ${P_TMPDIR})}
 : ${P_CONCUR=10}
 : ${P_MAXSIZE=5}
