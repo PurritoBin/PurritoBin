@@ -28,91 +28,6 @@ ultra fast, minimalistic, encrypted command line paste-bin
 - Tiny code base, less than 1000 lines of code, for very easy auditing.
 - Well documented, `man purrito`.
 
-## docker （ฅ＾・ﻌ・＾）ฅ
-
-### Parameters
-
-The docker image allows passing the following variables to configure PurritoBin:
-
-| Variable | Default | Description |
-|--------- | ------- | ----------- |
-| DOMAIN | `http://localhost:42069/` | **domain** used as prefix of returned paste |
-| MAXPASTESIZE  | `65536` | **maximum paste size** allowed, in *BYTES* |
-| SLUGSIZE | `7` | **length** of the *randomly generated string id* for the paste |
-| TLS | `NO` | enable listening via **`https`** |
-| SERVERNAME | `localhost` | **server name indication** used for *TLS* handshakes, must be valid for the given certificates |
-| PUBLICKEY | `/etc/purritobin/public.crt` | *TLS* public certificate |
-| PRIVATEKEY | `/etc/purritobin/private.crt` | *TLS* private certificate|
-
-### Volumes
-
-It is recommended to mount at least the first two volumes for persistent storage
-
-| Volume | Description |
-|------- | ----------- |
-| /var/www/purritobin | default location for storing pastes |
-| /var/db/purritobin | default location for storing timestamp database |
-| /etc/purritobin | default location for loading certificates **if** enabling TLS |
-
-### Examples
-
-For all examples below, remember to substitute the value of `DOMAIN` from `localhost` to the actual domain/IP of the machine.
-
-PurritoBin listens on port 42069 by default.
-
-#### docker cli
-
-##### HTTP
-
-A simple example:
-- Run the server while listening for pastes on port `8080`
-  - Map host port `8080` to container port `42069`
-- Create a persistent store of pastes in host folder `/data/apps/purritobin`
-  - Make a shared volume by mounting `/data/apps/purritobin/pastes` to `/var/www/purritobin` inside the container
-  - Make another shared volume by mounting `/data/apps/purritobin/database` to `/var/db/purritobin`
-
-```
-docker run -d \
-  --name=purritobin \
-  -e DOMAIN="http://localhost:8080/" \
-  -p 8080:42069 \
-  -v /data/apps/purritobin/pastes:/var/www/purritobin \
-  -v /data/apps/purritobin/database:/var/db/purritobin \
-  --restart unless-stopped \
-  purritobin/purritobin
-```
-
-To do a test paste to the above server
-```
-  $ echo "cool paste" | curl --silent --data-binary "@${1:-/dev/stdin}" "http://localhost:8080/"
-  http://localhost:8080/purr1t0
-  $ curl --silent http://localhost:8080/purr1t0
-  cool paste
-```
-
-##### HTTPS
-
-To run with `https`, the public and private keys need to be provided to the container and mounted at `/etc/purritobin`.
-By default, it is assumed that the public and private keys are stored at `/etc/purritobin/public.crt` and `/etc/purritobin/private.crt`, respectively.
-For example, assuming that the certificates, for the domain `localhost`, are stored on the host machine at `/data/apps/certificates/{public,private}.crt`, PurritoBin can be started in **`https`** mode with:
-
-```
-docker run -d \
-  --name=purritobin \
-  -e DOMAIN="https://localhost:42069/" \
-  -e MAXPASTESIZE=65536 \
-  -e SLUGSIZE="7" \
-  -e TLS="YES" \
-  -e PUBLICKEY="/etc/purritobin/public.crt" \
-  -e PRIVATEKEY="/etc/purritobin/private.crt \
-  -e SERVERNAME="localhost" \
-  -p 8080:42069 \
-  -v /data/apps/purritobin/:/var/www/purritobin \
-  -v /data/apps/purritobin/database:/var/db/purritobin \
-  -v /data/apps/certificates:/etc/purritobin \
-  --restart unless-stopped \
-  purritobin/purritobin
-```
 
 ## Manual setup （ฅ＾・ﻌ・＾）ฅ
 
@@ -258,28 +173,14 @@ In OpenBSD, it is automatically [pledges](https://man.openbsd.org/pledge) and [u
 
 Pull requests to harden the code by default in linux and other operating systems are highly welcome.
 
-### What PurritoBin provides
-- Auto slug generation and returning paste url.
-- Efficient limiting of paste size by cutting off requests at threshold, stopping network blockage.
-- Auto cleaning of pastes, depending on submission URL.
-  - Submit to `domain.tld/{day,week,month}`
-  - or submit to `domain.tld/<time-in-minutes>` - for paste lifetime specified in minutes, e.g. `domain.tld/300` for 300 minutes
-- Submission port for users to submit.
-- Tiny server to browse the pastes. It is optimized for small paste sizes. If accepting really large paste, it is recommended to not use this and instead use a dedicated web server, such as [httpd(8)](https://man.openbsd.org/httpd.8), [apache](https://httpd.apache.org/), [nginx](https://www.nginx.com/) or literally any other web server.
-- You can run it on an internal system so that it is accessible only by the people inside the network.
+## Extras
 
-### What PurritoBin does NOT provide
-- Request throttling
-  - Use a firewall, like [pf](https://www.openbsd.org/faq/pf/filter.html), [nftables](https://wiki.nftables.org/wiki-nftables/index.php/Main_Page) or **(god forbid)** [iptables](https://linux.die.net/man/8/iptables), to manage this, they are designed for exactly this kind of feature.
-
-### Extras
-
-#### System services
+### System services
 
 The [services](services/) directory consists of OpenRC and SystemD service files.
 They need the `purritobin` user and group to exist.
 
-#### Pure C client
+### Pure C client
 
 [ericonr](https://github.com/ericonr) has made a very nice C client, which also supports encrypted pastes - https://github.com/ericonr/purr-c
 It uses [BearSSL](https://www.bearssl.org/) and is very instructive for all who wish to get a small example of using SSL in C together with networking.

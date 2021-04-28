@@ -1,0 +1,105 @@
+<!--
+     Copyright (c) 2020 Aisha Tammy <purrito@bsd.ac>
+
+     Permission to use, copy, modify, and distribute this software for any
+     purpose with or without fee is hereby granted, provided that the above
+     copyright notice and this permission notice appear in all copies.
+
+     THE SOFTWARE IS PROVIDED "AS IS" AND THE AUTHOR DISCLAIMS ALL WARRANTIES
+     WITH REGARD TO THIS SOFTWARE INCLUDING ALL IMPLIED WARRANTIES OF
+     MERCHANTABILITY AND FITNESS. IN NO EVENT SHALL THE AUTHOR BE LIABLE FOR
+     ANY SPECIAL, DIRECT, INDIRECT, OR CONSEQUENTIAL DAMAGES OR ANY DAMAGES
+     WHATSOEVER RESULTING FROM LOSS OF USE, DATA OR PROFITS, WHETHER IN AN
+     ACTION OF CONTRACT, NEGLIGENCE OR OTHER TORTIOUS ACTION, ARISING OUT OF
+     OR IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE. -->
+<!DOCTYPE html>
+<html>
+	<head>
+		<meta charset="utf-8">
+		<meta name="viewport" content="width=device-width">
+		<title>Purrito Bin</title>
+	</head>
+	<body>
+		<pre>
+purrito(1)                                           purr(1)
+                             /\_/\
+                            ( o.o )
+                             > ^ <
+
+
+NAME
+
+	purrito: ultra fast, minimalistic, encrypted command line paste-bin
+	purr: POSIX shell client to paste to bsd.ac
+	meow: POSIX shell client to paste encrypted paste to bsd.ac
+	meowd: POSIX shell client to decrypt encrypted paste from bsd.ac
+
+
+CLIENT
+
+	: ${P_SERVER=bsd.ac}
+	: ${P_PORT=42069}
+	: ${P_MAXTIME=30}
+	: ${_PL=week} # can be set to day/week/month/<lifetime-in-minutes>
+
+	# POSIX shell client to upload standard message
+	purr() {
+		curl --silent --max-time "${P_MAXTIME}" --data-binary "@${1:-/dev/stdin}" "${P_SERVER}:${P_PORT}/${_PL}"
+	}
+
+	# POSIX shell client to upload encrypted message
+	meow() {
+		# we need to generate a 256 byte random key
+		# for using the aes-256-cbc cipher
+		key="$(openssl rand -hex 32)"
+		iv="$(openssl rand -hex 16)"
+		# calculate its encryption and upload it
+		url="$(openssl enc -aes-256-cbc -K ${key} -iv ${iv} -e -base64 -A < ${1:-/dev/stdin} | purr)"
+		printf %s\\n "${url%\/*}/paste.html#${url##*\/}_${key}_${iv}"
+		unset key iv url
+	}
+
+	# POSIX shell client to decrypt the message
+	meowd() {
+		url="$1"
+		baseurl="${url%\/*}"
+		vals="${url##*\#}"
+		paste=$(printf %s\\n "${vals}" | cut -d'_' -f1)
+		key=$(printf %s\\n "${vals}" | cut -d'_' -f2)
+		iv=$(printf %s\\n "${vals}" | cut -d'_' -f3)
+		curl --max-time "${P_MAXTIME}" --write-out "\n" --silent "${baseurl}/${paste}" | openssl enc -aes-256-cbc -base64 -d -K ${key} -iv ${iv}
+		unset url baseurl vals paste key iv
+	}
+
+USAGE
+
+	~$ purr c00lfile.txt
+	https://bsd.ac/purrit0
+
+	~$ purr &lt; h0tfile.txt
+	https://bsd.ac/purri1o
+
+	~$ echo Hello world. | purr
+	https://bsd.ac/d4nklit
+
+	~$ purr
+	This is my input
+	it can span multiple lines
+	&lt;Ctrl-d to exit&gt;
+	https://bsd.ac/curlpr0
+
+
+LIMITS
+
+	max paste size: 64KB
+
+	limit of one paste every 3 seconds, abusing ip is
+	banned for 10 minutes
+
+
+SOURCE
+
+	https://github.com/PurritoBin/PurritoBin
+		</pre>
+	</body>
+</html>
