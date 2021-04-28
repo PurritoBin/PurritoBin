@@ -286,13 +286,9 @@ int main(int argc, char **argv) {
 	if (header_names.size() != header_values.size()) {
 		errx(1, "ERROR: header names and values can't be matched");
 	}
-	if (header_names.size() != 0)
-		for (std::map<std::string, std::string>::size_type i = 0;
-		     i < header_names.size(); i++)
-			headers[header_names[i]] = header_values[i];
-	else {
-		headers["Content-Type"] = "text/plain; charset=UTF-8";
-	}
+	for (std::map<std::string, std::string>::size_type i = 0;
+	     i < header_names.size(); i++)
+		headers[header_names[i]] = header_values[i];
 
 	syslog(LOG_INFO,
 	       "Starting PurritoBin with settings - "
