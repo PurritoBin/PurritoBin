@@ -5,9 +5,9 @@
 [![GitHub issues](https://img.shields.io/github/issues-raw/PurritoBin/PurritoBin)](https://github.com/PurritoBin/PurritoBin/issues)
 [![contributions welcome](https://img.shields.io/badge/contributions-welcome-brightgreen.svg?style=flat)](https://github.com/PurritoBin/PurritoBin/issues)
 
-[![Docker Cloud Build Status](https://img.shields.io/docker/cloud/build/purritobin/purritobin)](https://hub.docker.com/r/purritobin/purritobin)
-[![Docker Pulls](https://img.shields.io/docker/pulls/purritobin/purritobin)](https://hub.docker.com/r/purritobin/purritobin)
-[![Docker Image Size](https://img.shields.io/docker/image-size/purritobin/purritobin/latest)](https://hub.docker.com/r/purritobin/purritobin)
+[![docker](https://github.com/PurritoBin/docker/actions/workflows/docker.yml/badge.svg)](https://hub.docker.com/r/purritobin/purritobin)
+[![docker pulls](https://img.shields.io/docker/pulls/purritobin/purritobin)](https://hub.docker.com/r/purritobin/purritobin)
+[![image size](https://img.shields.io/docker/image-size/purritobin/purritobin/edge)](https://hub.docker.com/r/purritobin/purritobin)
 
 
 ultra fast, minimalistic, encrypted command line paste-bin
