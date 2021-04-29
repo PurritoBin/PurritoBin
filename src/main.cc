@@ -330,7 +330,6 @@ int main(int argc, char **argv) {
 		});
 	}
 	auto cleaner = std::thread([&]() {
-		lmdb::dbi dbi;
 		while (1) {
 			syslog(LOG_INFO, "(cleaner) Starting a new run...");
 			auto current_time = time_since_epoch();
@@ -339,7 +338,8 @@ int main(int argc, char **argv) {
 				{
 					auto rtxn = lmdb::txn::begin(
 					    settings.env, nullptr, MDB_RDONLY);
-					dbi = lmdb::dbi::open(rtxn, nullptr);
+					auto dbi =
+					    lmdb::dbi::open(rtxn, nullptr);
 					std::string_view timestamp, slug;
 					auto cursor =
 					    lmdb::cursor::open(rtxn, dbi);
