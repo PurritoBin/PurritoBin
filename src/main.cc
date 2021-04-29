@@ -375,7 +375,7 @@ int main(int argc, char **argv) {
 				       paste.c_str());
 			try {
 				auto wtxn = lmdb::txn::begin(settings.env);
-				dbi = lmdb::dbi::open(wtxn, nullptr);
+				auto dbi = lmdb::dbi::open(wtxn, nullptr);
 
 				for (std::size_t i = 0; i < timestamps.size();
 				     i++) {
