@@ -14,13 +14,13 @@ HEADERS =	src/purrito.h
 
 MAN =		man/purrito.1
 
-CXXFLAGS +=	-std=c++17 -Wall -Wextra -Wpedantic
+PTHREADS ?=	-pthread
 
 # requirements
 # lmdbxx     : https://github.com/hoytech/lmdbxx
 # uwebsockets: https://github.com/uNetworking/uWebSockets
 # uSockets   : https://github.com/uNetworking/uSockets
-CXXFLAGS +=	-pthread -DUWS_NO_ZLIB
+CXXFLAGS +=	-std=c++17 ${PTHREADS} -Wall -Wextra -Wpedantic -DUWS_NO_ZLIB
 LDFLAGS +=	-lusockets -llmdb
 
 all: ${TARGET}
