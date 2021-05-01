@@ -257,7 +257,7 @@ class purrito_paste_file {
 			file_path = settings.storage_directory + slug;
 			fd =
 			    open(file_path.c_str(), O_WRONLY | O_CREAT | O_EXCL,
-			         S_IRUSR | S_IWUSR | S_IRGRP);
+			         S_IRUSR | S_IWUSR | S_IRGRP | S_IROTH);
 			if (fd == -1) continue;
 			int locked = flock(fd, LOCK_EX | LOCK_NB);
 			if (locked == -1) {
