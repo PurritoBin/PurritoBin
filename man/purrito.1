@@ -174,6 +174,10 @@ A paste can configure its lifetime by submitting to
 or
 .Sy domain.tld/<time-in-minutes>
 to set its lifetime to a desired number of minutes.
+If the submission time is
+.Dq 0
+the paste will have an infinite lifetime and will not
+be cleaned.
 The server will only clean pastes at its regular
 .Ar autoclean_interval .
 .Pp

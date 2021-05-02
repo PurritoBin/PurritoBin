@@ -505,12 +505,14 @@ void read_paste(const purrito_settings &settings,
 			       session_id, paste_url->c_str());
 
 			/* add timestamp to database */
-			auto wtxn = lmdb::txn::begin(settings.env);
-			auto dbi = lmdb::dbi::open(wtxn, nullptr);
-			auto timestamp = time_since_epoch(delay);
-			std::string_view ts(timestamp);
-			dbi.put(wtxn, ts, pfile->slug);
-			wtxn.commit();
+			if (delay != 0) {
+				auto wtxn = lmdb::txn::begin(settings.env);
+				auto dbi = lmdb::dbi::open(wtxn, nullptr);
+				auto timestamp = time_since_epoch(delay);
+				std::string_view ts(timestamp);
+				dbi.put(wtxn, ts, pfile->slug);
+				wtxn.commit();
+			}
 			/* and return it to the user */
 			res->end(paste_url->c_str());
 		}
