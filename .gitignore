@@ -3,6 +3,9 @@ purrito
 PB.key
 PB.crt
 
+# meson build directory
+build
+
 # coredumps
 *.core
 
