@@ -22,7 +22,7 @@ jobs:
     - name: Install dependencies
       run: |
         sudo apt update
-        sudo apt-get install -y libssl-dev pkg-config gcc-10 g++-10 curl mandoc valgrind clang-tools
+        sudo apt-get install -y libssl-dev pkg-config gcc-10 g++-10 curl mandoc valgrind clang-tools meson ninja
     - name: Install uSockets
       run: |
         git clone https://github.com/uNetworking/uSockets
@@ -46,10 +46,11 @@ jobs:
         sudo wget https://raw.githubusercontent.com/hoytech/lmdbxx/1.0.0/lmdb%2B%2B.h -O /usr/include/lmdb++.h
     - name: Make
       run: |
-        scan-build --status-bugs make
+        meson setup -Denable_testing=true -Dtest_dd_flags="iflag=fullblock" -Dtest_valgrind_wrapper="valgrind --leak-check=full --show-leak-kinds=all --verbose" build
+        ninja -C build scan-build
     - name: Test
       run: |
-        env P_DD_FLAGS="iflag=fullblock" P_CONCUR=5 P_MAXSIZE=3 PURRITO="valgrind --leak-check=full --show-leak-kinds=all --verbose ../purrito" --error-exitcode=1 make check
+        ninja -C build test
     - name: Check man pages
       run: |
         mandoc -T lint -W warning man/purrito.1

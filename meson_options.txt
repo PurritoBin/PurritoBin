@@ -1,0 +1,5 @@
+option('enable_testing', type: 'boolean', value: true, description: 'Enable and run tests')
+option('test_shuf', type: 'string', value: 'shuf', description: 'GNU shuf program used in tests')
+option('test_seq', type: 'string', value: 'seq', description: 'GNU seq program used in tests')
+option('test_dd_flags', type: 'string', value: '', description: 'Extra flags passed to dd in tests')
+option('test_valgrind_wrapper', type: 'string', value: '', description: 'What valgrind wrapper to use for tests')
