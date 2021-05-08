@@ -72,7 +72,7 @@ int main(int argc, char **argv) {
 	max_retries = 5;
 	storage_directory = "/var/www/purritobin/";
 	database_directory = "/var/db/purritobin/";
-	max_database_size = 524288000;
+	max_database_size = 16777216;
 	ssl_server = false;
 	default_time_limit = 604800;  // 1 week in seconds \o/
 	autoclean_interval = 300;     // 5 mins in seconds
@@ -234,6 +234,10 @@ int main(int argc, char **argv) {
 	if (unveil_err != 0) {
 		errx(unveil_err, "ERROR: could not unveil storage folder: %s",
 		     database_directory.c_str());
+	}
+	unveil_err = unveil("/tmp", "rwc");
+	if (unveil_err != 0) {
+		errx(unveil_err, "ERROR: could not unveil temporary folder: /tmp");
 	}
 
 	if (ssl_server) {
