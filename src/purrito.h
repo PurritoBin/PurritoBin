@@ -195,7 +195,11 @@ class purrito_settings {
 	      max_retries(max_retries),
 	      env(lmdb::env::create()) {
 		env.set_mapsize(max_database_size);
-		env.open(database_directory.c_str(), 0, 0640);
+		unsigned int env_flags = 0;
+#if defined(__OpenBSD__)
+		env_flags = MDB_WRITEMAP;
+#endif
+		env.open(database_directory.c_str(), env_flags, 0640);
 	}
 };
 
