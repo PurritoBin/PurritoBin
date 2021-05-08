@@ -14,11 +14,11 @@ sleep 2
 
 printf %s\\n "THISISINDEX" > "${P_TMPDIR}/index.html"
 
-curl --silent --cacert PB.crt --capath "$(pwd)" --fail "https://localhost:${P_PORT}/" | diff "${P_TMPDIR}/index.html" -
-curl --silent --cacert PB.crt --capath "$(pwd)" --fail "https://localhost:${P_PORT}"  | diff "${P_TMPDIR}/index.html" -
+curl --silent --cacert PB.crt --fail "https://localhost:${P_PORT}/" | diff "${P_TMPDIR}/index.html" -
+curl --silent --cacert PB.crt --fail "https://localhost:${P_PORT}"  | diff "${P_TMPDIR}/index.html" -
 
 printf %s\\n "THISISRANDOMPASTE" > "${P_TMPDIR}/somethingrandom"
-curl --silent --cacert PB.crt --capath "$(pwd)" --fail "https://localhost:${P_PORT}/somethingrandom" | diff "${P_TMPDIR}/somethingrandom" -
+curl --silent --cacert PB.crt --fail "https://localhost:${P_PORT}/somethingrandom" | diff "${P_TMPDIR}/somethingrandom" -
 
 # should be enough
 sleep 2
