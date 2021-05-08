@@ -3,5 +3,5 @@ purr() {
 }
 
 spurr() {
-    curl --max-time "${P_MAXTIME:-30}" --silent --cacert PB.crt --data-binary "@${1:-/dev/stdin}" "https://localhost:${P_PORT}"
+    curl --max-time "${P_MAXTIME:-30}" --silent --cacert "${P_CRT}" --data-binary "@${1:-/dev/stdin}" "https://localhost:${P_PORT}"
 }

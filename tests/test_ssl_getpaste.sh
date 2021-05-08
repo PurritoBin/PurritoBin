@@ -5,7 +5,7 @@ set -e
 . ./common.sh
 
 P_RACING=1
-${PURRITO} -d "${P_TMPDIR}/" -s "${P_TMPDIR}" -z "${P_TMPDBDIR}" -i 127.0.0.1 -p "${P_PORT}" -t -n localhost -k "PB.key" -c "PB.crt" -l &
+${PURRITO} -d "${P_TMPDIR}/" -s "${P_TMPDIR}" -z "${P_TMPDBDIR}" -i 127.0.0.1 -p "${P_PORT}" -t -n localhost -k "${P_KEY}" -c "${P_CRT}" -l &
 P_ID=$!
 P_RACING=
 
@@ -14,11 +14,11 @@ sleep 2
 
 printf %s\\n "THISISINDEX" > "${P_TMPDIR}/index.html"
 
-curl --silent --cacert PB.crt --fail "https://localhost:${P_PORT}/" | diff "${P_TMPDIR}/index.html" -
-curl --silent --cacert PB.crt --fail "https://localhost:${P_PORT}"  | diff "${P_TMPDIR}/index.html" -
+curl --silent --cacert "${P_CRT}" --fail "https://localhost:${P_PORT}/" | diff "${P_TMPDIR}/index.html" -
+curl --silent --cacert "${P_CRT}" --fail "https://localhost:${P_PORT}"  | diff "${P_TMPDIR}/index.html" -
 
 printf %s\\n "THISISRANDOMPASTE" > "${P_TMPDIR}/somethingrandom"
-curl --silent --cacert PB.crt --fail "https://localhost:${P_PORT}/somethingrandom" | diff "${P_TMPDIR}/somethingrandom" -
+curl --silent --cacert "${P_CRT}" --fail "https://localhost:${P_PORT}/somethingrandom" | diff "${P_TMPDIR}/somethingrandom" -
 
 # should be enough
 sleep 2

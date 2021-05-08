@@ -8,6 +8,8 @@
 : ${P_DATA=$(mktemp -p ${P_TMPDIR})}
 : ${P_CONCUR=10}
 : ${P_MAXSIZE=5}
+: ${P_CRT=PB.crt}
+: ${P_KEY=PB.key}
 : ${PURRITO=../purrito}
 
 ##########################
