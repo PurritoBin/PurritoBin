@@ -15,18 +15,20 @@ add_project_arguments(
 cpp      = meson.get_compiler('cpp')
 
 cpp.check_header('lmdb++.h', required: true)
+cpp.check_header('uWebSockets/App.h', required: true)
 
-lmdb     = cpp.find_library('lmdb', required: true)
-usockets = cpp.find_library('usockets', required: true)
-
+lmdb     = dependency('lmdb', required: true)
 threads  = dependency('threads', required: true)
+usockets = dependency('usockets', required: true)
 
-purrito  = executable('purrito', 'src/main.cc', dependencies: [ lmdb, usockets, threads ], install: true)
+purrito  = executable('purrito', 'src/main.cc', dependencies: [ lmdb, threads, usockets ], install: true)
 install_man('man/purrito.1')
 install_data('frontend/paste.html', 'clients/POSIX_shell_client.sh')
 
 if get_option('enable_testing')
 	find_program('curl')
+        find_program(get_option('test_shuf'))
+        find_program(get_option('test_seq'))
 	openssl   = find_program('openssl')
 	gen_certs = run_command(openssl,
 		    'req',
