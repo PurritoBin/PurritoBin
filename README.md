@@ -38,14 +38,14 @@ ultra fast, minimalistic, encrypted command line paste-bin
 - [uWebSockets](https://github.com/uNetworking/uWebSockets/)
 - [lmdbxx](https://github.com/hoytech/lmdbxx)
 
-If these are not available in your OS repositories, you can manually install them by following the steps in the [GitHub workflow](https://github.com/PurritoBin/PurritoBin/actions?query=workflow:pipeline)
+If these are not available in an OS's repositories, they can be manually installed by following the steps in the [GitHub workflow](https://github.com/PurritoBin/PurritoBin/actions?query=workflow:pipeline)
 
 ### Compilation
 
 ```
-    ~$ meson --prefix "/usr" -C build
-    ~$ ninja -C build
-    ~$ sudo ninja -C build install
+$ meson --prefix "/usr" -C build
+$ ninja -C build
+$ sudo ninja -C build install
 ```
 
 ### Usage
@@ -77,7 +77,7 @@ Make sure that whatever link is provided to the `-d ` domain option, is also abl
 ## Client  (=｀ﻌ´=)
 
 ### Shell client definitions
-Define these functions somewhere in the dot files of your shell (works on all POSIX compliant shells).
+Define these functions somewhere in the dot files of the desired shell (they work on all POSIX compliant shells).
 
 ```
 : ${P_SERVER=bsd.ac}
@@ -91,7 +91,7 @@ purr() {
 
 # POSIX shell client to upload encrypted message
 meow() {
-	# we need to generate a 256 byte random key
+	# generate a 256 byte random key
 	# for using the aes-256-cbc cipher
 	key="$(openssl rand -hex 32)"
 	iv="$(openssl rand -hex 16)"
@@ -115,40 +115,39 @@ meowd() {
 ```
 
 #### Client usage
-You can paste the `stdout` from a command, paste a file or paste while taking
-input from a file or from the command line.
+The `stdout` from a command can be pasted or from the `cat/head/tail` of a file or the input from a file or from the command line.
 ```
-    ~$ purr c00lfile.txt
-    https://bsd.ac/purrit0
+$ purr c00lfile.txt
+https://bsd.ac/purrit0
 
-    ~$ purr < h0tfile.txt
-    https://bsd.ac/purri1o
+$ purr < h0tfile.txt
+https://bsd.ac/purri1o
 
-    ~$ echo Hello world. | purr
-    https://bsd.ac/d4nklit
+$ echo Hello world. | purr
+https://bsd.ac/d4nklit
 
-    ~$ purr
-    This is my input
-    it can span multiple lines
-    <Ctrl-d to exit>
-    https://bsd.ac/curlpr0
+$ purr
+This is my input
+it can span multiple lines
+<Ctrl-d to exit>
+https://bsd.ac/curlpr0
 
-    ~$ meow
-    really cool paste
-    <Ctrl-d to exit>
-    https://bsd.ac/paste.html#329r1ml_9f5d0f2928b33c2a6a0752811170735af16c8eecfa208e1bdb84d831427be82b_fd579e101a3d31d0362f0ec6473573ad
+$ meow
+really cool paste
+<Ctrl-d to exit>
+https://bsd.ac/paste.html#329r1ml_9f5d0f2928b33c2a6a0752811170735af16c8eecfa208e1bdb84d831427be82b_fd579e101a3d31d0362f0ec6473573ad
 ```
 
 ### Encrypted Storage Clients  (=｀ᆺ├┬┴┬┴
 
 In a encrypted storage setting, the paste is encrypted before sending it to the server.
 Now the server will only be used as a storage bin and even in case of a non-https connection,
-you are guaranteed that no one else will be able to read the data that you have sent.
+it is guaranteed that no one else will be able to read the data that was sent.
 
 #### How does it work?
  Steps automatically done by the provided clients, on the client side:
  - Randomly generate an ecryption **key** and initialization vector **iv**.
- - Encrypt your **data** using said **key** and **iv**, the encrypted data is called the **cipher**.
+ - Encrypt the **data** using said **key** and **iv**, the encrypted data is called the **cipher**.
  - Send the **cipher** to the pastebin and get a standard paste url as above, which will be converted to the form
  ```
     https://bsd.ac/paste.html#pasteID_key_iv
@@ -156,17 +155,17 @@ you are guaranteed that no one else will be able to read the data that you have 
 The standard client is `meow`, a companion to the above `purr`, which is also POSIX compliant and should work in all shells. It has exactly the same usage as `purr`, so please look at those examples to see how to use it.
 The only dependency on the client side is the presence of [LibreSSL](https://www.libressl.org/) or [OpenSSL](https://www.openssl.org/), to do the encryption.
 
-There will be other clients in the [clients](clients/) folder, added on demand for other platforms, which will allow you to do all this automatically.
+There will be other clients in the [clients](clients/) folder, added on demand for other platforms, which will do all this automatically.
 Pull requests for other clients are highly welcome.
 
 #### Why is this secure?
 - All the encryption is done on the client side.
 - Only the **cipher** is sent to PurritoBin.
 - The url only contains the encrypted **cipher** and has no knowledge of the actual data.
-- When you visit the html webpage the **key** is in the **hash property** of the webpage, which is never sent to the server.
+- When visiting the html webpage the **key** is in the **hash property** of the webpage, which is never sent to the server.
 - All decryption is done inside the browser, using javascript, [Crypto JS](https://github.com/brix/crypto-js) on the client side.
 
-NOTE: Anyone who has the full link is going to be able to read the decrypted text. Only send the full hash included url to people you trust, through a secure communications channel.
+NOTE: Anyone who has the full link is going to be able to read the decrypted text. Only send the full hash included url to trusted parties, through a secure communication channel.
 
 
 ## Design principles
