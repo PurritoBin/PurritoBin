@@ -14,8 +14,8 @@ add_project_arguments(
 
 cpp      = meson.get_compiler('cpp')
 
-cpp.check_header('lmdb++.h', required: true)
-cpp.check_header('uWebSockets/App.h', required: true)
+cpp.has_header('lmdb++.h', required: true)
+cpp.has_header('uWebSockets/App.h', required: true)
 
 lmdb     = dependency('lmdb', required: true)
 threads  = dependency('threads', required: true)
