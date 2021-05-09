@@ -22,7 +22,7 @@ jobs:
     - name: Install dependencies
       run: |
         sudo apt update
-        sudo apt-get install -y libssl-dev pkg-config gcc-10 g++-10 curl mandoc valgrind clang-tools meson ninja
+        sudo apt-get install -y libssl-dev pkg-config gcc-10 g++-10 curl mandoc valgrind clang-tools meson ninja-build
     - name: Install uSockets
       run: |
         git clone https://github.com/uNetworking/uSockets

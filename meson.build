@@ -69,6 +69,8 @@ if get_option('enable_testing')
 			args: [ ts ],
 			env: {
 				'PURRITO':  get_option('test_valgrind_wrapper') + ' ' + purrito.full_path(),
+				'SHUF':     get_option('test_shuf'),
+				'SEQ':      get_option('test_seq'),
 				'P_KEY':    meson.build_root() / 'PB.key',
 				'P_CRT':    meson.build_root() / 'PB.crt'
 			},
