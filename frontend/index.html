@@ -1,105 +1,160 @@
 <!--
-     Copyright (c) 2020 Aisha Tammy <purrito@bsd.ac>
+    Copyright (c) 2020 Aisha Tammy <purrito@bsd.ac>
 
-     Permission to use, copy, modify, and distribute this software for any
-     purpose with or without fee is hereby granted, provided that the above
-     copyright notice and this permission notice appear in all copies.
+    Permission to use, copy, modify, and distribute this software for any
+    purpose with or without fee is hereby granted, provided that the above
+    copyright notice and this permission notice appear in all copies.
 
-     THE SOFTWARE IS PROVIDED "AS IS" AND THE AUTHOR DISCLAIMS ALL WARRANTIES
-     WITH REGARD TO THIS SOFTWARE INCLUDING ALL IMPLIED WARRANTIES OF
-     MERCHANTABILITY AND FITNESS. IN NO EVENT SHALL THE AUTHOR BE LIABLE FOR
-     ANY SPECIAL, DIRECT, INDIRECT, OR CONSEQUENTIAL DAMAGES OR ANY DAMAGES
-     WHATSOEVER RESULTING FROM LOSS OF USE, DATA OR PROFITS, WHETHER IN AN
-     ACTION OF CONTRACT, NEGLIGENCE OR OTHER TORTIOUS ACTION, ARISING OUT OF
-     OR IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE. -->
+    THE SOFTWARE IS PROVIDED "AS IS" AND THE AUTHOR DISCLAIMS ALL WARRANTIES
+    WITH REGARD TO THIS SOFTWARE INCLUDING ALL IMPLIED WARRANTIES OF
+    MERCHANTABILITY AND FITNESS. IN NO EVENT SHALL THE AUTHOR BE LIABLE FOR
+    ANY SPECIAL, DIRECT, INDIRECT, OR CONSEQUENTIAL DAMAGES OR ANY DAMAGES
+    WHATSOEVER RESULTING FROM LOSS OF USE, DATA OR PROFITS, WHETHER IN AN
+    ACTION OF CONTRACT, NEGLIGENCE OR OTHER TORTIOUS ACTION, ARISING OUT OF
+    OR IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE. -->
 <!DOCTYPE html>
 <html>
-	<head>
-		<meta charset="utf-8">
-		<meta name="viewport" content="width=device-width">
-		<title>Purrito Bin</title>
-	</head>
-	<body>
-		<pre>
-purrito(1)                                           purr(1)
-                             /\_/\
-                            ( o.o )
-                             > ^ <
+<meta charset="utf-8" />
+<title>Purrito Bin</title>
 
+<head>
+    <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/crypto-js/4.0.0/crypto-js.min.js"></script>
+    <script type="text/javascript">
+        /*************** CONFIGURATION ***************/
+        /*
+           CORS attributes on the pastebin need to allow
+           the pasting website in its HTTP headers.
+           Look at the man page for an example.
+        */
+        var PURRITOBIN_URL = "https://bsd.ac:42069";
 
-NAME
+        /********************************************/
+        function makeHttpObject() {
+            try {
+                return new XMLHttpRequest();
+            } catch (error) {}
+            try {
+                return new ActiveXObject("Msxml2.XMLHTTP");
+            } catch (error) {}
+            try {
+                return new ActiveXObject("Microsoft.XMLHTTP");
+            } catch (error) {}
+            throw new Error("Could not create HTTP request object.");
+        }
 
-	purrito: ultra fast, minimalistic, encrypted command line paste-bin
-	purr: POSIX shell client to paste to bsd.ac
-	meow: POSIX shell client to paste encrypted paste to bsd.ac
-	meowd: POSIX shell client to decrypt encrypted paste from bsd.ac
+        function submitPaste() {
+            var request = makeHttpObject();
+            request.open("POST", PURRITOBIN_URL, true);
+            request.setRequestHeader("Content-Type", "text/plain; charset=UTF-8");
+            request.send(document.getElementById("paste").value);
+            request.onreadystatechange = function() {
+                var decoded = request.responseText.trim();
+                var data_div = document.getElementById("url");
+                data_div.innerHTML = `<a href='${decoded}'>${decoded}</a>`;
+                return;
+            };
+        }
 
+        function submitEncrypted() {
+            var request = makeHttpObject();
+            request.open("POST", PURRITOBIN_URL, true);
+            request.setRequestHeader("Content-Type", "text/plain; charset=UTF-8");
+            var data = document.getElementById("paste").value;
+            var random_key = CryptoJS.lib.WordArray.random(32).toString();
+            var random_iv = CryptoJS.lib.WordArray.random(16).toString();
+            var random_key__ = CryptoJS.enc.Hex.parse(random_key);
+            var random_iv__ = CryptoJS.enc.Hex.parse(random_iv);
+            var cipher = CryptoJS.AES.encrypt(data, random_key__, {
+                iv: random_iv__,
+                mode: CryptoJS.mode.CBC
+            });
+            request.send(cipher);
+            request.onreadystatechange = function() {
+                var url_ = request.responseText.trim();
+                var slug = url_.substring(url_.lastIndexOf("/") + 1, url.length);
+                var base_url = url_.substring(0, url_.lastIndexOf("/") + 1);
+                var decoded = base_url + "paste.html#" + slug + "_" + random_key + "_" + random_iv;
+                var data_div = document.getElementById("url");
+                data_div.innerHTML = `<a href='${decoded}'>${decoded}</a>`;
+                return;
+            };
+        }
+    </script>
+    <style>
+        html,
+        body {
+            height: 80%;
+        }
 
-CLIENT
+        .submission {
+            margin: 0px;
+            position: absolute;
+            width: 95%;
+            height: 80%;
+            top: 50%;
+            left: 50%;
+            -ms-transform: translate(-50%, -50%);
+            transform: translate(-50%, -50%);
+        }
 
-	: ${P_SERVER=bsd.ac}
-	: ${P_PORT=42069}
-	: ${P_MAXTIME=30}
-	: ${_PL=week} # can be set to day/week/month/<lifetime-in-minutes>
+        .pasteURL {
+            width: 100%;
+            height: 5%;
+            margin: auto;
+            text-align: center;
+            -ms-transform: translateY(-5%);
+            transform: translateY(-5%);
+            font-size: x-large;
+            font-weight: bold;
+        }
 
-	# POSIX shell client to upload standard message
-	purr() {
-		curl --silent --max-time "${P_MAXTIME}" --data-binary "@${1:-/dev/stdin}" "${P_SERVER}:${P_PORT}/${_PL}"
-	}
+        .paste {
+            width: 100%;
+            height: 80%;
+            margin: auto;
+        }
 
-	# POSIX shell client to upload encrypted message
-	meow() {
-		# we need to generate a 256 byte random key
-		# for using the aes-256-cbc cipher
-		key="$(openssl rand -hex 32)"
-		iv="$(openssl rand -hex 16)"
-		# calculate its encryption and upload it
-		url="$(openssl enc -aes-256-cbc -K ${key} -iv ${iv} -e -base64 -A < ${1:-/dev/stdin} | purr)"
-		printf %s\\n "${url%\/*}/paste.html#${url##*\/}_${key}_${iv}"
-		unset key iv url
-	}
+        .submitWrapper,
+        .aboutWrapper {
+            width: 100%;
+            height: 10%;
+            margin: auto;
+            position: relative;
+        }
 
-	# POSIX shell client to decrypt the message
-	meowd() {
-		url="$1"
-		baseurl="${url%\/*}"
-		vals="${url##*\#}"
-		paste=$(printf %s\\n "${vals}" | cut -d'_' -f1)
-		key=$(printf %s\\n "${vals}" | cut -d'_' -f2)
-		iv=$(printf %s\\n "${vals}" | cut -d'_' -f3)
-		curl --max-time "${P_MAXTIME}" --write-out "\n" --silent "${baseurl}/${paste}" | openssl enc -aes-256-cbc -base64 -d -K ${key} -iv ${iv}
-		unset url baseurl vals paste key iv
-	}
+        .submit,
+        .about {
+            margin: auto;
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            -ms-transform: translate(-50%, -50%);
+            transform: translate(-50%, -50%);
+        }
 
-USAGE
+        #button1,
+        #button2 {
+            display: inline-block;
+        }
+    </style>
+</head>
 
-	~$ purr c00lfile.txt
-	https://bsd.ac/purrit0
+<body>
+    <div class="submission">
+        <div class="pasteURL" id="url"></div>
+        <textarea class="paste" id="paste"></textarea>
+        <div class="submitWrapper">
+            <div class="submit">
+                <button type="button" id="button1" onclick="submitPaste()">Paste!</button>
+                <button type="button" id="button2" onclick="submitEncrypted()">Encrypt Paste!</button>
+            </div>
+        </div>
+        <div class="aboutWrapper">
+            <div class="about">
+                <a href="about.html">About</a>
+            </div>
+        </div>
+    </div>
+</body>
 
-	~$ purr &lt; h0tfile.txt
-	https://bsd.ac/purri1o
-
-	~$ echo Hello world. | purr
-	https://bsd.ac/d4nklit
-
-	~$ purr
-	This is my input
-	it can span multiple lines
-	&lt;Ctrl-d to exit&gt;
-	https://bsd.ac/curlpr0
-
-
-LIMITS
-
-	max paste size: 64KB
-
-	limit of one paste every 3 seconds, abusing ip is
-	banned for 10 minutes
-
-
-SOURCE
-
-	https://github.com/PurritoBin/PurritoBin
-		</pre>
-	</body>
 </html>

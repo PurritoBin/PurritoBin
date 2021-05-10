@@ -219,6 +219,10 @@ The values are read in order, with the first
 .Ar header
 matching the first
 .Ar header_value .
+These can be used to allow the online submission
+portal to paste using javascript by setting the
+appropriate CORS attributes, see
+.Sx EXAMPLES .
 .Pp
 .It Fl w Ar passphrase
 .Sy DEFAULT : null
@@ -238,6 +242,10 @@ The values are read in order, with the first
 .Ar header_value
 matching the first
 .Ar header .
+These can be used to allow the online submission
+portal to paste using javascript by setting the
+appropriate CORS attributes, see
+.Sx EXAMPLES .
 .Pp
 .It Fl z Ar database_directory
 .Sy DEFAULT : /var/db/purritobin
@@ -252,19 +260,22 @@ Run the
 .Nm
 server with the domain name set to
 .Lk https://bsd.ac/
-with, enabling the built-in HTTP server and setting the
+with, enabling the built-in HTTP server, setting proper
+CORS attributes for enabling the web portal and setting the
 .Dq Content-Type
 header to
-.Dq text/html; charset=UTF-8 :
+.Dq text/plain; charset=UTF-8 :
 .Bd -literal -offset width
 $ purrito -d "https://bsd.ac/" -t \\
-          -x "Content-Type" -v "text/html; charset=UTF-8"
+          -x "Content-Type" -v "text/plain; charset=UTF-8" \\
+          -x "Access-Control-Allow-Origin" -v "https://bsd.ac"
 .Ed
 .Pp
 Run the previous server with TLS and the proper SNI:
 .Bd -literal -offset width
 $ purrito -d "https://bsd.ac/" -t \\
-          -x "Content-Type" -v "text/html; charset=UTF-8" \\
+          -x "Content-Type" -v "text/plain; charset=UTF-8" \\
+          -x "Access-Control-Allow-Origin" -v "https://bsd.ac" \\
           -l -n bsd.ac \\
           -c /etc/ssl/bsd.ac.crt -k /etc/ssl/private/bsd.ac.key
 .Ed
@@ -278,7 +289,8 @@ Run the previous TLS server, while listening on
 with:
 .Bd -literal -offset width
 $ purrito -d "https://bsd.ac/" -t \\
-          -x "Content-Type" -v "text/html; charset=UTF-8" \\
+          -x "Content-Type" -v "text/plain; charset=UTF-8" \\
+          -x "Access-Control-Allow-Origin" -v "https://bsd.ac" \\
           -l -n bsd.ac \\
           -c /etc/ssl/bsd.ac.crt -k /etc/ssl/private/bsd.ac.key \\
           -i "10.7.0.1"            -p 9876  \\

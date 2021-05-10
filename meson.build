@@ -1,5 +1,5 @@
-project('purritobin', 'cpp',
-	version: '0.6.5',
+project('PurritoBin', 'cpp',
+	version: '0.6.7',
 	license: 'ISC',
 	default_options: [
 		'cpp_std=c++17',
@@ -23,7 +23,7 @@ usockets = dependency('usockets', required: true)
 
 purrito  = executable('purrito', 'src/main.cc', dependencies: [ lmdb, threads, usockets ], install: true)
 install_man('man/purrito.1')
-install_data('frontend/paste.html', 'clients/POSIX_shell_client.sh')
+install_data('frontend/about.html', 'frontend/index.html', 'frontend/paste.html', 'clients/POSIX_shell_client.sh')
 
 if get_option('enable_testing')
 	find_program('curl')
