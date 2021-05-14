@@ -17,9 +17,10 @@ cpp      = meson.get_compiler('cpp')
 cpp.has_header('lmdb++.h', required: true)
 cpp.has_header('uWebSockets/App.h', required: true)
 
-lmdb     = dependency('lmdb', required: true)
+lmdb     = cpp.find_library('lmdb', required: true)
+
 threads  = dependency('threads', required: true)
-usockets = dependency('usockets', required: true)
+usockets = dependency('libusockets', required: true)
 
 purrito  = executable('purrito', 'src/main.cc', dependencies: [ lmdb, threads, usockets ], install: true)
 install_man('man/purrito.1')
