@@ -5,7 +5,7 @@
 # Requirements for encrypted message sending:
 # - LibreSSL / OpenSSL / GnuTLS
 
-: ${P_SERVER=bsd.ac}
+: ${P_SERVER=https://bsd.ac}
 : ${P_PORT=42069}
 : ${P_TIME=week}
 : ${P_MAXTIME=30}

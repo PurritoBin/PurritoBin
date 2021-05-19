@@ -80,7 +80,7 @@ Make sure that whatever link is provided to the `-d ` domain option, is also abl
 Define these functions somewhere in the dot files of the desired shell (they work on all POSIX compliant shells).
 
 ```
-: ${P_SERVER=bsd.ac}
+: ${P_SERVER=https://bsd.ac}
 : ${P_PORT=42069}
 : ${P_MAXTIME=30}
 
