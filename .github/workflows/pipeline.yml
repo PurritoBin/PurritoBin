@@ -27,7 +27,7 @@ jobs:
       run: |
         git clone https://github.com/uNetworking/uSockets
         cd uSockets
-        curl https://raw.githubusercontent.com/gentoo/guru/dev/net-libs/usockets/files/usockets-0.7.1-Makefile.patch | git apply
+        curl https://raw.githubusercontent.com/gentoo/guru/dev/net-libs/usockets/files/usockets-0.7.1_p20210909-Makefile.patch | git apply
         make WITH_OPENSSL=1
         sudo make install
     - name: Install uWebSockets

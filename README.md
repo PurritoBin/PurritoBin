@@ -7,7 +7,7 @@
 
 [![docker](https://github.com/PurritoBin/docker/actions/workflows/docker.yml/badge.svg)](https://hub.docker.com/r/purritobin/purritobin)
 [![docker pulls](https://img.shields.io/docker/pulls/purritobin/purritobin)](https://hub.docker.com/r/purritobin/purritobin)
-[![image size](https://img.shields.io/docker/image-size/purritobin/purritobin/edge)](https://hub.docker.com/r/purritobin/purritobin)
+[![image size](https://img.shields.io/docker/image-size/purritobin/purritobin/latest)](https://hub.docker.com/r/purritobin/purritobin)
 
 
 ultra fast, minimalistic, encrypted command line paste-bin
