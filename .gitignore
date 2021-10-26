@@ -6,6 +6,9 @@ PB.crt
 # meson build directory
 build
 
+# clang cache
+.cache
+
 # coredumps
 *.core
 
