@@ -23,17 +23,21 @@ jobs:
       run: |
         sudo apt update
         sudo apt-get install -y libssl-dev pkg-config gcc-10 g++-10 curl mandoc valgrind clang-tools meson ninja-build liblmdb-dev
-    - name: Install uSockets
+    - name: Install latest uSockets
       run: |
         git clone https://github.com/uNetworking/uSockets
         cd uSockets
+        git fetch --all --tags
+        git checkout $(git describe --tags $(git rev-list --tags --max-count=1))
         curl https://raw.githubusercontent.com/gentoo/guru/dev/net-libs/usockets/files/usockets-0.8.1_p20211023-Makefile.patch | git apply
         curl https://raw.githubusercontent.com/gentoo/guru/dev/net-libs/usockets/files/usockets-0.8.1_p20211023-pkg-config.patch | git apply
         make WITH_OPENSSL=1
         sudo make install
-    - name: Install uWebSockets
+    - name: Install latest uWebSockets
       run: |
         git clone https://github.com/uNetworking/uWebSockets
+        git fetch --all --tags
+        git checkout $(git describe --tags $(git rev-list --tags --max-count=1))
         sudo cp -r uWebSockets/src /usr/include/uWebSockets
     - name: Install lmdb
       run: |
