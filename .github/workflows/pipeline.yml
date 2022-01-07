@@ -28,7 +28,7 @@ jobs:
         git clone https://github.com/uNetworking/uSockets
         cd uSockets
         git fetch --all --tags
-        git checkout $(git describe --tags $(git rev-list --tags --max-count=1))
+        git checkout c2c1bbfa1644f1f6eb7fc9375650f41c5f9b7b06  # $(git describe --tags $(git rev-list --tags --max-count=1))
         curl https://raw.githubusercontent.com/gentoo/guru/dev/net-libs/usockets/files/usockets-0.8.1_p20211023-Makefile.patch | git apply
         curl https://raw.githubusercontent.com/gentoo/guru/dev/net-libs/usockets/files/usockets-0.8.1_p20211023-pkg-config.patch | git apply
         make WITH_OPENSSL=1
