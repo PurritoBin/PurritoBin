@@ -36,9 +36,10 @@ jobs:
     - name: Install latest uWebSockets
       run: |
         git clone https://github.com/uNetworking/uWebSockets
+        cd uWebSockets
         git fetch --all --tags
         git checkout $(git describe --tags $(git rev-list --tags --max-count=1))
-        sudo cp -r uWebSockets/src /usr/include/uWebSockets
+        sudo cp -r src /usr/include/uWebSockets
     - name: Install lmdb
       run: |
         wget https://git.openldap.org/openldap/openldap/-/archive/LMDB_0.9.29/openldap-LMDB_0.9.29.tar.gz
