@@ -1,0 +1,19 @@
+{
+    "name": "PurritoBin",
+    "version": "0.6.7",
+    "description": "fast, minimalistic, encrypted command line paste-bin",
+    "repository": {
+        "type": "git",
+        "url": "https://github.com/PurritoBin/PurritoBin"
+    },
+    "author": "Aisha Tammy <purrito@bsd.ac>",
+    "license": "ISC",
+    "bugs": "https://github.com/PurritoBin/PurritoBin/issues",
+    "homepage": "https://bsd.ac/about.html",
+    "dependencies": {
+        "lmdb": "LMDB/lmdb",
+        "lmdbxx": "hoytech/lmdbxx",
+        "uSockets": ">=uNetworking/uSockets#0.8.1",
+        "uWebSockets": ">=uNetworking/uWebSockets#20.5.0"
+    }
+}
