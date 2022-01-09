@@ -11,9 +11,9 @@
     "bugs": "https://github.com/PurritoBin/PurritoBin/issues",
     "homepage": "https://bsd.ac/about.html",
     "dependencies": {
-        "lmdb": "https://github.com/LMDB/lmdb",
-        "lmdbxx": "https://github.com/hoytech/lmdbxx",
-        "uSockets": ">=https://github.com/uNetworking/uSockets#0.8.1",
-        "uWebSockets": ">=https://github.com/uNetworking/uWebSockets#20.5.0"
+        "lmdb": "LMDB/lmdb",
+        "lmdbxx": "hoytech/lmdbxx",
+        "uSockets": ">=uNetworking/uSockets#0.8.1",
+        "uWebSockets": ">=uNetworking/uWebSockets#20.5.0"
     }
 }
