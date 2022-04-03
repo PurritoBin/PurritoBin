@@ -70,4 +70,4 @@ COPY --from=builder /out/bin/purrito /
 VOLUME ["/data"]
 VOLUME ["/db"]
 
-CMD ["/purrito", "-d", "localhost/"]
+CMD ["./purrito", "-d", "localhost/", "-s", "/data", "-z", "/db", "-t"]
