@@ -66,11 +66,19 @@ RUN apk add wget make gcc openssl openssl-dev curl musl-dev git g++ && \
 
 # Purrito binary from builder container
 COPY --from=builder /out/bin/purrito /
+COPY ./.entrypoint.sh /entrypoint.sh
 COPY ./.run.sh /run.sh
+
+# Copy frontend for provisioning
+COPY frontend /usr/share/purrito-frontend
 
 VOLUME ["/data"]
 VOLUME ["/db"]
 
 ENV DOMAIN_NAME="localhost"
 
-CMD ["./run.sh"]
+EXPOSE 42069
+
+ENTRYPOINT ["/entrypoint.sh"]
+
+CMD ["/run.sh"]
