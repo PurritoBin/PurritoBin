@@ -1,4 +1,4 @@
-FROM alpine:edge as builder
+FROM alpine:latest as builder
 
 RUN apk update && apk add build-base ninja meson git wget bash curl openssl openssl-dev
 
@@ -35,7 +35,7 @@ RUN meson --prefix "/out" build && \
     ninja -C build && \
     ninja -C build install
 
-FROM alpine:edge
+FROM alpine:latest
 
 RUN apk add wget make gcc openssl openssl-dev curl musl-dev git g++
 RUN wget https://git.openldap.org/openldap/openldap/-/archive/LMDB_0.9.29/openldap-LMDB_0.9.29.tar.gz && \
