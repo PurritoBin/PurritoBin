@@ -75,7 +75,7 @@ COPY frontend /usr/share/purrito-frontend
 VOLUME ["/data"]
 VOLUME ["/db"]
 
-ENV DOMAIN_NAME="localhost"
+ENV DOMAIN_NAME="localhost/"
 
 EXPOSE 42069
 
