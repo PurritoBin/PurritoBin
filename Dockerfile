@@ -66,8 +66,11 @@ RUN apk add wget make gcc openssl openssl-dev curl musl-dev git g++ && \
 
 # Purrito binary from builder container
 COPY --from=builder /out/bin/purrito /
+COPY ./.run.sh /run.sh
 
 VOLUME ["/data"]
 VOLUME ["/db"]
 
-CMD ["./purrito", "-d", "localhost/", "-s", "/data", "-z", "/db", "-t"]
+ENV DOMAIN_NAME="localhost"
+
+CMD ["./run.sh"]
