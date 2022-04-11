@@ -24,7 +24,15 @@ usockets = dependency('libusockets', required: true)
 
 purrito  = executable('purrito', 'src/main.cc', dependencies: [ lmdb, threads, usockets ], install: true)
 install_man('man/purrito.1')
-install_data('frontend/about.html', 'frontend/index.html', 'frontend/paste.html', 'clients/POSIX_shell_client.sh')
+install_data('frontend/about.html',
+             'frontend/index.html',
+             'frontend/paste.html',
+             'frontend/decrypt.js',
+             'frontend/submit.js',
+             'frontend/style.css',
+             'vendor/crypto-js-4.1.1.min.js',
+             'clients/POSIX_shell_client.sh'
+)
 
 if get_option('enable_testing')
 	find_program('curl')
